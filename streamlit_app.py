@@ -1,8 +1,6 @@
 import streamlit as st
 import torch
-import torchaudio
-from denoiser import pretrained
-from denoiser.dsp import convert_audio
+from df.enhance import enhance, init_df, load_audio, save_audio
 
 st.set_page_config(page_title="إزالة الضوضاء الصوتية", layout="centered")
 
@@ -54,55 +52,3 @@ st.markdown("""
     color: #000000 !important;
     border: none !important;
     border-radius: 100px !important;
-    font-weight: 600 !important;
-    box-shadow: 0 0 28px rgba(255,255,255,0.4) !important;
-}
-</style>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="hero">
-  <div class="mark">UMBRA AUDIO</div>
-  <h1>نظّف صوتك من الضوضاء</h1>
-  <p>ارفع أي تسجيل صوتي، والنموذج (DNS64) يزيل الضوضاء تلقائياً خلال ثوانٍ.</p>
-</div>
-""", unsafe_allow_html=True)
-
-
-@st.cache_resource
-def load_model():
-    model = pretrained.dns64()
-    model.eval()
-    return model
-
-
-with st.spinner("جاري تحميل النموذج..."):
-    model = load_model()
-
-uploaded_file = st.file_uploader(
-    "ارفع ملف صوتي فيه ضوضاء",
-    type=["wav", "mp3", "flac", "ogg"],
-)
-
-if uploaded_file is not None:
-    input_path = "input_audio." + uploaded_file.name.split(".")[-1]
-    with open(input_path, "wb") as f:
-        f.write(uploaded_file.getbuffer())
-
-    with st.spinner("جاري إزالة الضوضاء..."):
-        wav, sr = torchaudio.load(input_path)
-        wav = convert_audio(wav, sr, model.sample_rate, model.chin)
-        with torch.no_grad():
-            denoised = model(wav.unsqueeze(0))[0]
-
-        output_path = "denoised_output.wav"
-        torchaudio.save(output_path, denoised, model.sample_rate)
-
-    st.success("تم! استمع للنتيجة أو حمّلها.")
-    st.audio(output_path)
-    with open(output_path, "rb") as f:
-        st.download_button(
-            "تحميل الملف بعد التنقية",
-            f,
-            file_name="denoised.wav",
-        )
