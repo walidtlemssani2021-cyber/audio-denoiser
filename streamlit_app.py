@@ -5,50 +5,37 @@ from speechbrain.inference.enhancement import SpectralMaskEnhancement
 
 st.set_page_config(page_title="إزالة الضوضاء الصوتية", layout="centered")
 
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&display=swap');
+st.markdown("<style>.stApp{background:#000;font-family:sans-serif;} h1{color:#fff;text-align:center;} p{color:#aaa;text-align:center;} [data-testid='stFileUploader']{background:linear-gradient(160deg,#3fa0f5,#0a2a6b);border-radius:14px;padding:14px;} [data-testid='stFileUploader'] *{color:#eaf3ff !important;} .stDownloadButton button{background:#fff !important;color:#000 !important;border-radius:100px !important;font-weight:600 !important;}</style>", unsafe_allow_html=True)
 
-.stApp {
-    background: #000000 !important;
-    font-family: 'Inter', sans-serif;
-}
+st.markdown("<h1>نظّف صوتك من الضوضاء</h1>", unsafe_allow_html=True)
+st.markdown("<p>ارفع أي تسجيل صوتي، والنموذج يزيل الضوضاء تلقائياً.</p>", unsafe_allow_html=True)
 
-.hero {
-    text-align: center;
-    padding: 20px 10px 10px;
-}
-.hero .mark {
-    font-family: 'Fraunces', serif;
-    color: #ffffff;
-    opacity: 0.75;
-    font-size: 14px;
-    letter-spacing: 0.1em;
-    margin-bottom: 10px;
-}
-.hero h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 500;
-    font-size: 32px;
-    color: #ffffff;
-    margin: 6px 0 14px;
-}
-.hero p {
-    color: #a3a3a3;
-    font-size: 15px;
-}
 
-[data-testid="stFileUploader"] {
-    background: linear-gradient(160deg, #3fa0f5, #0a2a6b);
-    border-radius: 14px;
-    padding: 14px;
-    border: 1px solid rgba(255,255,255,0.15);
-}
-[data-testid="stFileUploader"] * {
-    color: #eaf3ff !important;
-}
+@st.cache_resource
+def load_model():
+    return SpectralMaskEnhancement.from_hparams(
+        source="speechbrain/metricgan-plus-voicebank",
+        savedir="pretrained_models/metricgan-plus-voicebank",
+    )
 
-.stDownloadButton button, .stButton button {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: none !important;
+
+with st.spinner("جاري تحميل النموذج..."):
+    model = load_model()
+
+uploaded_file = st.file_uploader("ارفع ملف صوتي فيه ضوضاء", type=["wav", "mp3", "flac", "ogg"])
+
+if uploaded_file is not None:
+    input_path = "input_audio." + uploaded_file.name.split(".")[-1]
+    with open(input_path, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+
+    with st.spinner("جاري إزالة الضوضاء..."):
+        noisy = model.load_audio(input_path).unsqueeze(0)
+        enhanced = model.enhance_batch(noisy, lengths=torch.tensor([1.0]))
+        output_path = "denoised_output.wav"
+        torchaudio.save(output_path, enhanced.cpu(), 16000)
+
+    st.success("تم! استمع للنتيجة أو حمّلها.")
+    st.audio(output_path)
+    with open(output_path, "rb") as f:
+        st.download_button("تحميل الملف بعد التنقية", f, file_name="denoised.wav")
