@@ -1,6 +1,6 @@
 import streamlit as st
 import torch
-import torchaudio
+import soundfile as sf
 from speechbrain.inference.enhancement import SpectralMaskEnhancement
 
 st.set_page_config(page_title="إزالة الضوضاء الصوتية", layout="centered")
@@ -33,7 +33,7 @@ if uploaded_file is not None:
         noisy = model.load_audio(input_path).unsqueeze(0)
         enhanced = model.enhance_batch(noisy, lengths=torch.tensor([1.0]))
         output_path = "denoised_output.wav"
-        torchaudio.save(output_path, enhanced.cpu(), 16000)
+        sf.write(output_path, enhanced.cpu().numpy().squeeze(), 16000)
 
     st.success("تم! استمع للنتيجة أو حمّلها.")
     st.audio(output_path)
