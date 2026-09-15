@@ -1,6 +1,7 @@
 import streamlit as st
 import torch
-from df.enhance import enhance, init_df, load_audio, save_audio
+import torchaudio
+from speechbrain.inference.enhancement import SpectralMaskEnhancement
 
 st.set_page_config(page_title="إزالة الضوضاء الصوتية", layout="centered")
 
@@ -51,4 +52,3 @@ st.markdown("""
     background: #ffffff !important;
     color: #000000 !important;
     border: none !important;
-    border-radius: 100px !important;
