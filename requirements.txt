@@ -1,5 +1,7 @@
---extra-index-url https://download.pytorch.org/whl/cpu
 streamlit
 soundfile
 numpy
-deepfilter-stream
+requests
+onnxruntime
+torch
+torchaudio
