@@ -1,10 +1,9 @@
+import os
 import streamlit as st
-import torch
 import soundfile as sf
-from denoiser import pretrained
-from denoiser.dsp import convert_audio
+from voicefixer import VoiceFixer
 
-st.set_page_config(page_title="إزالة الضوضاء الصوتية", layout="centered")
+st.set_page_config(page_title="ترميم الصوت - VoiceFixer", layout="centered")
 
 st.markdown("""
 <style>
@@ -63,58 +62,53 @@ st.markdown("""
 st.markdown("""
 <div class="hero">
   <div class="mark">UMBRA AUDIO</div>
-  <h1>نظّف صوتك من الضوضاء</h1>
-  <p>ارفع أي تسجيل صوتي، والنموذج (DNS64) يزيل الضوضاء تلقائياً خلال ثوانٍ.</p>
+  <h1>رمّم صوتك بالكامل</h1>
+  <p>ارفع أي تسجيل، والنموذج (VoiceFixer) يزيل الضوضاء والصدى ويرفع الجودة تلقائياً.</p>
 </div>
 """, unsafe_allow_html=True)
 
 
 @st.cache_resource
 def load_model():
-    model = pretrained.dns64()
-    model.eval()
-    return model
+    vf = VoiceFixer()
+    return vf
 
 
 with st.spinner("جاري تحميل النموذج..."):
-    model = load_model()
+    vf = load_model()
 
 uploaded_file = st.file_uploader(
-    "ارفع ملف صوتي فيه ضوضاء",
+    "ارفع ملف صوتي",
     type=["wav", "flac"],
+)
+
+mode = st.selectbox(
+    "اختر وضع المعالجة",
+    options=[0, 1, 2],
+    index=0,
+    help="0 = الأسرع، 2 = الأعمق والأبطأ",
 )
 
 if uploaded_file is not None:
     input_path = "input_audio." + uploaded_file.name.split(".")[-1]
+    output_path = "voicefixer_output.wav"
+
     with open(input_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
 
-    with st.spinner("جاري إزالة الضوضاء..."):
-        # قراءة الصوت باستخدام soundfile
-        wav_np, sr = sf.read(input_path, dtype="float32")
-        wav = torch.from_numpy(wav_np).float()
-
-        # ضبط شكل الموتر ليكون (قنوات، زمن)
-        if wav.dim() == 1:
-            wav = wav.unsqueeze(0)
-        else:
-            wav = wav.T
-
-        # تحويل الصوت إلى الصيغة التي يحتاجها النموذج
-        wav = convert_audio(wav, sr, model.sample_rate, model.chin)
-
-        with torch.no_grad():
-            denoised = model(wav.unsqueeze(0))[0]
-
-        output_path = "denoised_output.wav"
-        output_np = denoised.squeeze(0).cpu().numpy()
-        sf.write(output_path, output_np.T, model.sample_rate)
+    with st.spinner("جاري ترميم الصوت... (قد يستغرق بعض الوقت)"):
+        vf.restore(
+            input=input_path,
+            output=output_path,
+            cuda=False,
+            mode=mode,
+        )
 
     st.success("تم! استمع للنتيجة أو حمّلها.")
     st.audio(output_path)
     with open(output_path, "rb") as f:
         st.download_button(
-            "تحميل الملف بعد التنقية",
+            "تحميل الملف بعد الترميم",
             f,
-            file_name="denoised.wav",
+            file_name="voicefixer_restored.wav",
         )
