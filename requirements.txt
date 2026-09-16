@@ -1,5 +1,5 @@
 streamlit
 soundfile
 numpy
-requests
-sherpa-onnx
+librosa
+torch
