@@ -4,4 +4,4 @@ streamlit
 soundfile
 numpy
 requests
-clearvoice
+clearvoice @ git+https://github.com/modelscope/ClearerVoice-Studio.git#subdirectory=clearvoice
