@@ -2,6 +2,4 @@ streamlit
 soundfile
 numpy
 requests
-onnxruntime
-torch
-torchaudio
+sherpa-onnx
