@@ -3,6 +3,7 @@ import soundfile as sf
 import numpy as np
 import onnxruntime as ort
 import os
+import tempfile
 
 st.set_page_config(page_title="إزالة الضوضاء - ZipEnhancer ONNX", layout="centered")
 
@@ -32,6 +33,15 @@ def load_model():
     session = ort.InferenceSession(MODEL_PATH, providers=['CPUExecutionProvider'])
     return session
 
+
+def process_chunk(session, chunk_audio):
+    """معالجة قطعة صوتية واحدة عبر ONNX."""
+    input_name = session.get_inputs()[0].name
+    audio_input = chunk_audio.reshape(1, -1).astype(np.float32)
+    outputs = session.run(None, {input_name: audio_input})
+    return outputs[0].squeeze()
+
+
 uploaded_file = st.file_uploader("ارفع ملف صوتي (WAV)", type=["wav"])
 
 if uploaded_file is not None:
@@ -39,19 +49,34 @@ if uploaded_file is not None:
     if session is None:
         st.stop()
 
-    input_path = "input_temp.wav"
-    with open(input_path, "wb") as f:
-        f.write(uploaded_file.getbuffer())
+    # حفظ الملف في مسار مؤقت
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp:
+        tmp.write(uploaded_file.getbuffer())
+        input_path = tmp.name
 
     with st.spinner("جاري إزالة الضوضاء..."):
-        audio, sr = sf.read(input_path, dtype="float32")
-        
-        # تجهيز المدخلات حسب متطلبات النموذج
-        input_name = session.get_inputs()[0].name
-        audio_input = audio.reshape(1, -1).astype(np.float32)
-        
-        outputs = session.run(None, {input_name: audio_input})
-        enhanced = outputs[0].squeeze()
+        # قراءة معلومات الملف فقط (بدون تحميله كاملاً)
+        info = sf.info(input_path)
+        sr = info.samplerate
+        total_frames = info.frames
+
+        # حجم القطعة: 10 ثوانٍ (لتقليل استهلاك الذاكرة)
+        chunk_size = sr * 10
+        enhanced_chunks = []
+
+        # معالجة على شكل قطع
+        with sf.SoundFile(input_path, 'r') as f:
+            while True:
+                chunk = f.read(chunk_size, dtype='float32')
+                if len(chunk) == 0:
+                    break
+                # تحويل إلى mono إذا كان stereo
+                if chunk.ndim > 1:
+                    chunk = chunk.mean(axis=1)
+                enhanced_chunk = process_chunk(session, chunk)
+                enhanced_chunks.append(enhanced_chunk)
+
+        enhanced = np.concatenate(enhanced_chunks)
 
         output_path = "enhanced_zipenhancer_onnx.wav"
         sf.write(output_path, enhanced, 16000)
