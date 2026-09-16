@@ -39,7 +39,6 @@ if uploaded_file is not None:
         model = load_model()
         output_wav = model(input_path=input_path, online_write=False)
         
-        # استخدام مسار مؤقت آمن لتجنب خطأ FileNotFoundError
         temp_dir = tempfile.mkdtemp()
         output_path = os.path.join(temp_dir, "enhanced_dccrn.wav")
         model.write(output_wav, output_path=output_path)
