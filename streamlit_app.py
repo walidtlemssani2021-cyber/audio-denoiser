@@ -1,8 +1,7 @@
 import streamlit as st
+import numpy as np
 import soundfile as sf
-import torch
-import os
-from df.enhance import enhance, init_df, load_audio
+from deepfilter_stream import DeepFilterModel
 
 st.set_page_config(page_title="إزالة الضوضاء - DeepFilterNet", layout="centered")
 
@@ -18,34 +17,36 @@ st.markdown("""
 st.markdown("""
 <div class="hero">
   <h1>إزالة الضوضاء (DeepFilterNet)</h1>
-  <p>نموذج خفيف وسريع، مصمم للعمل على المعالج.</p>
+  <p>نموذج خفيف وسريع، يعمل عبر ONNX بدون الحاجة إلى Rust.</p>
 </div>
 """, unsafe_allow_html=True)
 
-
 @st.cache_resource
 def load_model():
-    # تحميل DeepFilterNet3 (الأحدث والأفضل)
-    model, df_state, _ = init_df(model_base_dir="DeepFilterNet3")
-    return model, df_state
+    # تحميل نموذج ONNX (سيتم تنزيله تلقائياً عند أول استخدام)
+    model = DeepFilterModel()
+    return model
 
-
-uploaded_file = st.file_uploader("ارفع ملف صوتي (WAV أو FLAC)", type=["wav", "flac"])
+uploaded_file = st.file_uploader("ارفع ملف صوتي (WAV)", type=["wav"])
 
 if uploaded_file is not None:
-    input_path = "input_temp." + uploaded_file.name.split(".")[-1]
-    with open(input_path, "wb") as f:
-        f.write(uploaded_file.getbuffer())
+    # قراءة الصوت باستخدام soundfile (بدون torchaudio)
+    audio, sr = sf.read(uploaded_file, dtype="float32")
 
     with st.spinner("جاري إزالة الضوضاء..."):
-        model, df_state = load_model()
-        # تحميل الصوت
-        audio, _ = load_audio(input_path, sr=df_state.sr())
-        # إزالة الضوضاء
-        enhanced = enhance(model, df_state, audio)
-        # حفظ النتيجة
-        output_path = "enhanced_deepfilternet.wav"
-        sf.write(output_path, enhanced.squeeze().cpu().numpy(), df_state.sr())
+        model = load_model()
+        # إنشاء تدفق معالجة جديد
+        stream = model.new_stream()
+        # معالجة الصوت (المكتبة تدعم معدلات عينات مختلفة)
+        enhanced = stream.process(audio, sr=sr)
+        # تفريغ أي بقايا مخزنة
+        tail = stream.flush()
+        if len(tail) > 0:
+            enhanced = np.concatenate([enhanced, tail])
+
+    # حفظ النتيجة بمعدل 48kHz (المعدل الذي ينتجه النموذج)
+    output_path = "enhanced_deepfilternet.wav"
+    sf.write(output_path, enhanced, 48000)
 
     st.success("تم! استمع للنتيجة أو حمّلها.")
     st.audio(output_path)
