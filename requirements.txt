@@ -1,5 +1,8 @@
+
+--extra-index-url https://download.pytorch.org/whl/cpu
 streamlit
 torch
 torchaudio
-resemble-enhance
 soundfile
+denoiser
+numpy
