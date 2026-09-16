@@ -1,11 +1,10 @@
 import streamlit as st
 import soundfile as sf
-import tempfile
+import numpy as np
+import onnxruntime as ort
 import os
-from modelscope.pipelines import pipeline
-from modelscope.utils.constant import Tasks
 
-st.set_page_config(page_title="إزالة الضوضاء - ZipEnhancer", layout="centered")
+st.set_page_config(page_title="إزالة الضوضاء - ZipEnhancer ONNX", layout="centered")
 
 st.markdown("""
 <style>
@@ -18,41 +17,46 @@ st.markdown("""
 
 st.markdown("""
 <div class="hero">
-  <h1>إزالة الضوضاء (ZipEnhancer)</h1>
-  <p>نموذج من Alibaba Tongyi Lab، يزيل الضوضاء والصدى معاً.</p>
+  <h1>إزالة الضوضاء (ZipEnhancer ONNX)</h1>
+  <p>نموذج سريع وخفيف يعمل على ONNX Runtime.</p>
 </div>
 """, unsafe_allow_html=True)
 
+MODEL_PATH = "zipenhancer.onnx"
 
 @st.cache_resource
 def load_model():
-    # تحميل pipeline من ModelScope
-    ans = pipeline(
-        Tasks.acoustic_noise_suppression,
-        model='iic/speech_zipenhancer_ans_multiloss_16k_base',
-        disable_update=True,
-        disable_log=True
-    )
-    return ans
-
+    if not os.path.exists(MODEL_PATH):
+        st.error(f"ملف النموذج {MODEL_PATH} غير موجود.")
+        return None
+    session = ort.InferenceSession(MODEL_PATH, providers=['CPUExecutionProvider'])
+    return session
 
 uploaded_file = st.file_uploader("ارفع ملف صوتي (WAV)", type=["wav"])
 
 if uploaded_file is not None:
+    session = load_model()
+    if session is None:
+        st.stop()
+
     input_path = "input_temp.wav"
     with open(input_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
 
     with st.spinner("جاري إزالة الضوضاء..."):
-        model = load_model()
+        audio, sr = sf.read(input_path, dtype="float32")
         
-        # استخدام مسار مؤقت آمن
-        temp_dir = tempfile.mkdtemp()
-        output_path = os.path.join(temp_dir, "enhanced_zipenhancer.wav")
+        # تجهيز المدخلات حسب متطلبات النموذج
+        input_name = session.get_inputs()[0].name
+        audio_input = audio.reshape(1, -1).astype(np.float32)
         
-        model(input_path, output_path=output_path)
+        outputs = session.run(None, {input_name: audio_input})
+        enhanced = outputs[0].squeeze()
+
+        output_path = "enhanced_zipenhancer_onnx.wav"
+        sf.write(output_path, enhanced, 16000)
 
     st.success("تم! استمع للنتيجة أو حمّلها.")
     st.audio(output_path)
     with open(output_path, "rb") as f:
-        st.download_button("تحميل الملف", f, file_name="enhanced_zipenhancer.wav")
+        st.download_button("تحميل الملف", f, file_name="enhanced_zipenhancer_onnx.wav")
