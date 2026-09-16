@@ -1,12 +1,4 @@
 streamlit
 soundfile
 numpy
-requests
-modelscope
-datasets==3.0.*
-torch
-torchaudio
-addict
-simplejson
-librosa
-sortedcontainers
+onnxruntime
