@@ -1,3 +1,4 @@
+
 name: Export ZipEnhancer to ONNX
 
 on:
@@ -21,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd zipEnhancer
-          pip install torch librosa soundfile numpy onnx onnxruntime onnxscript
+          pip install torch librosa soundfile numpy onnx onnxruntime onnxscript pyyaml
 
       - name: Export to ONNX
         run: |
