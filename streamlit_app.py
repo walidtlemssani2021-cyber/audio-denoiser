@@ -1,9 +1,9 @@
 import streamlit as st
 import soundfile as sf
 import numpy as np
-import onnxruntime as ort
-import requests
+import sherpa_onnx
 import os
+import requests
 
 st.set_page_config(page_title="إزالة الضوضاء - GTCRN", layout="centered")
 
@@ -35,52 +35,34 @@ def load_model():
             with open(MODEL_PATH, "wb") as f:
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
-    
-    # إنشاء جلسة ONNX
-    session = ort.InferenceSession(MODEL_PATH, providers=['CPUExecutionProvider'])
-    return session
+
+    # إعداد نموذج إزالة الضوضاء
+    config = sherpa_onnx.OfflineSpeechDenoiserConfig(
+        model=sherpa_onnx.OfflineSpeechDenoiserModelConfig(
+            gtcrn=sherpa_onnx.OfflineSpeechDenoiserGtcrnModelConfig(
+                model=MODEL_PATH
+            ),
+            debug=False,
+            num_threads=1,
+            provider="cpu",
+        )
+    )
+    return sherpa_onnx.OfflineSpeechDenoiser(config)
 
 uploaded_file = st.file_uploader("ارفع ملف صوتي (WAV)", type=["wav"])
 
 if uploaded_file is not None:
-    # قراءة الصوت
-    audio, sr = sf.read(uploaded_file, dtype="float32")
-
-    # GTCRN يتوقع 16kHz mono
-    if sr != 16000:
-        # إعادة تشكيل بسيطة (resample)
-        import torch
-        import torchaudio
-        audio = torch.from_numpy(audio).float()
-        if audio.dim() > 1:
-            audio = audio.mean(dim=1)
-        audio = torchaudio.functional.resample(audio, sr, 16000).numpy()
-        sr = 16000
+    # قراءة الصوت (مع تحويله إلى أحادي القناة)
+    data, sample_rate = sf.read(uploaded_file, always_2d=True, dtype="float32")
+    samples = np.ascontiguousarray(data[:, 0])
 
     with st.spinner("جاري إزالة الضوضاء..."):
-        session = load_model()
-        
-        # تجهيز المدخلات (GTCRN يتوقع شكل معين من ONNX)
-        # المدخلات: [batch, 1, time] أو مشابه حسب النموذج
-        input_name = session.get_inputs()[0].name
-        input_shape = session.get_inputs()[0].shape
-        
-        # عادةً ما يتوقع [1, 1, T] أو [1, T, 1]
-        if len(input_shape) == 3:
-            if input_shape[1] == 1:
-                audio_input = audio.reshape(1, 1, -1)
-            else:
-                audio_input = audio.reshape(1, -1, 1)
-        else:
-            audio_input = audio.reshape(1, -1)
-        
-        # تشغيل النموذج
-        outputs = session.run(None, {input_name: audio_input})
-        enhanced = outputs[0].squeeze()
-        
-        # حفظ النتيجة
-        output_path = "enhanced_gtcrn.wav"
-        sf.write(output_path, enhanced, 16000)
+        sd = load_model()
+        # معالجة الملف كاملاً في خطوة واحدة
+        denoised = sd(samples, sample_rate)
+
+    output_path = "enhanced_gtcrn.wav"
+    sf.write(output_path, denoised.samples, denoised.sample_rate)
 
     st.success("تم! استمع للنتيجة أو حمّلها.")
     st.audio(output_path)
@@ -89,4 +71,4 @@ if uploaded_file is not None:
             "تحميل الملف",
             f,
             file_name="enhanced_gtcrn.wav",
-              )
+        )
