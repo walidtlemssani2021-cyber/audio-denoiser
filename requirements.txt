@@ -1,9 +1,6 @@
 --extra-index-url https://download.pytorch.org/whl/cpu
 streamlit
-numpy
 soundfile
-torch
-torchaudio
+numpy
 requests
-ai-edge-litert
-audio-super-resolution[lavasr,download] @ git+https://github.com/Tinnci/python-audio-super-resolution.git
+dpdfnet
