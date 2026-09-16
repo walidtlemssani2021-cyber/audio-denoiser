@@ -1,6 +1,5 @@
 import streamlit as st
 import torch
-import torchaudio
 import soundfile as sf
 from denoiser import pretrained
 from denoiser.dsp import convert_audio
@@ -82,7 +81,7 @@ with st.spinner("جاري تحميل النموذج..."):
 
 uploaded_file = st.file_uploader(
     "ارفع ملف صوتي فيه ضوضاء",
-    type=["wav", "mp3", "flac", "ogg"],
+    type=["wav", "flac"],
 )
 
 if uploaded_file is not None:
@@ -91,13 +90,25 @@ if uploaded_file is not None:
         f.write(uploaded_file.getbuffer())
 
     with st.spinner("جاري إزالة الضوضاء..."):
-        wav, sr = torchaudio.load(input_path)
+        # قراءة الصوت باستخدام soundfile
+        wav_np, sr = sf.read(input_path, dtype="float32")
+        wav = torch.from_numpy(wav_np).float()
+
+        # ضبط شكل الموتر ليكون (قنوات، زمن)
+        if wav.dim() == 1:
+            wav = wav.unsqueeze(0)
+        else:
+            wav = wav.T
+
+        # تحويل الصوت إلى الصيغة التي يحتاجها النموذج
         wav = convert_audio(wav, sr, model.sample_rate, model.chin)
+
         with torch.no_grad():
             denoised = model(wav.unsqueeze(0))[0]
 
         output_path = "denoised_output.wav"
-        sf.write(output_path, denoised.squeeze().cpu().numpy(), model.sample_rate)
+        output_np = denoised.squeeze(0).cpu().numpy()
+        sf.write(output_path, output_np.T, model.sample_rate)
 
     st.success("تم! استمع للنتيجة أو حمّلها.")
     st.audio(output_path)
@@ -106,4 +117,4 @@ if uploaded_file is not None:
             "تحميل الملف بعد التنقية",
             f,
             file_name="denoised.wav",
-    )
+        )
