@@ -1,10 +1,11 @@
 import streamlit as st
-from clearvoice import ClearVoice
 import soundfile as sf
 import tempfile
 import os
+from modelscope.pipelines import pipeline
+from modelscope.utils.constant import Tasks
 
-st.set_page_config(page_title="إزالة الضوضاء - FRCRN", layout="centered")
+st.set_page_config(page_title="إزالة الضوضاء - ZipEnhancer", layout="centered")
 
 st.markdown("""
 <style>
@@ -17,15 +18,22 @@ st.markdown("""
 
 st.markdown("""
 <div class="hero">
-  <h1>إزالة الضوضاء (FRCRN)</h1>
-  <p>نموذج قوي من Alibaba DAMO Academy، متاح للاستخدام التجاري.</p>
+  <h1>إزالة الضوضاء (ZipEnhancer)</h1>
+  <p>نموذج من Alibaba Tongyi Lab، يزيل الضوضاء والصدى معاً.</p>
 </div>
 """, unsafe_allow_html=True)
 
 
 @st.cache_resource
 def load_model():
-    return ClearVoice(task='speech_enhancement', model_names=['FRCRN_SE_16K'])
+    # تحميل pipeline من ModelScope
+    ans = pipeline(
+        Tasks.acoustic_noise_suppression,
+        model='iic/speech_zipenhancer_ans_multiloss_16k_base',
+        disable_update=True,
+        disable_log=True
+    )
+    return ans
 
 
 uploaded_file = st.file_uploader("ارفع ملف صوتي (WAV)", type=["wav"])
@@ -37,14 +45,14 @@ if uploaded_file is not None:
 
     with st.spinner("جاري إزالة الضوضاء..."):
         model = load_model()
-        output_wav = model(input_path=input_path, online_write=False)
         
-        # استخدام مسار مؤقت آمن لتجنب خطأ FileNotFoundError
+        # استخدام مسار مؤقت آمن
         temp_dir = tempfile.mkdtemp()
-        output_path = os.path.join(temp_dir, "enhanced_frcrn.wav")
-        model.write(output_wav, output_path=output_path)
+        output_path = os.path.join(temp_dir, "enhanced_zipenhancer.wav")
+        
+        model(input_path, output_path=output_path)
 
     st.success("تم! استمع للنتيجة أو حمّلها.")
     st.audio(output_path)
     with open(output_path, "rb") as f:
-        st.download_button("تحميل الملف", f, file_name="enhanced_frcrn.wav")
+        st.download_button("تحميل الملف", f, file_name="enhanced_zipenhancer.wav")
