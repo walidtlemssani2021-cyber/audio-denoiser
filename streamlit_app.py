@@ -1,26 +1,22 @@
 import streamlit as st
-import torch
-import soundfile as sf
-from speechbrain.inference.enhancement import SpectralMaskEnhancement
+from df.enhance import enhance, init_df, load_audio, save_audio
 
 st.set_page_config(page_title="إزالة الضوضاء الصوتية", layout="centered")
 
 st.markdown("<style>.stApp{background:#000;font-family:sans-serif;} h1{color:#fff;text-align:center;} p{color:#aaa;text-align:center;} [data-testid='stFileUploader']{background:linear-gradient(160deg,#3fa0f5,#0a2a6b);border-radius:14px;padding:14px;} [data-testid='stFileUploader'] *{color:#eaf3ff !important;} .stDownloadButton button{background:#fff !important;color:#000 !important;border-radius:100px !important;font-weight:600 !important;}</style>", unsafe_allow_html=True)
 
 st.markdown("<h1>نظّف صوتك من الضوضاء</h1>", unsafe_allow_html=True)
-st.markdown("<p>ارفع أي تسجيل صوتي، والنموذج يزيل الضوضاء تلقائياً.</p>", unsafe_allow_html=True)
+st.markdown("<p>ارفع أي تسجيل صوتي، والنموذج (DeepFilterNet) يزيل الضوضاء تلقائياً.</p>", unsafe_allow_html=True)
 
 
 @st.cache_resource
 def load_model():
-    return SpectralMaskEnhancement.from_hparams(
-        source="speechbrain/metricgan-plus-voicebank",
-        savedir="pretrained_models/metricgan-plus-voicebank",
-    )
+    model, df_state, _ = init_df()
+    return model, df_state
 
 
 with st.spinner("جاري تحميل النموذج..."):
-    model = load_model()
+    model, df_state = load_model()
 
 uploaded_file = st.file_uploader("ارفع ملف صوتي فيه ضوضاء", type=["wav", "mp3", "flac", "ogg"])
 
@@ -30,10 +26,10 @@ if uploaded_file is not None:
         f.write(uploaded_file.getbuffer())
 
     with st.spinner("جاري إزالة الضوضاء..."):
-        noisy = model.load_audio(input_path).unsqueeze(0)
-        enhanced = model.enhance_batch(noisy, lengths=torch.tensor([1.0]))
+        audio, _ = load_audio(input_path, sr=df_state.sr())
+        enhanced = enhance(model, df_state, audio)
         output_path = "denoised_output.wav"
-        sf.write(output_path, enhanced.cpu().numpy().squeeze(), 16000)
+        save_audio(output_path, enhanced, df_state.sr())
 
     st.success("تم! استمع للنتيجة أو حمّلها.")
     st.audio(output_path)
