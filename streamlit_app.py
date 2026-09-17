@@ -1,72 +1,52 @@
 import streamlit as st
-import soundfile as sf
-import numpy as np
-import onnxruntime as ort
-from huggingface_hub import hf_hub_download
-import librosa
+from deep_translator import GoogleTranslator
+import fitz  # PyMuPDF
 
-st.set_page_config(page_title="رفع جودة الصوت - FlashSR", layout="centered")
+st.set_page_config(page_title="PDF Translator", layout="wide")
 
-st.markdown("""
-<style>
-.stApp { background: #000000 !important; }
-.hero { text-align: center; padding: 20px 10px; }
-.hero h1 { color: #ffffff; font-family: 'Fraunces', serif; font-size: 32px; }
-.hero p { color: #a3a3a3; font-size: 15px; }
-.stDownloadButton button { background: #ffffff !important; color: #000000 !important; border-radius: 100px !important; }
-</style>
-""", unsafe_allow_html=True)
+st.title("📄 PDF Translator for Human")
 
-st.markdown('<div class="hero"><h1>ارفع جودة صوتك</h1><p>FlashSR (ONNX) من 16kHz إلى 48kHz</p></div>', unsafe_allow_html=True)
+# دالة الترجمة
+def translate_text(text, target_lang='ar'):
+    if not text.strip():
+        return ""
+    try:
+        # GoogleTranslator يدعم اللغات بدون مفتاح API
+        translated = GoogleTranslator(source='auto', target=target_lang).translate(text)
+        return translated
+    except Exception as e:
+        return f"Error: {e}"
 
+# رفع الملف
+uploaded_file = st.file_uploader("ارفع ملف PDF", type=["pdf"])
 
-@st.cache_resource
-def load_sr_model():
-    model_path = hf_hub_download(
-        repo_id="YatharthS/FlashSR",
-        filename="model.onnx",
-        subfolder="onnx"
-    )
-    return ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
+if uploaded_file:
+    # قراءة الملف في الذاكرة
+    doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+    total_pages = len(doc)
 
+    st.sidebar.write(f"عدد الصفحات: {total_pages}")
 
-with st.spinner("جاري تحميل النموذج..."):
-    sr_session = load_sr_model()
+    # اختيار الصفحة واللغة
+    page_num = st.sidebar.number_input("اختر الصفحة", min_value=1, max_value=total_pages, value=1) - 1
+    target_lang = st.sidebar.selectbox("اللغة الهدف", ["ar", "en", "fr", "es", "de"], index=0)
 
-uploaded_file = st.file_uploader("ارفع ملف صوتي", type=["wav", "flac"])
+    # عرض الصفحة الأصلية
+    col1, col2 = st.columns(2)
 
-if uploaded_file is not None:
-    input_path = "input_audio." + uploaded_file.name.split(".")[-1]
-    with open(input_path, "wb") as f:
-        f.write(uploaded_file.getbuffer())
+    with col1:
+        st.subheader("النص الأصلي")
+        original_text = doc[page_num].get_text()
+        st.text_area("Original Text", original_text, height=400, key="orig")
 
-    with st.spinner("جاري رفع الجودة..."):
-        # قراءة الصوت
-        audio, sr = sf.read(input_path, dtype="float32")
+    with col2:
+        st.subheader("الترجمة")
+        # زر لترجمة الصفحة الحالية فقط (لحفظ الذاكرة)
+        if st.button("ترجم هذه الصفحة"):
+            with st.spinner("جاري الترجمة..."):
+                translated = translate_text(original_text, target_lang)
+                st.session_state['translated'] = translated
 
-        # تحويل إلى mono إذا كان stereo
-        if audio.ndim > 1:
-            audio = audio.mean(axis=1)
-
-        # FlashSR يتوقع 16kHz
-        if sr != 16000:
-            audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
-            sr = 16000
-
-        # تجهيز المدخلات
-        audio_input = audio[np.newaxis, :].astype(np.float32)
-
-        # تشغيل النموذج
-        input_name = sr_session.get_inputs()[0].name
-        output_name = sr_session.get_outputs()[0].name
-        onnx_output = sr_session.run([output_name], {input_name: audio_input})[0]
-
-        enhanced = onnx_output.squeeze(0)
-
-        output_path = "enhanced_flashsr.wav"
-        sf.write(output_path, enhanced, 48000)
-
-    st.success("تم!")
-    st.audio(output_path)
-    with open(output_path, "rb") as f:
-        st.download_button("تحميل الملف", f, file_name="enhanced_flashsr.wav")
+        # عرض الترجمة إذا كانت موجودة في الجلسة
+        if 'translated' in st.session_state:
+            st.text_area("Translated Text", st.session_state['translated'], height=400, key="trans")
