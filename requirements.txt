@@ -6,3 +6,4 @@ denoiser
 numpy
 pedalboard
 pyloudnorm
+scipy
