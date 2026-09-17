@@ -4,3 +4,7 @@ torch
 soundfile
 denoiser
 numpy
+resemble-enhance
+
+
+
