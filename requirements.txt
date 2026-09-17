@@ -1,7 +1,9 @@
-streamlit
 
-denoiser
-soundfile
-pydub
-audioop-lts
+--extra-index-url https://download.pytorch.org/whl/cpu
+streamlit
 torch
+soundfile
+denoiser
+numpy
+pedalboard
+pyloudnorm
