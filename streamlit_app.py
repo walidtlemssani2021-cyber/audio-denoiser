@@ -70,40 +70,60 @@ if uploaded_file is not None:
         gain_db = -3.0 - peak_db
         audio = audio * (10 ** (gain_db / 20.0))
 
-        # 4. De-esser ديناميكي (أقوى للنعومة)
-        def apply_de_esser(data, rate, strength=0.65):
-            cutoff = 5000
-            sos_high = butter(4, cutoff, 'high', fs=rate, output='sos')
-            high = sosfiltfilt(sos_high, data)
-            env = np.abs(hilbert(high))
-            sigma = (rate * 5 / 1000) / 2.355
-            env = gaussian_filter1d(env, sigma)
-            env_db = 20 * np.log10(env + 1e-10)
-            gain_db = np.where(env_db > -20, (env_db + 20) * (1/4 - 1), 0.0)
-            gain = 10 ** (gain_db / 20.0)
-            high_compressed = high * gain
-            sos_low = butter(4, cutoff, 'low', fs=rate, output='sos')
-            low = sosfiltfilt(sos_low, data)
-            return (1 - strength) * data + strength * (low + high_compressed)
+        # 4. De-esser متعدد النطاقات (3 نطاقات)
+        def apply_multiband_de_esser(data, rate, strength=0.65):
+            bands = [
+                (5000, 7000, -20, 4.0),   # منطقة الحروف الرئيسية
+                (7000, 9000, -22, 4.5),   # منطقة "الس" الحادة
+                (9000, 11000, -24, 5.0),  # منطقة "الهواء" الحادة
+            ]
+            
+            result = data.copy()
+            for low_freq, high_freq, threshold, ratio in bands:
+                # استخراج النطاق
+                sos_band = butter(4, [low_freq, high_freq], 'band', fs=rate, output='sos')
+                band = sosfiltfilt(sos_band, data)
+                
+                # حساب غلاف الطاقة
+                env = np.abs(hilbert(band))
+                sigma = (rate * 5 / 1000) / 2.355
+                env = gaussian_filter1d(env, sigma)
+                
+                # حساب التخفيض
+                env_db = 20 * np.log10(env + 1e-10)
+                gain_db = np.where(env_db > threshold, (env_db - threshold) * (1/ratio - 1), 0.0)
+                gain = 10 ** (gain_db / 20.0)
+                
+                # تطبيق التخفيض على النطاق
+                band_compressed = band * gain
+                band_original = band
+                
+                # الفرق بين النطاق الأصلي والمضغوط
+                diff = band_compressed - band_original
+                
+                # تطبيق الفرق على الصوت الأصلي
+                result = result + strength * diff
+            
+            return result
 
-        audio = apply_de_esser(audio, sr, strength=0.65)
+        audio = apply_multiband_de_esser(audio, sr, strength=0.65)
 
         # 5. سلسلة EQ (تحسين الوضوح + تقليل الحدة)
         board = Pedalboard([
             PeakFilter(cutoff_frequency_hz=250, gain_db=-2.0, q=1.0),
-            PeakFilter(cutoff_frequency_hz=2000, gain_db=1.0, q=1.0),   # وضوح
-            PeakFilter(cutoff_frequency_hz=4000, gain_db=1.5, q=1.0),   # وضوح
-            PeakFilter(cutoff_frequency_hz=8000, gain_db=-1.5, q=1.0),  # تقليل الحدة
-            HighShelfFilter(cutoff_frequency_hz=10000, gain_db=-3.0),   # نعومة
+            PeakFilter(cutoff_frequency_hz=2000, gain_db=1.0, q=1.0),
+            PeakFilter(cutoff_frequency_hz=4000, gain_db=1.5, q=1.0),
+            PeakFilter(cutoff_frequency_hz=8000, gain_db=-1.5, q=1.0),
+            HighShelfFilter(cutoff_frequency_hz=10000, gain_db=-3.0),
         ])
         audio = board(audio, sr)
 
         # 6. Saturation حقيقي (أنعم)
-        def apply_saturation(data, drive=0.05):
+        def apply_saturation(data, drive=0.04):
             driven = np.tanh(data * (1 + drive * 5))
             return driven / (np.max(np.abs(driven)) + 1e-9) * np.max(np.abs(data))
 
-        audio = apply_saturation(audio, drive=0.05)
+        audio = apply_saturation(audio, drive=0.04)
 
         # 7. موازنة الصوت (LUFS) قبل الضغط
         meter = pyln.Meter(sr)
@@ -112,33 +132,46 @@ if uploaded_file is not None:
         audio = audio * (10 ** (gain_db / 20.0))
 
         # 8. Exciter خفيف (تحسين الوضوح)
-        def apply_exciter(data, rate, amount=0.05):
+        def apply_exciter(data, rate, amount=0.04):
             sos_high = butter(4, 3000, 'high', fs=rate, output='sos')
             high = sosfiltfilt(sos_high, data)
             harmonic = np.tanh(high * 2.0) - high
             return data + amount * harmonic
 
-        audio = apply_exciter(audio, sr, amount=0.05)
+        audio = apply_exciter(audio, sr, amount=0.04)
 
-        # 9. ضغط متعدد النطاقات (ناعم)
-        def multiband_compress(data, rate):
+        # 9. Multiband Compression (4 نطاقات)
+        def multiband_compress_4band(data, rate):
+            # فصل النطاقات
             sos_low = butter(4, 300, 'low', fs=rate, output='sos')
             low = sosfiltfilt(sos_low, data)
-            sos_mid = butter(4, [300, 3000], 'band', fs=rate, output='sos')
-            mid = sosfiltfilt(sos_mid, data)
-            sos_high = butter(4, 3000, 'high', fs=rate, output='sos')
+            
+            sos_mid_low = butter(4, [300, 1500], 'band', fs=rate, output='sos')
+            mid_low = sosfiltfilt(sos_mid_low, data)
+            
+            sos_mid_high = butter(4, [1500, 4000], 'band', fs=rate, output='sos')
+            mid_high = sosfiltfilt(sos_mid_high, data)
+            
+            sos_high = butter(4, 4000, 'high', fs=rate, output='sos')
             high = sosfiltfilt(sos_high, data)
             
-            c_low = Compressor(threshold_db=-25, ratio=2.0, attack_ms=30, release_ms=200)
-            c_mid = Compressor(threshold_db=-20, ratio=1.6, attack_ms=25, release_ms=180)
-            c_high = Compressor(threshold_db=-20, ratio=1.8, attack_ms=20, release_ms=120)
+            # ضغط كل نطاق بعتبة نسبية
+            def relative_compress(signal, ratio, factor=10):
+                peak = 20 * np.log10(np.max(np.abs(signal)) + 1e-9)
+                threshold = peak - factor
+                return Compressor(threshold_db=threshold, ratio=ratio, attack_ms=25, release_ms=180)(signal, rate)
             
-            return c_low(low, rate) + c_mid(mid, rate) + c_high(high, rate)
+            c_low = relative_compress(low, ratio=1.8, factor=12)
+            c_mid_low = relative_compress(mid_low, ratio=1.6, factor=10)
+            c_mid_high = relative_compress(mid_high, ratio=1.5, factor=8)
+            c_high = relative_compress(high, ratio=1.7, factor=10)
+            
+            return c_low + c_mid_low + c_mid_high + c_high
 
-        audio = multiband_compress(audio, sr)
+        audio = multiband_compress_4band(audio, sr)
 
         # 10. ضغط نهائي (ناعم)
-        audio = Compressor(threshold_db=-15, ratio=1.5, attack_ms=30, release_ms=250)(audio, sr)
+        audio = Compressor(threshold_db=-15, ratio=1.4, attack_ms=30, release_ms=250)(audio, sr)
 
         # 11. تطبيع نهائي إلى -24 LUFS
         meter = pyln.Meter(sr)
