@@ -6,4 +6,3 @@ denoiser
 numpy
 onnxruntime
 huggingface-hub
-librosa
