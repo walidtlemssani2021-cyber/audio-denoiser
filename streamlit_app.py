@@ -70,38 +70,28 @@ if uploaded_file is not None:
         gain_db = -3.0 - peak_db
         audio = audio * (10 ** (gain_db / 20.0))
 
-        # 4. De-esser متعدد النطاقات (3 نطاقات)
+        # 4. De-esser متعدد النطاقات (تعديل: نطاقات أقل من 8kHz)
         def apply_multiband_de_esser(data, rate, strength=0.65):
             bands = [
-                (5000, 7000, -20, 4.0),   # منطقة الحروف الرئيسية
-                (7000, 9000, -22, 4.5),   # منطقة "الس" الحادة
-                (9000, 11000, -24, 5.0),  # منطقة "الهواء" الحادة
+                (4000, 5500, -20, 4.0),
+                (5500, 7000, -22, 4.5),
+                (7000, 7800, -24, 5.0),
             ]
             
             result = data.copy()
             for low_freq, high_freq, threshold, ratio in bands:
-                # استخراج النطاق
+                if high_freq >= rate / 2:
+                    continue
                 sos_band = butter(4, [low_freq, high_freq], 'band', fs=rate, output='sos')
                 band = sosfiltfilt(sos_band, data)
-                
-                # حساب غلاف الطاقة
                 env = np.abs(hilbert(band))
                 sigma = (rate * 5 / 1000) / 2.355
                 env = gaussian_filter1d(env, sigma)
-                
-                # حساب التخفيض
                 env_db = 20 * np.log10(env + 1e-10)
                 gain_db = np.where(env_db > threshold, (env_db - threshold) * (1/ratio - 1), 0.0)
                 gain = 10 ** (gain_db / 20.0)
-                
-                # تطبيق التخفيض على النطاق
                 band_compressed = band * gain
-                band_original = band
-                
-                # الفرق بين النطاق الأصلي والمضغوط
-                diff = band_compressed - band_original
-                
-                # تطبيق الفرق على الصوت الأصلي
+                diff = band_compressed - band
                 result = result + strength * diff
             
             return result
@@ -113,8 +103,8 @@ if uploaded_file is not None:
             PeakFilter(cutoff_frequency_hz=250, gain_db=-2.0, q=1.0),
             PeakFilter(cutoff_frequency_hz=2000, gain_db=1.0, q=1.0),
             PeakFilter(cutoff_frequency_hz=4000, gain_db=1.5, q=1.0),
-            PeakFilter(cutoff_frequency_hz=8000, gain_db=-1.5, q=1.0),
-            HighShelfFilter(cutoff_frequency_hz=10000, gain_db=-3.0),
+            PeakFilter(cutoff_frequency_hz=7000, gain_db=-1.5, q=1.0),
+            HighShelfFilter(cutoff_frequency_hz=7500, gain_db=-2.5),
         ])
         audio = board(audio, sr)
 
@@ -140,9 +130,8 @@ if uploaded_file is not None:
 
         audio = apply_exciter(audio, sr, amount=0.04)
 
-        # 9. Multiband Compression (4 نطاقات)
+        # 9. Multiband Compression (4 نطاقات، أقل من 8kHz)
         def multiband_compress_4band(data, rate):
-            # فصل النطاقات
             sos_low = butter(4, 300, 'low', fs=rate, output='sos')
             low = sosfiltfilt(sos_low, data)
             
@@ -152,10 +141,9 @@ if uploaded_file is not None:
             sos_mid_high = butter(4, [1500, 4000], 'band', fs=rate, output='sos')
             mid_high = sosfiltfilt(sos_mid_high, data)
             
-            sos_high = butter(4, 4000, 'high', fs=rate, output='sos')
+            sos_high = butter(4, [4000, 7800], 'band', fs=rate, output='sos')
             high = sosfiltfilt(sos_high, data)
             
-            # ضغط كل نطاق بعتبة نسبية
             def relative_compress(signal, ratio, factor=10):
                 peak = 20 * np.log10(np.max(np.abs(signal)) + 1e-9)
                 threshold = peak - factor
