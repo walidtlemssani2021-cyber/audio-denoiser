@@ -1,13 +1,11 @@
 import streamlit as st
-import torch
 import soundfile as sf
 import numpy as np
-from denoiser import pretrained
-from denoiser.dsp import convert_audio
 import onnxruntime as ort
 from huggingface_hub import hf_hub_download
+import librosa
 
-st.set_page_config(page_title="تنقية ورفع جودة الصوت", layout="centered")
+st.set_page_config(page_title="رفع جودة الصوت - FlashSR", layout="centered")
 
 st.markdown("""
 <style>
@@ -19,53 +17,50 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="hero"><h1>نظّف صوتك وارفع جودته</h1><p>DNS64 + FlashSR (ONNX)</p></div>', unsafe_allow_html=True)
+st.markdown('<div class="hero"><h1>ارفع جودة صوتك</h1><p>FlashSR (ONNX) من 16kHz إلى 48kHz</p></div>', unsafe_allow_html=True)
 
-@st.cache_resource
-def load_dns_model():
-    model = pretrained.dns64()
-    model.eval()
-    return model
 
 @st.cache_resource
 def load_sr_model():
-    model_path = hf_hub_download(repo_id="YatharthS/FlashSR", filename="model.onnx", subfolder="onnx")
+    model_path = hf_hub_download(
+        repo_id="YatharthS/FlashSR",
+        filename="model.onnx",
+        subfolder="onnx"
+    )
     return ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
 
-with st.spinner("جاري تحميل النماذج..."):
-    dns_model = load_dns_model()
+
+with st.spinner("جاري تحميل النموذج..."):
     sr_session = load_sr_model()
 
-uploaded_file = st.file_uploader("ارفع ملف صوتي فيه ضوضاء", type=["wav", "flac"])
+uploaded_file = st.file_uploader("ارفع ملف صوتي", type=["wav", "flac"])
 
 if uploaded_file is not None:
     input_path = "input_audio." + uploaded_file.name.split(".")[-1]
     with open(input_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
 
-    with st.spinner("جاري المعالجة..."):
-        wav_np, sr = sf.read(input_path, dtype="float32")
-        wav = torch.from_numpy(wav_np).float()
-        if wav.dim() == 1:
-            wav = wav.unsqueeze(0)
-        else:
-            wav = wav.T
+    with st.spinner("جاري رفع الجودة..."):
+        # قراءة الصوت
+        audio, sr = sf.read(input_path, dtype="float32")
 
-        wav = convert_audio(wav, sr, dns_model.sample_rate, dns_model.chin)
-        with torch.no_grad():
-            denoised = dns_model(wav.unsqueeze(0))[0]
+        # تحويل إلى mono إذا كان stereo
+        if audio.ndim > 1:
+            audio = audio.mean(axis=1)
 
-        audio = denoised.squeeze(0).cpu().numpy()
-        sr = dns_model.sample_rate
-
-        # FlashSR ONNX
+        # FlashSR يتوقع 16kHz
         if sr != 16000:
-            import librosa
             audio = librosa.resample(audio, orig_sr=sr, target_sr=16000)
             sr = 16000
 
+        # تجهيز المدخلات
         audio_input = audio[np.newaxis, :].astype(np.float32)
-        onnx_output = sr_session.run(["reconstruction"], {"audio_values": audio_input})[0]
+
+        # تشغيل النموذج
+        input_name = sr_session.get_inputs()[0].name
+        output_name = sr_session.get_outputs()[0].name
+        onnx_output = sr_session.run([output_name], {input_name: audio_input})[0]
+
         enhanced = onnx_output.squeeze(0)
 
         output_path = "enhanced_flashsr.wav"
