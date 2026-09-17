@@ -1,8 +1,7 @@
-
-
 streamlit
 torch
 torchaudio
 denoiser
 soundfile
 pydub
+audioop-lts
