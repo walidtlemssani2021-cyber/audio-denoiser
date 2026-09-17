@@ -26,7 +26,7 @@ st.markdown("""
 st.markdown("""
 <div class="hero">
   <h1>نظّف صوتك وارفع جودته</h1>
-  <p>معالجة احترافية بمستوى بودكاست ناعم ومستقر.</p>
+  <p>معالجة احترافية بمستوى بودكاست ناعم وواضح.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -65,13 +65,13 @@ if uploaded_file is not None:
         audio = denoised.squeeze(0).cpu().numpy()
         sr = model.sample_rate
 
-        # 3. تضخيم أولي (Gain) لتوحيد المستوى قبل المعالجة
+        # 3. تضخيم أولي (Gain) لتوحيد المستوى
         peak_db = 20 * np.log10(np.max(np.abs(audio)) + 1e-9)
-        gain_db = -3.0 - peak_db  # ارفع الذروة إلى -3 dBFS
+        gain_db = -3.0 - peak_db
         audio = audio * (10 ** (gain_db / 20.0))
 
-        # 4. De-esser ديناميكي
-        def apply_de_esser(data, rate, strength=0.6):
+        # 4. De-esser ديناميكي (أقوى للنعومة)
+        def apply_de_esser(data, rate, strength=0.65):
             cutoff = 5000
             sos_high = butter(4, cutoff, 'high', fs=rate, output='sos')
             high = sosfiltfilt(sos_high, data)
@@ -86,22 +86,24 @@ if uploaded_file is not None:
             low = sosfiltfilt(sos_low, data)
             return (1 - strength) * data + strength * (low + high_compressed)
 
-        audio = apply_de_esser(audio, sr, strength=0.6)
+        audio = apply_de_esser(audio, sr, strength=0.65)
 
-        # 5. سلسلة EQ
+        # 5. سلسلة EQ (تحسين الوضوح + تقليل الحدة)
         board = Pedalboard([
             PeakFilter(cutoff_frequency_hz=250, gain_db=-2.0, q=1.0),
-            PeakFilter(cutoff_frequency_hz=3000, gain_db=0.0, q=0.8),
-            HighShelfFilter(cutoff_frequency_hz=10000, gain_db=-3.0),
+            PeakFilter(cutoff_frequency_hz=2000, gain_db=1.0, q=1.0),   # وضوح
+            PeakFilter(cutoff_frequency_hz=4000, gain_db=1.5, q=1.0),   # وضوح
+            PeakFilter(cutoff_frequency_hz=8000, gain_db=-1.5, q=1.0),  # تقليل الحدة
+            HighShelfFilter(cutoff_frequency_hz=10000, gain_db=-3.0),   # نعومة
         ])
         audio = board(audio, sr)
 
-        # 6. Saturation
-        def apply_saturation(data, drive=0.06):
+        # 6. Saturation حقيقي (أنعم)
+        def apply_saturation(data, drive=0.05):
             driven = np.tanh(data * (1 + drive * 5))
             return driven / (np.max(np.abs(driven)) + 1e-9) * np.max(np.abs(data))
 
-        audio = apply_saturation(audio, drive=0.06)
+        audio = apply_saturation(audio, drive=0.05)
 
         # 7. موازنة الصوت (LUFS) قبل الضغط
         meter = pyln.Meter(sr)
@@ -109,7 +111,16 @@ if uploaded_file is not None:
         gain_db = -24.0 - loudness
         audio = audio * (10 ** (gain_db / 20.0))
 
-        # 8. ضغط متعدد النطاقات
+        # 8. Exciter خفيف (تحسين الوضوح)
+        def apply_exciter(data, rate, amount=0.05):
+            sos_high = butter(4, 3000, 'high', fs=rate, output='sos')
+            high = sosfiltfilt(sos_high, data)
+            harmonic = np.tanh(high * 2.0) - high
+            return data + amount * harmonic
+
+        audio = apply_exciter(audio, sr, amount=0.05)
+
+        # 9. ضغط متعدد النطاقات (ناعم)
         def multiband_compress(data, rate):
             sos_low = butter(4, 300, 'low', fs=rate, output='sos')
             low = sosfiltfilt(sos_low, data)
@@ -119,29 +130,29 @@ if uploaded_file is not None:
             high = sosfiltfilt(sos_high, data)
             
             c_low = Compressor(threshold_db=-25, ratio=2.0, attack_ms=30, release_ms=200)
-            c_mid = Compressor(threshold_db=-20, ratio=1.8, attack_ms=25, release_ms=180)
-            c_high = Compressor(threshold_db=-20, ratio=2.0, attack_ms=20, release_ms=120)
+            c_mid = Compressor(threshold_db=-20, ratio=1.6, attack_ms=25, release_ms=180)
+            c_high = Compressor(threshold_db=-20, ratio=1.8, attack_ms=20, release_ms=120)
             
             return c_low(low, rate) + c_mid(mid, rate) + c_high(high, rate)
 
         audio = multiband_compress(audio, sr)
 
-        # 9. ضغط نهائي
-        audio = Compressor(threshold_db=-15, ratio=1.8, attack_ms=30, release_ms=250)(audio, sr)
+        # 10. ضغط نهائي (ناعم)
+        audio = Compressor(threshold_db=-15, ratio=1.5, attack_ms=30, release_ms=250)(audio, sr)
 
-        # 10. تطبيع نهائي
+        # 11. تطبيع نهائي إلى -24 LUFS
         meter = pyln.Meter(sr)
         final_loudness = meter.integrated_loudness(audio)
         gain_db = -24.0 - final_loudness
         audio = audio * (10 ** (gain_db / 20.0))
 
-        # 11. منع تجاوز الذروة
+        # 12. منع تجاوز الذروة (-4 dBFS)
         peak_ceiling = 10 ** (-4.0 / 20.0)
         peak = np.max(np.abs(audio))
         if peak > peak_ceiling:
             audio = np.tanh(audio * (1 / peak_ceiling)) * peak_ceiling
 
-        # 12. حفظ الملف
+        # 13. حفظ الملف
         output_path = "enhanced_podcast.wav"
         sf.write(output_path, audio, sr)
 
