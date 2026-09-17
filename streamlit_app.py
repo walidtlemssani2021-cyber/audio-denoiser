@@ -65,7 +65,12 @@ if uploaded_file is not None:
         audio = denoised.squeeze(0).cpu().numpy()
         sr = model.sample_rate
 
-        # 3. De-esser ديناميكي (أقوى لتقليل الحدة)
+        # 3. تضخيم أولي (Gain) لتوحيد المستوى قبل المعالجة
+        peak_db = 20 * np.log10(np.max(np.abs(audio)) + 1e-9)
+        gain_db = -3.0 - peak_db  # ارفع الذروة إلى -3 dBFS
+        audio = audio * (10 ** (gain_db / 20.0))
+
+        # 4. De-esser ديناميكي
         def apply_de_esser(data, rate, strength=0.6):
             cutoff = 5000
             sos_high = butter(4, cutoff, 'high', fs=rate, output='sos')
@@ -83,28 +88,28 @@ if uploaded_file is not None:
 
         audio = apply_de_esser(audio, sr, strength=0.6)
 
-        # 4. حساب العتبة النسبية للضغط
-        peak_db = 20 * np.log10(np.max(np.abs(audio)) + 1e-9)
-        threshold = peak_db - 10.0
-
-        # 5. سلسلة المعالجة (EQ + Compressor) - تقليل الحدة أكثر
+        # 5. سلسلة EQ
         board = Pedalboard([
             PeakFilter(cutoff_frequency_hz=250, gain_db=-2.0, q=1.0),
             PeakFilter(cutoff_frequency_hz=3000, gain_db=0.0, q=0.8),
             HighShelfFilter(cutoff_frequency_hz=10000, gain_db=-3.0),
-            Compressor(threshold_db=threshold, ratio=2.5, attack_ms=25.0, release_ms=180.0),
         ])
+        audio = board(audio, sr)
 
-        processed = board(audio, sr)
-
-        # 6. Saturation حقيقي (أنعم)
+        # 6. Saturation
         def apply_saturation(data, drive=0.06):
             driven = np.tanh(data * (1 + drive * 5))
             return driven / (np.max(np.abs(driven)) + 1e-9) * np.max(np.abs(data))
 
-        processed = apply_saturation(processed, drive=0.06)
+        audio = apply_saturation(audio, drive=0.06)
 
-        # 7. Multiband Compression (3 نطاقات) - ضغط لطيف
+        # 7. موازنة الصوت (LUFS) قبل الضغط
+        meter = pyln.Meter(sr)
+        loudness = meter.integrated_loudness(audio)
+        gain_db = -24.0 - loudness
+        audio = audio * (10 ** (gain_db / 20.0))
+
+        # 8. ضغط متعدد النطاقات
         def multiband_compress(data, rate):
             sos_low = butter(4, 300, 'low', fs=rate, output='sos')
             low = sosfiltfilt(sos_low, data)
@@ -119,39 +124,26 @@ if uploaded_file is not None:
             
             return c_low(low, rate) + c_mid(mid, rate) + c_high(high, rate)
 
-        processed = multiband_compress(processed, sr)
+        audio = multiband_compress(audio, sr)
 
-        # 8. ضغط إضافي لطيف
-        processed = Compressor(threshold_db=-15, ratio=1.8, attack_ms=30, release_ms=250)(processed, sr)
+        # 9. ضغط نهائي
+        audio = Compressor(threshold_db=-15, ratio=1.8, attack_ms=30, release_ms=250)(audio, sr)
 
-        # 9. تطبيع الجهارة إلى -24 LUFS مع حد ذروة -4 dBFS
-        TARGET_LUFS = -24.0
-        PEAK_CEILING_DB = -4.0
-
+        # 10. تطبيع نهائي
         meter = pyln.Meter(sr)
-        loudness = meter.integrated_loudness(processed.T)
+        final_loudness = meter.integrated_loudness(audio)
+        gain_db = -24.0 - final_loudness
+        audio = audio * (10 ** (gain_db / 20.0))
 
-        gain_db = TARGET_LUFS - loudness
-        gain_linear = 10 ** (gain_db / 20.0)
-        normalized = processed.T * gain_linear
-
-        peak_ceiling = 10 ** (PEAK_CEILING_DB / 20.0)
-        peak = np.max(np.abs(normalized))
-
+        # 11. منع تجاوز الذروة
+        peak_ceiling = 10 ** (-4.0 / 20.0)
+        peak = np.max(np.abs(audio))
         if peak > peak_ceiling:
-            normalized = np.tanh(normalized * (1 / peak_ceiling)) * peak_ceiling
+            audio = np.tanh(audio * (1 / peak_ceiling)) * peak_ceiling
 
-        final_loudness = meter.integrated_loudness(normalized)
-        if final_loudness < TARGET_LUFS - 0.5:
-            correction_db = TARGET_LUFS - final_loudness
-            normalized = normalized * (10 ** (correction_db / 20.0))
-            peak = np.max(np.abs(normalized))
-            if peak > peak_ceiling:
-                normalized = np.tanh(normalized * (1 / peak_ceiling)) * peak_ceiling
-
-        # 10. حفظ الملف
+        # 12. حفظ الملف
         output_path = "enhanced_podcast.wav"
-        sf.write(output_path, normalized, sr)
+        sf.write(output_path, audio, sr)
 
     st.success("تم! استمع للنتيجة.")
     st.audio(output_path)
