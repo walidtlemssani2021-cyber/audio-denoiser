@@ -4,6 +4,4 @@ torch
 soundfile
 denoiser
 numpy
-pedalboard
-pyloudnorm
-scipy
+audiosronnx
