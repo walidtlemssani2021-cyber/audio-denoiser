@@ -65,8 +65,8 @@ if uploaded_file is not None:
         audio = denoised.squeeze(0).cpu().numpy()
         sr = model.sample_rate
 
-        # 3. De-esser ديناميكي
-        def apply_de_esser(data, rate, strength=0.5):
+        # 3. De-esser ديناميكي (أقوى لتقليل الحدة)
+        def apply_de_esser(data, rate, strength=0.6):
             cutoff = 5000
             sos_high = butter(4, cutoff, 'high', fs=rate, output='sos')
             high = sosfiltfilt(sos_high, data)
@@ -81,17 +81,17 @@ if uploaded_file is not None:
             low = sosfiltfilt(sos_low, data)
             return (1 - strength) * data + strength * (low + high_compressed)
 
-        audio = apply_de_esser(audio, sr, strength=0.5)
+        audio = apply_de_esser(audio, sr, strength=0.6)
 
         # 4. حساب العتبة النسبية للضغط
         peak_db = 20 * np.log10(np.max(np.abs(audio)) + 1e-9)
         threshold = peak_db - 10.0
 
-        # 5. سلسلة المعالجة (EQ + Compressor) - ناعمة
+        # 5. سلسلة المعالجة (EQ + Compressor) - تقليل الحدة أكثر
         board = Pedalboard([
             PeakFilter(cutoff_frequency_hz=250, gain_db=-2.0, q=1.0),
-            PeakFilter(cutoff_frequency_hz=3000, gain_db=0.5, q=0.8),
-            HighShelfFilter(cutoff_frequency_hz=10000, gain_db=-2.0),
+            PeakFilter(cutoff_frequency_hz=3000, gain_db=0.0, q=0.8),
+            HighShelfFilter(cutoff_frequency_hz=10000, gain_db=-3.0),
             Compressor(threshold_db=threshold, ratio=2.5, attack_ms=25.0, release_ms=180.0),
         ])
 
@@ -124,8 +124,8 @@ if uploaded_file is not None:
         # 8. ضغط إضافي لطيف
         processed = Compressor(threshold_db=-15, ratio=1.8, attack_ms=30, release_ms=250)(processed, sr)
 
-        # 9. تطبيع الجهارة إلى -25 LUFS مع حد ذروة -4 dBFS
-        TARGET_LUFS = -25.0
+        # 9. تطبيع الجهارة إلى -24 LUFS مع حد ذروة -4 dBFS
+        TARGET_LUFS = -24.0
         PEAK_CEILING_DB = -4.0
 
         meter = pyln.Meter(sr)
