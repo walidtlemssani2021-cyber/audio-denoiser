@@ -4,12 +4,9 @@ import soundfile as sf
 import numpy as np
 from denoiser import pretrained
 from denoiser.dsp import convert_audio
-from pedalboard import Pedalboard, Compressor, PeakFilter, HighShelfFilter
-import pyloudnorm as pyln
-from scipy.signal import butter, sosfiltfilt, hilbert
-from scipy.ndimage import gaussian_filter1d
+from audiosronnx import load_sr
 
-st.set_page_config(page_title="تحسين الصوت للبودكاست", layout="centered")
+st.set_page_config(page_title="تنقية ورفع جودة الصوت", layout="centered")
 
 st.markdown("""
 <style>
@@ -26,20 +23,26 @@ st.markdown("""
 st.markdown("""
 <div class="hero">
   <h1>نظّف صوتك وارفع جودته</h1>
-  <p>معالجة احترافية بمستوى بودكاست ناعم وواضح ومتوازن.</p>
+  <p>DNS64 لإزالة الضوضاء + LavaSR لرفع الدقة إلى 48kHz.</p>
 </div>
 """, unsafe_allow_html=True)
 
 
 @st.cache_resource
-def load_model():
+def load_dns_model():
     model = pretrained.dns64()
     model.eval()
     return model
 
 
-with st.spinner("جاري تحميل النموذج..."):
-    model = load_model()
+@st.cache_resource
+def load_sr_model():
+    return load_sr("lavasr")
+
+
+with st.spinner("جاري تحميل النماذج..."):
+    dns_model = load_dns_model()
+    sr_model = load_sr_model()
 
 uploaded_file = st.file_uploader("ارفع ملف صوتي فيه ضوضاء", type=["wav", "flac"])
 
@@ -58,124 +61,17 @@ if uploaded_file is not None:
             wav = wav.T
 
         # 2. إزالة الضوضاء (DNS64)
-        wav = convert_audio(wav, sr, model.sample_rate, model.chin)
+        wav = convert_audio(wav, sr, dns_model.sample_rate, dns_model.chin)
         with torch.no_grad():
-            denoised = model(wav.unsqueeze(0))[0]
+            denoised = dns_model(wav.unsqueeze(0))[0]
 
         audio = denoised.squeeze(0).cpu().numpy()
-        sr = model.sample_rate
+        sr = dns_model.sample_rate
 
-        # 3. تضخيم أولي (Gain)
-        peak_db = 20 * np.log10(np.max(np.abs(audio)) + 1e-9)
-        gain_db = -3.0 - peak_db
-        audio = audio * (10 ** (gain_db / 20.0))
+        # 3. رفع الدقة (LavaSR)
+        audio, sr = sr_model.upscale(audio, sr)
 
-        # 4. De-esser متعدد النطاقات (قوي للنعومة)
-        def apply_multiband_de_esser(data, rate, strength=0.7):
-            bands = [
-                (4000, 5500, -20, 4.0),
-                (5500, 7000, -22, 4.5),
-                (7000, 7800, -24, 5.0),
-            ]
-            result = data.copy()
-            for low_freq, high_freq, threshold, ratio in bands:
-                if high_freq >= rate / 2:
-                    continue
-                sos_band = butter(4, [low_freq, high_freq], 'band', fs=rate, output='sos')
-                band = sosfiltfilt(sos_band, data)
-                env = np.abs(hilbert(band))
-                sigma = (rate * 5 / 1000) / 2.355
-                env = gaussian_filter1d(env, sigma)
-                env_db = 20 * np.log10(env + 1e-10)
-                gain_db = np.where(env_db > threshold, (env_db - threshold) * (1/ratio - 1), 0.0)
-                gain = 10 ** (gain_db / 20.0)
-                band_compressed = band * gain
-                diff = band_compressed - band
-                result = result + strength * diff
-            return result
-
-        audio = apply_multiband_de_esser(audio, sr, strength=0.7)
-
-        # 5. سلسلة EQ (وضوح أقوى + نعومة أقوى)
-        board = Pedalboard([
-            # تقليل الطنين
-            PeakFilter(cutoff_frequency_hz=200, gain_db=-2.0, q=1.0),
-            PeakFilter(cutoff_frequency_hz=400, gain_db=-1.5, q=1.0),
-            # تعزيز الوضوح (أقوى)
-            PeakFilter(cutoff_frequency_hz=2000, gain_db=2.5, q=1.0),
-            PeakFilter(cutoff_frequency_hz=4000, gain_db=3.0, q=1.0),
-            # تقليل الحدة (أقوى)
-            PeakFilter(cutoff_frequency_hz=6500, gain_db=-3.0, q=1.0),
-            PeakFilter(cutoff_frequency_hz=7500, gain_db=-3.0, q=1.0),
-        ])
-        audio = board(audio, sr)
-
-        # 6. Saturation (أنعم)
-        def apply_saturation(data, drive=0.03):
-            driven = np.tanh(data * (1 + drive * 5))
-            return driven / (np.max(np.abs(driven)) + 1e-9) * np.max(np.abs(data))
-
-        audio = apply_saturation(audio, drive=0.03)
-
-        # 7. موازنة الصوت (LUFS)
-        meter = pyln.Meter(sr)
-        loudness = meter.integrated_loudness(audio)
-        gain_db = -24.0 - loudness
-        audio = audio * (10 ** (gain_db / 20.0))
-
-        # 8. Exciter (وضوح إضافي)
-        def apply_exciter(data, rate, amount=0.06):
-            sos_high = butter(4, 3000, 'high', fs=rate, output='sos')
-            high = sosfiltfilt(sos_high, data)
-            harmonic = np.tanh(high * 2.0) - high
-            return data + amount * harmonic
-
-        audio = apply_exciter(audio, sr, amount=0.06)
-
-        # 9. Multiband Compression (4 نطاقات، ضغط أقوى)
-        def multiband_compress_4band(data, rate):
-            sos_low = butter(4, 300, 'low', fs=rate, output='sos')
-            low = sosfiltfilt(sos_low, data)
-            
-            sos_mid_low = butter(4, [300, 1500], 'band', fs=rate, output='sos')
-            mid_low = sosfiltfilt(sos_mid_low, data)
-            
-            sos_mid_high = butter(4, [1500, 4000], 'band', fs=rate, output='sos')
-            mid_high = sosfiltfilt(sos_mid_high, data)
-            
-            sos_high = butter(4, [4000, 7800], 'band', fs=rate, output='sos')
-            high = sosfiltfilt(sos_high, data)
-            
-            def relative_compress(signal, ratio, factor=10):
-                peak = 20 * np.log10(np.max(np.abs(signal)) + 1e-9)
-                threshold = peak - factor
-                return Compressor(threshold_db=threshold, ratio=ratio, attack_ms=20, release_ms=150)(signal, rate)
-            
-            c_low = relative_compress(low, ratio=2.5, factor=10)
-            c_mid_low = relative_compress(mid_low, ratio=2.2, factor=8)
-            c_mid_high = relative_compress(mid_high, ratio=2.0, factor=7)
-            c_high = relative_compress(high, ratio=2.2, factor=8)
-            
-            return c_low + c_mid_low + c_mid_high + c_high
-
-        audio = multiband_compress_4band(audio, sr)
-
-        # 10. ضغط نهائي (أقوى)
-        audio = Compressor(threshold_db=-18, ratio=2.0, attack_ms=20, release_ms=150)(audio, sr)
-
-        # 11. تطبيع نهائي إلى -24 LUFS
-        meter = pyln.Meter(sr)
-        final_loudness = meter.integrated_loudness(audio)
-        gain_db = -24.0 - final_loudness
-        audio = audio * (10 ** (gain_db / 20.0))
-
-        # 12. منع تجاوز الذروة (-4 dBFS)
-        peak_ceiling = 10 ** (-4.0 / 20.0)
-        peak = np.max(np.abs(audio))
-        if peak > peak_ceiling:
-            audio = np.tanh(audio * (1 / peak_ceiling)) * peak_ceiling
-
-        # 13. حفظ الملف
+        # 4. حفظ الملف
         output_path = "enhanced_podcast.wav"
         sf.write(output_path, audio, sr)
 
