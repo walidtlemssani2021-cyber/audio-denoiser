@@ -4,4 +4,6 @@ torch
 soundfile
 denoiser
 numpy
-audiosronnx
+onnxruntime
+huggingface-hub
+librosa
