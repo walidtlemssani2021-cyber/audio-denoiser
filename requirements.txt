@@ -1,4 +1,6 @@
 streamlit
 PyMuPDF
 deep-translator
-requests
+pdf2image
+pytesseract
+Pillow
