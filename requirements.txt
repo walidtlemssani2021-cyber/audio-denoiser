@@ -1,6 +1,4 @@
 streamlit
-soundfile
-numpy
-onnxruntime
-huggingface-hub
-librosa
+PyMuPDF
+deep-translator
+requests
