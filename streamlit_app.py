@@ -26,7 +26,7 @@ st.markdown("""
 st.markdown("""
 <div class="hero">
   <h1>نظّف صوتك وارفع جودته</h1>
-  <p>إزالة الضوضاء + سلسلة معالجة احترافية (De-esser، Saturation، Multiband).</p>
+  <p>إزالة الضوضاء + سلسلة معالجة احترافية للبودكاست.</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -65,8 +65,8 @@ if uploaded_file is not None:
         audio = denoised.squeeze(0).cpu().numpy()
         sr = model.sample_rate
 
-        # 3. De-esser ديناميكي حقيقي
-        def apply_de_esser(data, rate, strength=0.5):
+        # 3. De-esser ديناميكي (مخفّف)
+        def apply_de_esser(data, rate, strength=0.4):
             cutoff = 5000
             sos_high = butter(4, cutoff, 'high', fs=rate, output='sos')
             high = sosfiltfilt(sos_high, data)
@@ -81,7 +81,7 @@ if uploaded_file is not None:
             low = sosfiltfilt(sos_low, data)
             return (1 - strength) * data + strength * (low + high_compressed)
 
-        audio = apply_de_esser(audio, sr, strength=0.6)
+        audio = apply_de_esser(audio, sr, strength=0.4)
 
         # 4. حساب العتبة النسبية للضغط
         peak_db = 20 * np.log10(np.max(np.abs(audio)) + 1e-9)
@@ -90,14 +90,14 @@ if uploaded_file is not None:
         # 5. سلسلة المعالجة (EQ + Compressor)
         board = Pedalboard([
             PeakFilter(cutoff_frequency_hz=250, gain_db=-2.0, q=1.0),
-            PeakFilter(cutoff_frequency_hz=3000, gain_db=2.0, q=1.0),
+            PeakFilter(cutoff_frequency_hz=3000, gain_db=1.0, q=0.8),
             HighShelfFilter(cutoff_frequency_hz=10000, gain_db=1.5),
             Compressor(threshold_db=threshold, ratio=3.0, attack_ms=20.0, release_ms=150.0),
         ])
 
         processed = board(audio, sr)
 
-        # 6. Saturation حقيقي (توافقيات ناعمة)
+        # 6. Saturation حقيقي
         def apply_saturation(data, drive=0.15):
             driven = np.tanh(data * (1 + drive * 5))
             return driven / (np.max(np.abs(driven)) + 1e-9) * np.max(np.abs(data))
@@ -114,15 +114,15 @@ if uploaded_file is not None:
             high = sosfiltfilt(sos_high, data)
             
             c_low = Compressor(threshold_db=-25, ratio=2.5, attack_ms=30, release_ms=200)
-            c_mid = Compressor(threshold_db=-22, ratio=3.0, attack_ms=20, release_ms=150)
+            c_mid = Compressor(threshold_db=-20, ratio=2.5, attack_ms=25, release_ms=180)
             c_high = Compressor(threshold_db=-20, ratio=3.5, attack_ms=15, release_ms=100)
             
             return c_low(low, rate) + c_mid(mid, rate) + c_high(high, rate)
 
         processed = multiband_compress(processed, sr)
 
-        # 8. تطبيع الجهارة إلى -16 LUFS مع حد ذروة -3 dBFS
-        TARGET_LUFS = -16.0
+        # 8. تطبيع الجهارة إلى -18 LUFS مع حد ذروة -3 dBFS
+        TARGET_LUFS = -18.0
         PEAK_CEILING_DB = -3.0
 
         meter = pyln.Meter(sr)
