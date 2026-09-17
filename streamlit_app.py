@@ -1,8 +1,11 @@
 import streamlit as st
 import torch
 import torchaudio
-import soundfile as sf
-from resemble_enhance.enhancer.inference import enhance
+import numpy as np
+from denoiser import pretrained
+from denoiser.dsp import convert_audio
+from pydub import AudioSegment
+from pydub.effects import normalize, compress_dynamic_range
 
 st.set_page_config(page_title="تحسين جودة الصوت", layout="centered")
 
@@ -64,11 +67,30 @@ st.markdown("""
 <div class="hero">
   <div class="mark">UMBRA AUDIO</div>
   <h1>حوّل صوتك لجودة بودكاست</h1>
-  <p>ارفع أي تسجيل صوتي، والنموذج يحسّن وضوحه واحترافيته تلقائياً.</p>
+  <p>تنظيف بالذكاء الاصطناعي (DNS64)، ثم نورماليزيشن وكومبريشن احترافي.</p>
 </div>
 """, unsafe_allow_html=True)
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
+
+@st.cache_resource
+def load_model():
+    model = pretrained.dns64()
+    model.eval()
+    return model
+
+
+def numpy_to_audiosegment(samples, sr):
+    int_samples = (np.clip(samples, -1.0, 1.0) * 32767).astype(np.int16)
+    return AudioSegment(
+        int_samples.tobytes(),
+        frame_rate=sr,
+        sample_width=2,
+        channels=1,
+    )
+
+
+with st.spinner("جاري تحميل النموذج..."):
+    model = load_model()
 
 uploaded_file = st.file_uploader(
     "ارفع ملف صوتي",
@@ -80,23 +102,27 @@ if uploaded_file is not None:
     with open(input_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
 
-    with st.spinner("جاري تحسين جودة الصوت... (قد يأخذ دقيقة أو أكثر)"):
-        dwav, sr = torchaudio.load(input_path)
-        dwav = dwav.mean(dim=0)
+    with st.spinner("جاري تنظيف الصوت وتحسينه..."):
+        # 1) تنظيف الضوضاء بالنموذج
+        wav, sr = torchaudio.load(input_path)
+        wav = convert_audio(wav, sr, model.sample_rate, model.chin)
+        with torch.no_grad():
+            denoised = model(wav.unsqueeze(0))[0]
+        denoised_np = denoised.squeeze().cpu().numpy()
 
-        wav, new_sr = enhance(
-            dwav, sr, device,
-            nfe=32, solver="midpoint", lambd=0.9, tau=0.5,
-        )
+        # 2) تحويلها لصيغة يفهمها pydub
+        segment = numpy_to_audiosegment(denoised_np, model.sample_rate)
+
+        # 3) نورماليزيشن (توحيد مستوى الصوت)
+        segment = normalize(segment)
+
+        # 4) كومبريشن (تقليل الفرق بين الأجزاء العالية والمنخفضة)
+        segment = compress_dynamic_range(segment)
 
         output_path = "enhanced_output.wav"
-        sf.write(output_path, wav.cpu().numpy(), new_sr)
+        segment.export(output_path, format="wav")
 
     st.success("تم! استمع للنتيجة أو حمّلها.")
     st.audio(output_path)
     with open(output_path, "rb") as f:
-        st.download_button(
-            "تحميل الملف المحسّن",
-            f,
-            file_name="enhanced.wav",
-        )
+        st.download_button("تحميل الملف المحسّن", f, file_name="enhanced.wav")
