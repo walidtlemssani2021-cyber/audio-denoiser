@@ -1,10 +1,8 @@
---extra-index-url https://download.pytorch.org/whl/cpu
+
+
 streamlit
 torch
-soundfile
+torchaudio
 denoiser
-numpy
-resemble-enhance
-
-
-
+soundfile
+pydub
