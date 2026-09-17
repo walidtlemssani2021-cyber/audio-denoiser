@@ -1,2 +1,6 @@
+tesseract-ocr
+tesseract-ocr-ara
+tesseract-ocr-eng
+poppler-utils
 libsndfile1
 ffmpeg
