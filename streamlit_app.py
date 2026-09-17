@@ -65,8 +65,8 @@ if uploaded_file is not None:
         audio = denoised.squeeze(0).cpu().numpy()
         sr = model.sample_rate
 
-        # 3. De-esser ديناميكي (أقوى لتقليل الحدة)
-        def apply_de_esser(data, rate, strength=0.6):
+        # 3. De-esser ديناميكي
+        def apply_de_esser(data, rate, strength=0.5):
             cutoff = 5000
             sos_high = butter(4, cutoff, 'high', fs=rate, output='sos')
             high = sosfiltfilt(sos_high, data)
@@ -81,28 +81,28 @@ if uploaded_file is not None:
             low = sosfiltfilt(sos_low, data)
             return (1 - strength) * data + strength * (low + high_compressed)
 
-        audio = apply_de_esser(audio, sr, strength=0.6)
+        audio = apply_de_esser(audio, sr, strength=0.5)
 
         # 4. حساب العتبة النسبية للضغط
         peak_db = 20 * np.log10(np.max(np.abs(audio)) + 1e-9)
         threshold = peak_db - 10.0
 
-        # 5. سلسلة المعالجة (EQ + Compressor) - تقليل الحدة
+        # 5. سلسلة المعالجة (EQ + Compressor) - ناعمة
         board = Pedalboard([
             PeakFilter(cutoff_frequency_hz=250, gain_db=-2.0, q=1.0),
             PeakFilter(cutoff_frequency_hz=3000, gain_db=0.5, q=0.8),
             HighShelfFilter(cutoff_frequency_hz=10000, gain_db=-2.0),
-            Compressor(threshold_db=threshold, ratio=3.0, attack_ms=20.0, release_ms=150.0),
+            Compressor(threshold_db=threshold, ratio=2.5, attack_ms=25.0, release_ms=180.0),
         ])
 
         processed = board(audio, sr)
 
         # 6. Saturation حقيقي (أنعم)
-        def apply_saturation(data, drive=0.08):
+        def apply_saturation(data, drive=0.06):
             driven = np.tanh(data * (1 + drive * 5))
             return driven / (np.max(np.abs(driven)) + 1e-9) * np.max(np.abs(data))
 
-        processed = apply_saturation(processed, drive=0.08)
+        processed = apply_saturation(processed, drive=0.06)
 
         # 7. Multiband Compression (3 نطاقات) - ضغط لطيف
         def multiband_compress(data, rate):
@@ -114,19 +114,19 @@ if uploaded_file is not None:
             high = sosfiltfilt(sos_high, data)
             
             c_low = Compressor(threshold_db=-25, ratio=2.0, attack_ms=30, release_ms=200)
-            c_mid = Compressor(threshold_db=-20, ratio=2.0, attack_ms=25, release_ms=180)
-            c_high = Compressor(threshold_db=-20, ratio=2.5, attack_ms=15, release_ms=100)
+            c_mid = Compressor(threshold_db=-20, ratio=1.8, attack_ms=25, release_ms=180)
+            c_high = Compressor(threshold_db=-20, ratio=2.0, attack_ms=20, release_ms=120)
             
             return c_low(low, rate) + c_mid(mid, rate) + c_high(high, rate)
 
         processed = multiband_compress(processed, sr)
 
-        # 8. ضغط إضافي لطيف (للاستقرار)
-        processed = Compressor(threshold_db=-15, ratio=2.0, attack_ms=30, release_ms=250)(processed, sr)
+        # 8. ضغط إضافي لطيف
+        processed = Compressor(threshold_db=-15, ratio=1.8, attack_ms=30, release_ms=250)(processed, sr)
 
-        # 9. تطبيع الجهارة إلى -22 LUFS مع حد ذروة -3 dBFS
-        TARGET_LUFS = -22.0
-        PEAK_CEILING_DB = -3.0
+        # 9. تطبيع الجهارة إلى -25 LUFS مع حد ذروة -4 dBFS
+        TARGET_LUFS = -25.0
+        PEAK_CEILING_DB = -4.0
 
         meter = pyln.Meter(sr)
         loudness = meter.integrated_loudness(processed.T)
