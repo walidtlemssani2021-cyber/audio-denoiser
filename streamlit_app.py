@@ -1,10 +1,10 @@
 import streamlit as st
 import torch
+import torchaudio
 import soundfile as sf
-from denoiser import pretrained
-from denoiser.dsp import convert_audio
+from resemble_enhance.enhancer.inference import enhance
 
-st.set_page_config(page_title="إزالة الضوضاء الصوتية", layout="centered")
+st.set_page_config(page_title="تحسين جودة الصوت", layout="centered")
 
 st.markdown("""
 <style>
@@ -63,25 +63,16 @@ st.markdown("""
 st.markdown("""
 <div class="hero">
   <div class="mark">UMBRA AUDIO</div>
-  <h1>نظّف صوتك من الضوضاء</h1>
-  <p>ارفع أي تسجيل صوتي، والنموذج (DNS64) يزيل الضوضاء تلقائياً خلال ثوانٍ.</p>
+  <h1>حوّل صوتك لجودة بودكاست</h1>
+  <p>ارفع أي تسجيل صوتي، والنموذج يحسّن وضوحه واحترافيته تلقائياً.</p>
 </div>
 """, unsafe_allow_html=True)
 
-
-@st.cache_resource
-def load_model():
-    model = pretrained.dns64()
-    model.eval()
-    return model
-
-
-with st.spinner("جاري تحميل النموذج..."):
-    model = load_model()
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 uploaded_file = st.file_uploader(
-    "ارفع ملف صوتي فيه ضوضاء",
-    type=["wav", "flac"],
+    "ارفع ملف صوتي",
+    type=["wav", "mp3", "flac", "ogg"],
 )
 
 if uploaded_file is not None:
@@ -89,31 +80,23 @@ if uploaded_file is not None:
     with open(input_path, "wb") as f:
         f.write(uploaded_file.getbuffer())
 
-    with st.spinner("جاري إزالة الضوضاء..."):
-        # قراءة الصوت باستخدام soundfile
-        wav_np, sr = sf.read(input_path, dtype="float32")
-        wav = torch.from_numpy(wav_np).float()
+    with st.spinner("جاري تحسين جودة الصوت... (قد يأخذ دقيقة أو أكثر)"):
+        dwav, sr = torchaudio.load(input_path)
+        dwav = dwav.mean(dim=0)
 
-        # ضبط الشكل ليكون (قنوات، زمن)
-        if wav.dim() == 1:
-            wav = wav.unsqueeze(0)
-        else:
-            wav = wav.T
+        wav, new_sr = enhance(
+            dwav, sr, device,
+            nfe=32, solver="midpoint", lambd=0.9, tau=0.5,
+        )
 
-        wav = convert_audio(wav, sr, model.sample_rate, model.chin)
-
-        with torch.no_grad():
-            denoised = model(wav.unsqueeze(0))[0]
-
-        output_path = "denoised_output.wav"
-        output_np = denoised.squeeze(0).cpu().numpy()
-        sf.write(output_path, output_np.T, model.sample_rate)
+        output_path = "enhanced_output.wav"
+        sf.write(output_path, wav.cpu().numpy(), new_sr)
 
     st.success("تم! استمع للنتيجة أو حمّلها.")
     st.audio(output_path)
     with open(output_path, "rb") as f:
         st.download_button(
-            "تحميل الملف بعد التنقية",
+            "تحميل الملف المحسّن",
             f,
-            file_name="denoised.wav",
+            file_name="enhanced.wav",
         )
