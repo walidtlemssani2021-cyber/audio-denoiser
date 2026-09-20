@@ -38,21 +38,17 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
     st.image(image, caption="الصورة الأصلية")
 
-    # تصغير الصورة لتقليل الذاكرة
-    MAX_INPUT_SIZE = 512
+    MAX_INPUT_SIZE = 700
     if max(image.size) > MAX_INPUT_SIZE:
         image.thumbnail((MAX_INPUT_SIZE, MAX_INPUT_SIZE), Image.LANCZOS)
         st.info(f"تم تصغير الصورة إلى {image.size} لتقليل استهلاك الذاكرة.")
 
     with st.spinner("جاري رفع الجودة..."):
-        # تجهيز المدخلات (RGB, float32, range 0-1)
         img_array = np.asarray(image, dtype=np.float32) / 255.0
-        img_array = img_array.transpose(2, 0, 1)[None, ...]  # 1x3xHxW
+        img_array = img_array.transpose(2, 0, 1)[None, ...]
 
-        # تشغيل النموذج
         output = session.run(None, {"input": img_array})[0][0]
 
-        # معالجة المخرجات
         output = (output.transpose(1, 2, 0) * 255).clip(0, 255).astype(np.uint8)
         result_image = Image.fromarray(output)
 
