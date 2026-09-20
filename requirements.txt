@@ -5,4 +5,4 @@ torchvision
 pillow
 numpy
 realesrgan
-basicsr
+basicsr==1.4.2
