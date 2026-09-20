@@ -1,6 +1,5 @@
 streamlit
-PyMuPDF
-deep-translator
-pdf2image
-pytesseract
-Pillow
+torch
+torchvision
+transformers
+pillow
