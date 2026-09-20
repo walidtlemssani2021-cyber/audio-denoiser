@@ -81,7 +81,7 @@ def load_model():
 with st.spinner("جاري تحميل النموذج..."):
     processor, model = load_model()
 
-uploaded_file = st.file_uploader("ارفع صورة", type=["png", "jpg", "jpeg"])
+uploaded_file = st.file_uploader("ارفع صورة", type=["png", "jpg", "jpeg", "webp"])
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
