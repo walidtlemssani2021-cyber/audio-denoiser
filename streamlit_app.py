@@ -11,7 +11,7 @@ from bidi.algorithm import get_display
 from fpdf import FPDF
 import pypdfium2 as pdfium
 
-st.set_page_config(page_title="ترجمة كتاب ممسوح ضوئياً", layout="centered")
+st.set_page_config(page_title="ترجمة كتاب PDF إلى العربية", layout="centered")
 
 st.markdown("""
 <style>
@@ -23,11 +23,12 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="hero"><h1>ترجمة كتاب كامل إلى العربية</h1><p>ارفع صفحات كصور أو ملف PDF واحد للكتاب، ونعيده لك PDF عربي واحد</p></div>', unsafe_allow_html=True)
+st.markdown('<div class="hero"><h1>ترجمة كتاب PDF إلى العربية</h1><p>ارفع ملف PDF للكتاب، ونعيده لك PDF عربي واحد</p></div>', unsafe_allow_html=True)
 
 # خط عربي (Amiri) يُحمَّل مرة واحدة عند أول تشغيل ويُخبَّأ محلياً
 FONT_URL = "https://github.com/google/fonts/raw/main/ofl/amiri/Amiri-Regular.ttf"
 FONT_PATH = "/tmp/Amiri-Regular.ttf"
+FONT_FAMILY = "Amiri"  # اسم صريح للعائلة كي لا يعتمد على اسم ملف الخط
 MAX_INPUT_SIZE = 1600  # أقصى بعد للصورة قبل المعالجة، لتقليل استهلاك الذاكرة
 PDF_RENDER_SCALE = 2.0  # ~144dpi عند تحويل صفحات PDF إلى صور
 
@@ -54,21 +55,15 @@ def resize_for_memory(image: Image.Image) -> Image.Image:
     return image
 
 
-def iter_uploaded_pages(uploaded_files):
-    """يحوّل كل الملفات المرفوعة (صور أو PDF) إلى قائمة (صورة الصفحة, وسم الصفحة)."""
+def extract_pdf_pages(pdf_file):
+    """يحوّل كل صفحات ملف PDF المرفوع إلى قائمة (صورة الصفحة, وسم الصفحة)."""
+    pdf_bytes = pdf_file.getvalue()
+    doc = pdfium.PdfDocument(io.BytesIO(pdf_bytes))
     pages = []
-    for file in uploaded_files:
-        name = file.name.lower()
-        if name.endswith(".pdf"):
-            pdf_bytes = file.getvalue()
-            pdf = pdfium.PdfDocument(io.BytesIO(pdf_bytes))
-            for i in range(len(pdf)):
-                page = pdf[i]
-                image = page.render(scale=PDF_RENDER_SCALE).to_pil().convert("RGB")
-                pages.append((image, f"{file.name} — صفحة {i + 1}"))
-        else:
-            image = Image.open(file).convert("RGB")
-            pages.append((image, file.name))
+    for i in range(len(doc)):
+        page = doc[i]
+        image = page.render(scale=PDF_RENDER_SCALE).to_pil().convert("RGB")
+        pages.append((image, f"صفحة {i + 1}"))
     return pages
 
 
@@ -123,11 +118,11 @@ def add_arabic_page(pdf: FPDF, paragraph_text: str, label: str):
     pdf.add_page()
     max_width = pdf.w - pdf.l_margin - pdf.r_margin
 
-    pdf.set_font("Amiri", size=10)
+    pdf.set_font(FONT_FAMILY, size=10)
     pdf.cell(0, 8, get_display(arabic_reshaper.reshape(label)), align="C", ln=1)
     pdf.ln(2)
 
-    pdf.set_font("Amiri", size=13)
+    pdf.set_font(FONT_FAMILY, size=13)
     if paragraph_text.strip():
         for line in wrap_arabic_paragraph(pdf, paragraph_text, max_width):
             bidi_line = get_display(arabic_reshaper.reshape(line))
@@ -145,23 +140,15 @@ pdf_file = st.file_uploader(
     accept_multiple_files=False,
 )
 
-image_files = st.file_uploader(
-    "أو ارفع صور صفحات منفردة (اختياري، يمكن اختيار أكثر من صورة)",
-    type=["png", "jpg", "jpeg", "webp"],
-    accept_multiple_files=True,
-)
-
-uploaded_files = ([pdf_file] if pdf_file is not None else []) + list(image_files or [])
-
-if uploaded_files:
-    pages = iter_uploaded_pages(uploaded_files)
+if pdf_file is not None:
+    pages = extract_pdf_pages(pdf_file)
     total_pages = len(pages)
     st.info(f"تم التعرف على {total_pages} صفحة إجمالاً. قد تستغرق الترجمة بضع ثوانٍ لكل صفحة.")
 
     if st.button("ابدأ الاستخراج والترجمة"):
         pdf = FPDF()
         pdf.set_margins(15, 15, 15)
-        pdf.add_font(fname=get_arabic_font_path())
+        pdf.add_font(FONT_FAMILY, "", get_arabic_font_path())
 
         translator = GoogleTranslator(source="en", target="ar")
 
