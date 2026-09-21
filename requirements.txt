@@ -1,6 +1,10 @@
-
 streamlit
 pillow
 numpy
-onnxruntime
-huggingface-hub
+rapidocr-onnxruntime
+opencv-python-headless
+deep-translator
+arabic-reshaper
+python-bidi
+fpdf2>=2.7.0
+requests
