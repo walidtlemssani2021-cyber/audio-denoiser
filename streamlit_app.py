@@ -139,11 +139,19 @@ def add_arabic_page(pdf: FPDF, paragraph_text: str, label: str):
 with st.spinner("جاري تحميل محرك القراءة..."):
     engine = load_ocr_engine()
 
-uploaded_files = st.file_uploader(
-    "ارفع صور صفحات الكتاب، أو ملف PDF واحد يحوي الكتاب كاملاً (يمكن اختيار عدة ملفات معاً)",
-    type=["png", "jpg", "jpeg", "webp", "pdf"],
+pdf_file = st.file_uploader(
+    "ارفع ملف PDF للكتاب كاملاً",
+    type=["pdf"],
+    accept_multiple_files=False,
+)
+
+image_files = st.file_uploader(
+    "أو ارفع صور صفحات منفردة (اختياري، يمكن اختيار أكثر من صورة)",
+    type=["png", "jpg", "jpeg", "webp"],
     accept_multiple_files=True,
 )
+
+uploaded_files = ([pdf_file] if pdf_file is not None else []) + list(image_files or [])
 
 if uploaded_files:
     pages = iter_uploaded_pages(uploaded_files)
