@@ -1,3 +1,4 @@
+import io
 import os
 import requests
 import streamlit as st
@@ -8,8 +9,9 @@ from deep_translator import GoogleTranslator
 import arabic_reshaper
 from bidi.algorithm import get_display
 from fpdf import FPDF
+import pypdfium2 as pdfium
 
-st.set_page_config(page_title="استخراج وترجمة نص الكتب", layout="centered")
+st.set_page_config(page_title="ترجمة كتاب ممسوح ضوئياً", layout="centered")
 
 st.markdown("""
 <style>
@@ -17,15 +19,17 @@ st.markdown("""
 .hero { text-align: center; padding: 20px 10px; }
 .hero h1 { color: #ffffff; font-family: 'Fraunces', serif; font-size: 32px; }
 .hero p { color: #a3a3a3; font-size: 15px; }
-.stDownloadButton button { background: #ffffff !important; color: #000000 !important; border-radius: 100px !important; }
+.stDownloadButton button, .stButton button { background: #ffffff !important; color: #000000 !important; border-radius: 100px !important; }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="hero"><h1>استخراج وترجمة نص الكتب</h1><p>قراءة الصفحة (RapidOCR) ثم ترجمتها للعربية وتصديرها PDF</p></div>', unsafe_allow_html=True)
+st.markdown('<div class="hero"><h1>ترجمة كتاب كامل إلى العربية</h1><p>ارفع صفحات كصور أو ملف PDF واحد للكتاب، ونعيده لك PDF عربي واحد</p></div>', unsafe_allow_html=True)
 
 # خط عربي (Amiri) يُحمَّل مرة واحدة عند أول تشغيل ويُخبَّأ محلياً
 FONT_URL = "https://github.com/google/fonts/raw/main/ofl/amiri/Amiri-Regular.ttf"
 FONT_PATH = "/tmp/Amiri-Regular.ttf"
+MAX_INPUT_SIZE = 1600  # أقصى بعد للصورة قبل المعالجة، لتقليل استهلاك الذاكرة
+PDF_RENDER_SCALE = 2.0  # ~144dpi عند تحويل صفحات PDF إلى صور
 
 
 @st.cache_resource
@@ -43,76 +47,138 @@ def get_arabic_font_path():
     return FONT_PATH
 
 
-def translate_line_to_arabic(translator: GoogleTranslator, line: str) -> str:
-    line = line.strip()
-    if not line:
-        return ""
-    try:
-        return translator.translate(line) or line
-    except Exception:
-        # في حال فشل الاتصال بخدمة الترجمة لهذا السطر، نُبقي النص الأصلي بدل إيقاف كل العملية
-        return line
+def resize_for_memory(image: Image.Image) -> Image.Image:
+    if max(image.size) > MAX_INPUT_SIZE:
+        image = image.copy()
+        image.thumbnail((MAX_INPUT_SIZE, MAX_INPUT_SIZE), Image.LANCZOS)
+    return image
 
 
-def build_arabic_pdf(arabic_lines, font_path: str) -> bytes:
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_margins(15, 15, 15)
-    pdf.add_font(fname=font_path)
-    pdf.set_font("Amiri", size=14)
-
-    for line in arabic_lines:
-        if line:
-            reshaped = arabic_reshaper.reshape(line)
-            bidi_line = get_display(reshaped)
+def iter_uploaded_pages(uploaded_files):
+    """يحوّل كل الملفات المرفوعة (صور أو PDF) إلى قائمة (صورة الصفحة, وسم الصفحة)."""
+    pages = []
+    for file in uploaded_files:
+        name = file.name.lower()
+        if name.endswith(".pdf"):
+            pdf_bytes = file.getvalue()
+            pdf = pdfium.PdfDocument(io.BytesIO(pdf_bytes))
+            for i in range(len(pdf)):
+                page = pdf[i]
+                image = page.render(scale=PDF_RENDER_SCALE).to_pil().convert("RGB")
+                pages.append((image, f"{file.name} — صفحة {i + 1}"))
         else:
-            bidi_line = ""
-        pdf.multi_cell(0, 10, bidi_line, align="R")
+            image = Image.open(file).convert("RGB")
+            pages.append((image, file.name))
+    return pages
 
-    return bytes(pdf.output())
+
+def translate_text_block(translator: GoogleTranslator, text: str, max_chars: int = 4500) -> str:
+    text = text.strip()
+    if not text:
+        return ""
+    if len(text) <= max_chars:
+        try:
+            return translator.translate(text) or text
+        except Exception:
+            return text
+
+    # نص طويل جداً لصفحة واحدة: نقسّمه لأجزاء آمنة الحجم قبل الترجمة
+    parts, current = [], ""
+    for word in text.split(" "):
+        if len(current) + len(word) + 1 > max_chars:
+            parts.append(current)
+            current = word
+        else:
+            current = f"{current} {word}".strip()
+    if current:
+        parts.append(current)
+
+    translated_parts = []
+    for part in parts:
+        try:
+            translated_parts.append(translator.translate(part) or part)
+        except Exception:
+            translated_parts.append(part)
+    return " ".join(translated_parts)
+
+
+def wrap_arabic_paragraph(pdf: FPDF, text: str, max_width: float):
+    """يقسّم الفقرة إلى أسطر تناسب عرض الصفحة، بالترتيب المنطقي قبل التشكيل البصري (bidi)."""
+    words = text.split()
+    lines, current = [], ""
+    for word in words:
+        candidate = f"{current} {word}".strip()
+        reshaped = arabic_reshaper.reshape(candidate)
+        if not current or pdf.get_string_width(reshaped) <= max_width:
+            current = candidate
+        else:
+            lines.append(current)
+            current = word
+    if current:
+        lines.append(current)
+    return lines
+
+
+def add_arabic_page(pdf: FPDF, paragraph_text: str, label: str):
+    pdf.add_page()
+    max_width = pdf.w - pdf.l_margin - pdf.r_margin
+
+    pdf.set_font("Amiri", size=10)
+    pdf.cell(0, 8, get_display(arabic_reshaper.reshape(label)), align="C", ln=1)
+    pdf.ln(2)
+
+    pdf.set_font("Amiri", size=13)
+    if paragraph_text.strip():
+        for line in wrap_arabic_paragraph(pdf, paragraph_text, max_width):
+            bidi_line = get_display(arabic_reshaper.reshape(line))
+            pdf.cell(0, 9, bidi_line, align="R", ln=1)
+    else:
+        pdf.cell(0, 9, get_display(arabic_reshaper.reshape("(لم يُعثر على نص في هذه الصفحة)")), align="C", ln=1)
 
 
 with st.spinner("جاري تحميل محرك القراءة..."):
     engine = load_ocr_engine()
 
-uploaded_file = st.file_uploader("ارفع صورة صفحة من الكتاب", type=["png", "jpg", "jpeg", "webp"])
+uploaded_files = st.file_uploader(
+    "ارفع صور صفحات الكتاب، أو ملف PDF واحد يحوي الكتاب كاملاً (يمكن اختيار عدة ملفات معاً)",
+    type=["png", "jpg", "jpeg", "webp", "pdf"],
+    accept_multiple_files=True,
+)
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="الصفحة الأصلية")
+if uploaded_files:
+    pages = iter_uploaded_pages(uploaded_files)
+    total_pages = len(pages)
+    st.info(f"تم التعرف على {total_pages} صفحة إجمالاً. قد تستغرق الترجمة بضع ثوانٍ لكل صفحة.")
 
-    # تصغير الصورة لتقليل استهلاك الذاكرة (مهم على استضافات بذاكرة محدودة مثل Streamlit Cloud)
-    MAX_INPUT_SIZE = 1600
-    if max(image.size) > MAX_INPUT_SIZE:
-        image.thumbnail((MAX_INPUT_SIZE, MAX_INPUT_SIZE), Image.LANCZOS)
-        st.info(f"تم تصغير الصورة إلى {image.size} لتقليل استهلاك الذاكرة.")
+    if st.button("ابدأ الاستخراج والترجمة"):
+        pdf = FPDF()
+        pdf.set_margins(15, 15, 15)
+        pdf.add_font(fname=get_arabic_font_path())
 
-    with st.spinner("جاري التعرف على النص..."):
-        img_array = np.array(image)
-        result, elapse = engine(img_array)
+        translator = GoogleTranslator(source="en", target="ar")
 
-    if not result:
-        st.warning("لم يتم العثور على نص واضح في الصورة.")
-    else:
-        english_lines = [item[1] for item in result]
+        progress = st.progress(0.0)
+        status = st.empty()
 
-        with st.expander(f"عرض النص الإنجليزي المستخرج ({len(english_lines)} سطر)"):
-            st.text_area("النص الأصلي", value="\n".join(english_lines), height=200)
+        for idx, (page_image, label) in enumerate(pages, start=1):
+            status.write(f"جاري معالجة الصفحة {idx} من {total_pages}: {label}")
 
-        with st.spinner("جاري الترجمة إلى العربية..."):
-            translator = GoogleTranslator(source="en", target="ar")
-            arabic_lines = [translate_line_to_arabic(translator, line) for line in english_lines]
+            page_image = resize_for_memory(page_image)
+            img_array = np.array(page_image)
+            result, _ = engine(img_array)
 
-        st.success("تمت الترجمة.")
-        st.text_area("النص المترجم", value="\n".join(arabic_lines), height=250)
+            english_text = " ".join(item[1] for item in result) if result else ""
+            arabic_text = translate_text_block(translator, english_text)
 
-        with st.spinner("جاري إنشاء ملف PDF..."):
-            font_path = get_arabic_font_path()
-            pdf_bytes = build_arabic_pdf(arabic_lines, font_path)
+            add_arabic_page(pdf, arabic_text, label)
+            progress.progress(idx / total_pages)
+
+        status.write("تم الانتهاء من جميع الصفحات ✅")
+        pdf_bytes = bytes(pdf.output())
 
         st.download_button(
-            "تحميل الترجمة (PDF)",
+            "تحميل الكتاب المترجم (PDF)",
             data=pdf_bytes,
-            file_name="translated_arabic.pdf",
+            file_name="translated_book.pdf",
             mime="application/pdf",
         )
