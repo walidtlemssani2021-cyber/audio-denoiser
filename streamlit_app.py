@@ -5,7 +5,7 @@ import streamlit as st
 from PIL import Image
 import numpy as np
 from rapidocr_onnxruntime import RapidOCR
-from deep_translator import GoogleTranslator
+from deep_translator import GoogleTranslator, MyMemoryTranslator
 import arabic_reshaper
 from bidi.algorithm import get_display
 from fpdf import FPDF
@@ -67,34 +67,44 @@ def extract_pdf_pages(pdf_file):
     return pages
 
 
-def translate_text_block(translator: GoogleTranslator, text: str, max_chars: int = 4500) -> str:
-    text = text.strip()
-    if not text:
-        return ""
-    if len(text) <= max_chars:
-        try:
-            return translator.translate(text) or text
-        except Exception:
-            return text
-
-    # نص طويل جداً لصفحة واحدة: نقسّمه لأجزاء آمنة الحجم قبل الترجمة
+def split_by_limit(text: str, limit: int):
+    words = text.split(" ")
     parts, current = [], ""
-    for word in text.split(" "):
-        if len(current) + len(word) + 1 > max_chars:
+    for word in words:
+        if len(current) + len(word) + 1 > limit:
             parts.append(current)
             current = word
         else:
             current = f"{current} {word}".strip()
     if current:
         parts.append(current)
+    return parts
 
-    translated_parts = []
-    for part in parts:
-        try:
-            translated_parts.append(translator.translate(part) or part)
-        except Exception:
-            translated_parts.append(part)
-    return " ".join(translated_parts)
+
+def translate_text_block(text: str, error_log: list) -> tuple:
+    """يترجم النص للعربية. يجرّب Google أولاً، وإن فشل يجرّب MyMemory كبديل.
+    يُرجع (النص المترجم أو الأصلي, نجحت الترجمة أم لا)."""
+    text = text.strip()
+    if not text:
+        return "", True
+
+    # المحاولة الأولى: Google (عبر deep-translator)
+    try:
+        parts = split_by_limit(text, 4500)
+        google = GoogleTranslator(source="en", target="ar")
+        return " ".join(google.translate(p) or p for p in parts), True
+    except Exception as e:
+        error_log.append(f"Google: {e}")
+
+    # المحاولة الثانية: MyMemory كبديل (حد أقصر تقريباً 500 حرف لكل طلب)
+    try:
+        parts = split_by_limit(text, 450)
+        mymemory = MyMemoryTranslator(source="en", target="ar")
+        return " ".join(mymemory.translate(p) or p for p in parts), True
+    except Exception as e:
+        error_log.append(f"MyMemory: {e}")
+
+    return text, False
 
 
 def wrap_arabic_paragraph(pdf: FPDF, text: str, max_width: float):
@@ -150,10 +160,10 @@ if pdf_file is not None:
         pdf.set_margins(15, 15, 15)
         pdf.add_font(FONT_FAMILY, "", get_arabic_font_path())
 
-        translator = GoogleTranslator(source="en", target="ar")
-
         progress = st.progress(0.0)
         status = st.empty()
+        error_log = []
+        failed_pages = []
 
         for idx, (page_image, label) in enumerate(pages, start=1):
             status.write(f"جاري معالجة الصفحة {idx} من {total_pages}: {label}")
@@ -163,13 +173,24 @@ if pdf_file is not None:
             result, _ = engine(img_array)
 
             english_text = " ".join(item[1] for item in result) if result else ""
-            arabic_text = translate_text_block(translator, english_text)
+            arabic_text, ok = translate_text_block(english_text, error_log)
+            if not ok:
+                failed_pages.append(idx)
+                label = f"{label} ⚠️ لم تُترجم"
 
             add_arabic_page(pdf, arabic_text, label)
             progress.progress(idx / total_pages)
 
         status.write("تم الانتهاء من جميع الصفحات ✅")
         pdf_bytes = bytes(pdf.output())
+
+        if failed_pages:
+            st.warning(
+                f"تعذّرت ترجمة {len(failed_pages)} صفحة من {total_pages} "
+                f"(بقيت بالإنجليزية في الملف): {failed_pages}"
+            )
+            with st.expander("تفاصيل الخطأ (لتشخيص المشكلة)"):
+                st.code("\n".join(error_log[:5]))
 
         st.download_button(
             "تحميل الكتاب المترجم (PDF)",
