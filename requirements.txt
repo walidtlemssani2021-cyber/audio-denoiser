@@ -8,3 +8,4 @@ arabic-reshaper
 python-bidi
 fpdf2>=2.7.0
 requests
+pypdfium2
