@@ -1,11 +1,6 @@
 streamlit
-pillow
-numpy
-rapidocr-onnxruntime
-opencv-python-headless
-deep-translator
-arabic-reshaper
-python-bidi
-fpdf2>=2.7.0
-requests
-pypdfium2
+PyMuPDF
+pdf2image
+pytesseract
+Pillow
+argostranslate
