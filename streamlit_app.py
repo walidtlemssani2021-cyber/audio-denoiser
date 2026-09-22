@@ -1,18 +1,14 @@
-import io
-import os
-import concurrent.futures
-import requests
 import streamlit as st
+import fitz  # PyMuPDF
+from pdf2image import convert_from_path
+import pytesseract
 from PIL import Image
-import numpy as np
-from rapidocr_onnxruntime import RapidOCR
-from deep_translator import GoogleTranslator, MyMemoryTranslator
-import arabic_reshaper
-from bidi.algorithm import get_display
-from fpdf import FPDF
-import pypdfium2 as pdfium
+import tempfile
+import os
+import argostranslate.package
+import argostranslate.translate
 
-st.set_page_config(page_title="ترجمة كتاب PDF إلى العربية", layout="centered")
+st.set_page_config(page_title="ترجمة الكتب الممسوحة", layout="centered")
 
 st.markdown("""
 <style>
@@ -20,248 +16,102 @@ st.markdown("""
 .hero { text-align: center; padding: 20px 10px; }
 .hero h1 { color: #ffffff; font-family: 'Fraunces', serif; font-size: 32px; }
 .hero p { color: #a3a3a3; font-size: 15px; }
-.stDownloadButton button, .stButton button { background: #ffffff !important; color: #000000 !important; border-radius: 100px !important; }
+[data-testid="stFileUploader"] { background: linear-gradient(160deg, #3fa0f5, #0a2a6b); border-radius: 14px; padding: 14px; }
+.stDownloadButton button { background: #ffffff !important; color: #000000 !important; border-radius: 100px !important; }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="hero"><h1>ترجمة كتاب PDF إلى العربية</h1><p>ارفع ملف PDF للكتاب، ونعيده لك PDF عربي واحد</p></div>', unsafe_allow_html=True)
-
-# خط عربي (Amiri) يُحمَّل مرة واحدة عند أول تشغيل ويُخبَّأ محلياً
-FONT_URL = "https://github.com/google/fonts/raw/main/ofl/amiri/Amiri-Regular.ttf"
-FONT_PATH = "/tmp/Amiri-Regular.ttf"
-FONT_FAMILY = "Amiri"  # اسم صريح للعائلة كي لا يعتمد على اسم ملف الخط
-MAX_INPUT_SIZE = 1200  # أقصى بعد للصورة قبل المعالجة (خُفِّض من 1600 لتسريع OCR)
-PDF_RENDER_SCALE = 1.6  # ~115dpi عند تحويل صفحات PDF إلى صور (خُفِّض من 2.0 لتسريع OCR)
-MAX_TRANSLATE_WORKERS = 5  # عدد طلبات الترجمة المتزامنة (أعلى = أسرع لكن خطر حظر أكبر من الخدمة المجانية)
+st.markdown('<div class="hero"><h1>ترجم كتبك الممسوحة</h1><p>Tesseract (OCR) + Argos (ترجمة)</p></div>', unsafe_allow_html=True)
 
 
 @st.cache_resource
-def load_ocr_engine():
-    return RapidOCR()
+def load_translation_model():
+    # تحميل حزمة الترجمة من الإنجليزية إلى العربية
+    argostranslate.package.update_package_index()
+    available_packages = argostranslate.package.get_available_packages()
+    package_to_install = next(
+        filter(
+            lambda x: x.from_code == "en" and x.to_code == "ar", available_packages
+        )
+    )
+    argostranslate.package.install_from_path(package_to_install.download())
+    return True
 
 
 @st.cache_resource
-def get_arabic_font_path():
-    if not os.path.exists(FONT_PATH):
-        response = requests.get(FONT_URL, timeout=30)
-        response.raise_for_status()
-        with open(FONT_PATH, "wb") as f:
-            f.write(response.content)
-    return FONT_PATH
+def configure_tesseract():
+    # إعداد مسار Tesseract (يختلف حسب نظام التشغيل)
+    # على Streamlit Cloud (Linux)، عادةً يكون في المسار الافتراضي
+    return pytesseract.get_tesseract_version()
 
 
-def resize_for_memory(image: Image.Image) -> Image.Image:
-    if max(image.size) > MAX_INPUT_SIZE:
-        image = image.copy()
-        image.thumbnail((MAX_INPUT_SIZE, MAX_INPUT_SIZE), Image.LANCZOS)
-    return image
+with st.spinner("جاري تحضير أدوات الترجمة..."):
+    load_translation_model()
+    configure_tesseract()
 
+uploaded_file = st.file_uploader("ارفع ملف PDF ممسوحاً ضوئياً", type=["pdf"])
 
-def extract_pdf_pages(pdf_file):
-    """يحوّل كل صفحات ملف PDF المرفوع إلى قائمة (صورة الصفحة, وسم الصفحة)."""
-    pdf_bytes = pdf_file.getvalue()
-    doc = pdfium.PdfDocument(io.BytesIO(pdf_bytes))
-    pages = []
-    for i in range(len(doc)):
-        page = doc[i]
-        image = page.render(scale=PDF_RENDER_SCALE).to_pil().convert("RGB")
-        pages.append((image, f"صفحة {i + 1}"))
-    return pages
+if uploaded_file is not None:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        tmp.write(uploaded_file.read())
+        pdf_path = tmp.name
 
+    with st.spinner("جاري تحويل الصفحات إلى صور..."):
+        images = convert_from_path(pdf_path, dpi=300)
 
-def split_by_limit(text: str, limit: int):
-    words = text.split(" ")
-    parts, current = [], ""
-    for word in words:
-        if len(current) + len(word) + 1 > limit:
-            parts.append(current)
-            current = word
-        else:
-            current = f"{current} {word}".strip()
-    if current:
-        parts.append(current)
-    return parts
+    total_pages = len(images)
+    st.sidebar.write(f"عدد الصفحات: {total_pages}")
 
+    lang = st.sidebar.selectbox(
+        "لغة النص الأصلي",
+        ["eng", "eng+ara"],
+        index=0
+    )
 
-def translate_text_block(text: str, error_log: list) -> tuple:
-    """يترجم النص للعربية. يجرّب Google أولاً، وإن فشل يجرّب MyMemory كبديل.
-    يُرجع (النص المترجم أو الأصلي, نجحت الترجمة أم لا)."""
-    text = text.strip()
-    if not text:
-        return "", True
+    page_num = st.sidebar.number_input("اختر الصفحة", 1, total_pages, 1) - 1
 
-    # المحاولة الأولى: Google (عبر deep-translator)
-    try:
-        parts = split_by_limit(text, 4500)
-        google = GoogleTranslator(source="en", target="ar")
-        return " ".join(google.translate(p) or p for p in parts), True
-    except Exception as e:
-        error_log.append(f"Google: {e}")
+    with st.spinner(f"جاري استخراج النص من الصفحة {page_num + 1}..."):
+        img = images[page_num].convert("L")
+        img = img.point(lambda x: 0 if x < 128 else 255, '1')
+        original_text = pytesseract.image_to_string(img, lang=lang)
 
-    # المحاولة الثانية: MyMemory كبديل (حد أقصر تقريباً 500 حرف لكل طلب)
-    try:
-        parts = split_by_limit(text, 450)
-        mymemory = MyMemoryTranslator(source="en", target="ar")
-        return " ".join(mymemory.translate(p) or p for p in parts), True
-    except Exception as e:
-        error_log.append(f"MyMemory: {e}")
+    with st.spinner("جاري الترجمة..."):
+        translated_text = argostranslate.translate.translate(original_text, "en", "ar")
 
-    return text, False
+    col1, col2 = st.columns(2)
 
+    with col1:
+        st.subheader("النص الأصلي")
+        st.text_area("Original", original_text, height=400)
 
-@st.cache_resource
-def get_supported_codepoints(font_path: str):
-    """يرجع مجموعة الرموز (codepoints) التي يدعمها الخط فعلياً، لتفادي رموز تُسقط PDF."""
-    from fontTools.ttLib import TTFont
-    tt_font = TTFont(font_path)
-    cmap = tt_font.getBestCmap() or {}
-    return set(cmap.keys())
+    with col2:
+        st.subheader("الترجمة")
+        st.text_area("Translated", translated_text, height=400)
 
+    if st.button("استخراج وترجمة كل الصفحات"):
+        all_text = []
+        progress = st.progress(0)
 
-def sanitize_for_font(text: str, supported: set) -> str:
-    """يستبدل أي رمز لا يدعمه الخط بعلامة استفهام، بدل أن يوقف البرنامج بخطأ."""
-    return "".join(ch if ord(ch) in supported else "?" for ch in text)
+        for i, img in enumerate(images):
+            img_gray = img.convert("L")
+            img_bin = img_gray.point(lambda x: 0 if x < 128 else 255, '1')
+            page_text = pytesseract.image_to_string(img_bin, lang=lang)
 
+            if page_text.strip():
+                translated = argostranslate.translate.translate(page_text, "en", "ar")
+                all_text.append(f"--- صفحة {i+1} ---\n{translated}\n")
+            else:
+                all_text.append(f"--- صفحة {i+1} ---\n(لا يوجد نص)\n")
 
-def wrap_arabic_paragraph(pdf: FPDF, text: str, max_width: float):
-    """يقسّم الفقرة إلى أسطر تناسب عرض الصفحة، بالترتيب المنطقي قبل التشكيل البصري (bidi)."""
-    words = text.split()
-    lines, current = [], ""
-    for word in words:
-        candidate = f"{current} {word}".strip()
-        reshaped = arabic_reshaper.reshape(candidate)
-        if not current or pdf.get_string_width(reshaped) <= max_width:
-            current = candidate
-        else:
-            lines.append(current)
-            current = word
-    if current:
-        lines.append(current)
-    return lines
+            progress.progress((i + 1) / total_pages)
 
-
-def add_arabic_page(pdf: FPDF, paragraph_text: str, label: str, supported: set):
-    pdf.add_page()
-    max_width = pdf.w - pdf.l_margin - pdf.r_margin
-
-    label = sanitize_for_font(label, supported)
-    paragraph_text = sanitize_for_font(paragraph_text, supported)
-
-    pdf.set_font(FONT_FAMILY, size=10)
-    pdf.cell(0, 8, get_display(arabic_reshaper.reshape(label)), align="C", ln=1)
-    pdf.ln(2)
-
-    pdf.set_font(FONT_FAMILY, size=13)
-    if paragraph_text.strip():
-        for line in wrap_arabic_paragraph(pdf, paragraph_text, max_width):
-            bidi_line = get_display(arabic_reshaper.reshape(line))
-            pdf.cell(0, 9, bidi_line, align="R", ln=1)
-    else:
-        pdf.cell(0, 9, get_display(arabic_reshaper.reshape("(لم يُعثر على نص في هذه الصفحة)")), align="C", ln=1)
-
-
-with st.spinner("جاري تحميل محرك القراءة..."):
-    engine = load_ocr_engine()
-
-pdf_file = st.file_uploader(
-    "ارفع ملف PDF للكتاب كاملاً",
-    type=["pdf"],
-    accept_multiple_files=False,
-)
-
-if pdf_file is not None:
-    pages = extract_pdf_pages(pdf_file)
-    total_pages = len(pages)
-    st.info(f"تم التعرف على {total_pages} صفحة إجمالاً. قد تستغرق الترجمة بضع ثوانٍ لكل صفحة.")
-
-    if st.button("ابدأ الاستخراج والترجمة"):
-        pdf = FPDF()
-        pdf.set_margins(15, 15, 15)
-        font_path = get_arabic_font_path()
-        pdf.add_font(FONT_FAMILY, "", font_path)
-        supported_chars = get_supported_codepoints(font_path)
-
-        error_log = []
-        failed_pages = []
-        crashed_pages = []
-        progress = st.progress(0.0)
-        status = st.empty()
-
-        # المرحلة 1: استخراج النص من كل صفحة (تسلسلي عمداً لضبط استهلاك الذاكرة)
-        ocr_results = []  # كل عنصر: (idx, label, النص الإنجليزي أو None عند فشل الصفحة)
-        for idx, (page_image, label) in enumerate(pages, start=1):
-            status.write(f"جاري استخراج النص: صفحة {idx} من {total_pages}")
-            try:
-                page_image_resized = resize_for_memory(page_image)
-                img_array = np.array(page_image_resized)
-                result, _ = engine(img_array, use_cls=False)
-                english_text = " ".join(item[1] for item in result) if result else ""
-                ocr_results.append((idx, label, english_text))
-            except Exception as e:
-                crashed_pages.append(idx)
-                error_log.append(f"OCR صفحة {idx}: {e}")
-                ocr_results.append((idx, label, None))
-            progress.progress(idx / total_pages)
-
-        # المرحلة 2: ترجمة كل الصفحات بالتوازي (الترجمة عبر الشبكة، فتشغيلها معاً يوفّر وقتاً كبيراً)
-        status.write("جاري ترجمة الصفحات (بالتوازي)...")
-        translations = {}
-        translatable = [(idx, text) for idx, _, text in ocr_results if text is not None]
-        progress.progress(0.0)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_TRANSLATE_WORKERS) as executor:
-            future_to_idx = {
-                executor.submit(translate_text_block, text, error_log): idx
-                for idx, text in translatable
-            }
-            done = 0
-            for future in concurrent.futures.as_completed(future_to_idx):
-                idx = future_to_idx[future]
-                try:
-                    translations[idx] = future.result()
-                except Exception as e:
-                    translations[idx] = ("", False)
-                    error_log.append(f"ترجمة صفحة {idx}: {e}")
-                done += 1
-                progress.progress(done / len(future_to_idx) if future_to_idx else 1.0)
-
-        # المرحلة 3: بناء ملف PDF بالترتيب الصحيح (تسلسلي؛ سريع نسبياً)
-        status.write("جاري تجميع ملف PDF...")
-        for idx, label, english_text in ocr_results:
-            try:
-                if english_text is None:
-                    add_arabic_page(pdf, "", f"{label} (تعذّرت معالجة هذه الصفحة)", supported_chars)
-                    continue
-                arabic_text, ok = translations.get(idx, ("", False))
-                page_label = label
-                if not ok:
-                    failed_pages.append(idx)
-                    page_label = f"{label} (لم تُترجم)"
-                add_arabic_page(pdf, arabic_text, page_label, supported_chars)
-            except Exception as e:
-                crashed_pages.append(idx)
-                error_log.append(f"صفحة {idx}: {e}")
-                try:
-                    add_arabic_page(pdf, "", f"{label} (تعذّرت معالجة هذه الصفحة)", supported_chars)
-                except Exception:
-                    pass
-
-        status.write("تم الانتهاء من جميع الصفحات ✅")
-        pdf_bytes = bytes(pdf.output())
-
-        if failed_pages:
-            st.warning(
-                f"تعذّرت ترجمة {len(failed_pages)} صفحة من {total_pages} "
-                f"(بقيت بالإنجليزية في الملف): {failed_pages}"
-            )
-        if crashed_pages:
-            st.error(f"حدث خطأ أثناء معالجة {len(crashed_pages)} صفحة بالكامل: {crashed_pages}")
-        if error_log:
-            with st.expander("تفاصيل الأخطاء (لتشخيص المشكلة)"):
-                st.code("\n".join(error_log[:10]))
+        full_text = "\n".join(all_text)
+        st.text_area("الترجمة الكاملة", full_text, height=500)
 
         st.download_button(
-            "تحميل الكتاب المترجم (PDF)",
-            data=pdf_bytes,
-            file_name="translated_book.pdf",
-            mime="application/pdf",
+            "تحميل الترجمة (TXT)",
+            full_text,
+            file_name="translated_book.txt"
         )
+
+    os.unlink(pdf_path)
