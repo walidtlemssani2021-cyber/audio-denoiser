@@ -159,26 +159,38 @@ if pdf_file is not None:
         pdf = FPDF()
         pdf.set_margins(15, 15, 15)
         pdf.add_font(FONT_FAMILY, "", get_arabic_font_path())
+        pdf.set_fallback_fonts(["helvetica"])  # خط احتياطي لأي رمز لا يدعمه Amiri (يمنع توقف البرنامج)
 
         progress = st.progress(0.0)
         status = st.empty()
         error_log = []
         failed_pages = []
+        crashed_pages = []
 
         for idx, (page_image, label) in enumerate(pages, start=1):
             status.write(f"جاري معالجة الصفحة {idx} من {total_pages}: {label}")
+            try:
+                page_image_resized = resize_for_memory(page_image)
+                img_array = np.array(page_image_resized)
+                result, _ = engine(img_array)
 
-            page_image = resize_for_memory(page_image)
-            img_array = np.array(page_image)
-            result, _ = engine(img_array)
+                english_text = " ".join(item[1] for item in result) if result else ""
+                arabic_text, ok = translate_text_block(english_text, error_log)
+                page_label = label
+                if not ok:
+                    failed_pages.append(idx)
+                    page_label = f"{label} (لم تُترجم)"
 
-            english_text = " ".join(item[1] for item in result) if result else ""
-            arabic_text, ok = translate_text_block(english_text, error_log)
-            if not ok:
-                failed_pages.append(idx)
-                label = f"{label} ⚠️ لم تُترجم"
+                add_arabic_page(pdf, arabic_text, page_label)
+            except Exception as e:
+                # لا نوقف معالجة الكتاب كله بسبب خطأ في صفحة واحدة؛ نسجّله ونكمل الباقي
+                crashed_pages.append(idx)
+                error_log.append(f"صفحة {idx}: {e}")
+                try:
+                    add_arabic_page(pdf, "", f"{label} (تعذّرت معالجة هذه الصفحة)")
+                except Exception:
+                    pass
 
-            add_arabic_page(pdf, arabic_text, label)
             progress.progress(idx / total_pages)
 
         status.write("تم الانتهاء من جميع الصفحات ✅")
@@ -189,8 +201,11 @@ if pdf_file is not None:
                 f"تعذّرت ترجمة {len(failed_pages)} صفحة من {total_pages} "
                 f"(بقيت بالإنجليزية في الملف): {failed_pages}"
             )
-            with st.expander("تفاصيل الخطأ (لتشخيص المشكلة)"):
-                st.code("\n".join(error_log[:5]))
+        if crashed_pages:
+            st.error(f"حدث خطأ أثناء معالجة {len(crashed_pages)} صفحة بالكامل: {crashed_pages}")
+        if error_log:
+            with st.expander("تفاصيل الأخطاء (لتشخيص المشكلة)"):
+                st.code("\n".join(error_log[:10]))
 
         st.download_button(
             "تحميل الكتاب المترجم (PDF)",
