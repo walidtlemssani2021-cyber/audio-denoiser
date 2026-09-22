@@ -30,8 +30,8 @@ st.markdown('<div class="hero"><h1>ترجمة كتاب PDF إلى العربية
 FONT_URL = "https://github.com/google/fonts/raw/main/ofl/amiri/Amiri-Regular.ttf"
 FONT_PATH = "/tmp/Amiri-Regular.ttf"
 FONT_FAMILY = "Amiri"  # اسم صريح للعائلة كي لا يعتمد على اسم ملف الخط
-MAX_INPUT_SIZE = 1600  # أقصى بعد للصورة قبل المعالجة، لتقليل استهلاك الذاكرة
-PDF_RENDER_SCALE = 2.0  # ~144dpi عند تحويل صفحات PDF إلى صور
+MAX_INPUT_SIZE = 1200  # أقصى بعد للصورة قبل المعالجة (خُفِّض من 1600 لتسريع OCR)
+PDF_RENDER_SCALE = 1.6  # ~115dpi عند تحويل صفحات PDF إلى صور (خُفِّض من 2.0 لتسريع OCR)
 MAX_TRANSLATE_WORKERS = 5  # عدد طلبات الترجمة المتزامنة (أعلى = أسرع لكن خطر حظر أكبر من الخدمة المجانية)
 
 
@@ -194,7 +194,7 @@ if pdf_file is not None:
             try:
                 page_image_resized = resize_for_memory(page_image)
                 img_array = np.array(page_image_resized)
-                result, _ = engine(img_array)
+                result, _ = engine(img_array, use_cls=False)
                 english_text = " ".join(item[1] for item in result) if result else ""
                 ocr_results.append((idx, label, english_text))
             except Exception as e:
