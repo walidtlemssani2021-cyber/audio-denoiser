@@ -1,5 +1,6 @@
 import io
 import os
+import concurrent.futures
 import requests
 import streamlit as st
 from PIL import Image
@@ -31,6 +32,7 @@ FONT_PATH = "/tmp/Amiri-Regular.ttf"
 FONT_FAMILY = "Amiri"  # اسم صريح للعائلة كي لا يعتمد على اسم ملف الخط
 MAX_INPUT_SIZE = 1600  # أقصى بعد للصورة قبل المعالجة، لتقليل استهلاك الذاكرة
 PDF_RENDER_SCALE = 2.0  # ~144dpi عند تحويل صفحات PDF إلى صور
+MAX_TRANSLATE_WORKERS = 5  # عدد طلبات الترجمة المتزامنة (أعلى = أسرع لكن خطر حظر أكبر من الخدمة المجانية)
 
 
 @st.cache_resource
@@ -179,37 +181,69 @@ if pdf_file is not None:
         pdf.add_font(FONT_FAMILY, "", font_path)
         supported_chars = get_supported_codepoints(font_path)
 
-        progress = st.progress(0.0)
-        status = st.empty()
         error_log = []
         failed_pages = []
         crashed_pages = []
+        progress = st.progress(0.0)
+        status = st.empty()
 
+        # المرحلة 1: استخراج النص من كل صفحة (تسلسلي عمداً لضبط استهلاك الذاكرة)
+        ocr_results = []  # كل عنصر: (idx, label, النص الإنجليزي أو None عند فشل الصفحة)
         for idx, (page_image, label) in enumerate(pages, start=1):
-            status.write(f"جاري معالجة الصفحة {idx} من {total_pages}: {label}")
+            status.write(f"جاري استخراج النص: صفحة {idx} من {total_pages}")
             try:
                 page_image_resized = resize_for_memory(page_image)
                 img_array = np.array(page_image_resized)
                 result, _ = engine(img_array)
-
                 english_text = " ".join(item[1] for item in result) if result else ""
-                arabic_text, ok = translate_text_block(english_text, error_log)
+                ocr_results.append((idx, label, english_text))
+            except Exception as e:
+                crashed_pages.append(idx)
+                error_log.append(f"OCR صفحة {idx}: {e}")
+                ocr_results.append((idx, label, None))
+            progress.progress(idx / total_pages)
+
+        # المرحلة 2: ترجمة كل الصفحات بالتوازي (الترجمة عبر الشبكة، فتشغيلها معاً يوفّر وقتاً كبيراً)
+        status.write("جاري ترجمة الصفحات (بالتوازي)...")
+        translations = {}
+        translatable = [(idx, text) for idx, _, text in ocr_results if text is not None]
+        progress.progress(0.0)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_TRANSLATE_WORKERS) as executor:
+            future_to_idx = {
+                executor.submit(translate_text_block, text, error_log): idx
+                for idx, text in translatable
+            }
+            done = 0
+            for future in concurrent.futures.as_completed(future_to_idx):
+                idx = future_to_idx[future]
+                try:
+                    translations[idx] = future.result()
+                except Exception as e:
+                    translations[idx] = ("", False)
+                    error_log.append(f"ترجمة صفحة {idx}: {e}")
+                done += 1
+                progress.progress(done / len(future_to_idx) if future_to_idx else 1.0)
+
+        # المرحلة 3: بناء ملف PDF بالترتيب الصحيح (تسلسلي؛ سريع نسبياً)
+        status.write("جاري تجميع ملف PDF...")
+        for idx, label, english_text in ocr_results:
+            try:
+                if english_text is None:
+                    add_arabic_page(pdf, "", f"{label} (تعذّرت معالجة هذه الصفحة)", supported_chars)
+                    continue
+                arabic_text, ok = translations.get(idx, ("", False))
                 page_label = label
                 if not ok:
                     failed_pages.append(idx)
                     page_label = f"{label} (لم تُترجم)"
-
                 add_arabic_page(pdf, arabic_text, page_label, supported_chars)
             except Exception as e:
-                # لا نوقف معالجة الكتاب كله بسبب خطأ في صفحة واحدة؛ نسجّله ونكمل الباقي
                 crashed_pages.append(idx)
                 error_log.append(f"صفحة {idx}: {e}")
                 try:
                     add_arabic_page(pdf, "", f"{label} (تعذّرت معالجة هذه الصفحة)", supported_chars)
                 except Exception:
                     pass
-
-            progress.progress(idx / total_pages)
 
         status.write("تم الانتهاء من جميع الصفحات ✅")
         pdf_bytes = bytes(pdf.output())
