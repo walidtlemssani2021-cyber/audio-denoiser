@@ -107,6 +107,20 @@ def translate_text_block(text: str, error_log: list) -> tuple:
     return text, False
 
 
+@st.cache_resource
+def get_supported_codepoints(font_path: str):
+    """يرجع مجموعة الرموز (codepoints) التي يدعمها الخط فعلياً، لتفادي رموز تُسقط PDF."""
+    from fontTools.ttLib import TTFont
+    tt_font = TTFont(font_path)
+    cmap = tt_font.getBestCmap() or {}
+    return set(cmap.keys())
+
+
+def sanitize_for_font(text: str, supported: set) -> str:
+    """يستبدل أي رمز لا يدعمه الخط بعلامة استفهام، بدل أن يوقف البرنامج بخطأ."""
+    return "".join(ch if ord(ch) in supported else "?" for ch in text)
+
+
 def wrap_arabic_paragraph(pdf: FPDF, text: str, max_width: float):
     """يقسّم الفقرة إلى أسطر تناسب عرض الصفحة، بالترتيب المنطقي قبل التشكيل البصري (bidi)."""
     words = text.split()
@@ -124,9 +138,12 @@ def wrap_arabic_paragraph(pdf: FPDF, text: str, max_width: float):
     return lines
 
 
-def add_arabic_page(pdf: FPDF, paragraph_text: str, label: str):
+def add_arabic_page(pdf: FPDF, paragraph_text: str, label: str, supported: set):
     pdf.add_page()
     max_width = pdf.w - pdf.l_margin - pdf.r_margin
+
+    label = sanitize_for_font(label, supported)
+    paragraph_text = sanitize_for_font(paragraph_text, supported)
 
     pdf.set_font(FONT_FAMILY, size=10)
     pdf.cell(0, 8, get_display(arabic_reshaper.reshape(label)), align="C", ln=1)
@@ -158,8 +175,9 @@ if pdf_file is not None:
     if st.button("ابدأ الاستخراج والترجمة"):
         pdf = FPDF()
         pdf.set_margins(15, 15, 15)
-        pdf.add_font(FONT_FAMILY, "", get_arabic_font_path())
-        pdf.set_fallback_fonts(["helvetica"])  # خط احتياطي لأي رمز لا يدعمه Amiri (يمنع توقف البرنامج)
+        font_path = get_arabic_font_path()
+        pdf.add_font(FONT_FAMILY, "", font_path)
+        supported_chars = get_supported_codepoints(font_path)
 
         progress = st.progress(0.0)
         status = st.empty()
@@ -181,13 +199,13 @@ if pdf_file is not None:
                     failed_pages.append(idx)
                     page_label = f"{label} (لم تُترجم)"
 
-                add_arabic_page(pdf, arabic_text, page_label)
+                add_arabic_page(pdf, arabic_text, page_label, supported_chars)
             except Exception as e:
                 # لا نوقف معالجة الكتاب كله بسبب خطأ في صفحة واحدة؛ نسجّله ونكمل الباقي
                 crashed_pages.append(idx)
                 error_log.append(f"صفحة {idx}: {e}")
                 try:
-                    add_arabic_page(pdf, "", f"{label} (تعذّرت معالجة هذه الصفحة)")
+                    add_arabic_page(pdf, "", f"{label} (تعذّرت معالجة هذه الصفحة)", supported_chars)
                 except Exception:
                     pass
 
