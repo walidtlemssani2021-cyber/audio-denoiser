@@ -53,6 +53,7 @@ def load_rembg_session():
 
 # ---------------- رفع جودة الصورة ----------------
 if mode == "رفع جودة الصورة (x4plus)":
+    load_rembg_session.clear()  # تفريغ نموذج نزع الخلفية من الذاكرة لو كان محمّل
     with st.spinner("جاري تحميل النموذج... (قد يستغرق دقيقة)"):
         session = load_upscale_model()
 
@@ -86,6 +87,7 @@ if mode == "رفع جودة الصورة (x4plus)":
 
 # ---------------- نزع خلفية الصورة ----------------
 else:
+    load_upscale_model.clear()  # تفريغ نموذج رفع الجودة من الذاكرة لو كان محمّل
     with st.spinner("جاري تحميل النموذج... (قد يستغرق دقيقة)"):
         rembg_session = load_rembg_session()
 
