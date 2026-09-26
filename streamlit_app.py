@@ -48,7 +48,7 @@ def load_upscale_model():
 
 @st.cache_resource
 def load_rembg_session():
-    return new_session("birefnet-general")
+    return new_session("birefnet-general-lite")
 
 
 # ---------------- رفع جودة الصورة ----------------
