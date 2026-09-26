@@ -97,7 +97,7 @@ else:
         image = Image.open(uploaded_file).convert("RGB")
         st.image(image, caption="الصورة الأصلية")
 
-        MAX_BG_INPUT_SIZE = 1200
+        MAX_BG_INPUT_SIZE = 1600
         if max(image.size) > MAX_BG_INPUT_SIZE:
             image.thumbnail((MAX_BG_INPUT_SIZE, MAX_BG_INPUT_SIZE), Image.LANCZOS)
             st.info(f"تم تصغير الصورة إلى {image.size} لتقليل استهلاك الذاكرة.")
