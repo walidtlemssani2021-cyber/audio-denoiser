@@ -4,8 +4,9 @@ from PIL import Image
 import numpy as np
 import onnxruntime as ort
 from huggingface_hub import hf_hub_download
+from rembg import remove, new_session
 
-st.set_page_config(page_title="رفع جودة الصور - RealESRGAN x4plus", layout="centered")
+st.set_page_config(page_title="أدوات الصور بالذكاء الاصطناعي", layout="centered")
 
 st.markdown("""
 <style>
@@ -14,19 +15,29 @@ st.markdown("""
 .hero h1 { color: #ffffff; font-family: 'Fraunces', serif; font-size: 32px; }
 .hero p { color: #a3a3a3; font-size: 15px; }
 .stDownloadButton button { background: #ffffff !important; color: #000000 !important; border-radius: 100px !important; }
+div[role="radiogroup"] { justify-content: center; }
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <div class="hero">
-  <h1>ارفع جودة صورتك (x4plus)</h1>
-  <p>RealESRGAN x4plus (FP32) — الأقوى في العائلة</p>
+  <h1>أدوات الصور بالذكاء الاصطناعي</h1>
+  <p>رفع الجودة أو نزع الخلفية بضغطة زر</p>
 </div>
 """, unsafe_allow_html=True)
 
+mode = st.radio(
+    "اختر الميزة",
+    ["رفع جودة الصورة (x4plus)", "نزع خلفية الصورة"],
+    horizontal=True,
+    label_visibility="collapsed",
+)
+
+st.write("")
+
 
 @st.cache_resource
-def load_model():
+def load_upscale_model():
     model_path = hf_hub_download(
         repo_id="fernandotonon/QtMeshEditor-realesrgan-onnx",
         filename="RealESRGAN_x4plus.onnx"
@@ -35,33 +46,61 @@ def load_model():
     return session
 
 
-with st.spinner("جاري تحميل النموذج... (قد يستغرق دقيقة)"):
-    session = load_model()
+@st.cache_resource
+def load_rembg_session():
+    return new_session("u2net")
 
-uploaded_file = st.file_uploader("ارفع صورة", type=["png", "jpg", "jpeg", "webp"])
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="الصورة الأصلية")
+# ---------------- رفع جودة الصورة ----------------
+if mode == "رفع جودة الصورة (x4plus)":
+    with st.spinner("جاري تحميل النموذج... (قد يستغرق دقيقة)"):
+        session = load_upscale_model()
 
-    # تصغير الصورة (مهم لتقليل الذاكرة)
-    MAX_INPUT_SIZE = 400
-    if max(image.size) > MAX_INPUT_SIZE:
-        image.thumbnail((MAX_INPUT_SIZE, MAX_INPUT_SIZE), Image.LANCZOS)
-        st.info(f"تم تصغير الصورة إلى {image.size} لتقليل استهلاك الذاكرة.")
+    uploaded_file = st.file_uploader("ارفع صورة", type=["png", "jpg", "jpeg", "webp"], key="upscale_uploader")
 
-    with st.spinner("جاري رفع الجودة... (قد يستغرق وقتاً)"):
-        img_array = np.asarray(image, dtype=np.float32) / 255.0
-        img_array = img_array.transpose(2, 0, 1)[None, ...]  # [1, 3, H, W]
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file).convert("RGB")
+        st.image(image, caption="الصورة الأصلية")
 
-        output = session.run(None, {"input": img_array})[0][0]
+        # تصغير الصورة (مهم لتقليل الذاكرة)
+        MAX_INPUT_SIZE = 400
+        if max(image.size) > MAX_INPUT_SIZE:
+            image.thumbnail((MAX_INPUT_SIZE, MAX_INPUT_SIZE), Image.LANCZOS)
+            st.info(f"تم تصغير الصورة إلى {image.size} لتقليل استهلاك الذاكرة.")
 
-        output = (output.transpose(1, 2, 0) * 255).clip(0, 255).astype(np.uint8)
-        result_image = Image.fromarray(output)
+        with st.spinner("جاري رفع الجودة... (قد يستغرق وقتاً)"):
+            img_array = np.asarray(image, dtype=np.float32) / 255.0
+            img_array = img_array.transpose(2, 0, 1)[None, ...]  # [1, 3, H, W]
 
-    st.success("تم!")
-    st.image(result_image, caption="بعد التحسين")
+            output = session.run(None, {"input": img_array})[0][0]
 
-    buf = io.BytesIO()
-    result_image.save(buf, format="PNG")
-    st.download_button("تحميل الصورة", buf.getvalue(), file_name="upscaled_x4plus.png", mime="image/png")
+            output = (output.transpose(1, 2, 0) * 255).clip(0, 255).astype(np.uint8)
+            result_image = Image.fromarray(output)
+
+        st.success("تم!")
+        st.image(result_image, caption="بعد التحسين")
+
+        buf = io.BytesIO()
+        result_image.save(buf, format="PNG")
+        st.download_button("تحميل الصورة", buf.getvalue(), file_name="upscaled_x4plus.png", mime="image/png")
+
+# ---------------- نزع خلفية الصورة ----------------
+else:
+    with st.spinner("جاري تحميل النموذج... (قد يستغرق دقيقة)"):
+        rembg_session = load_rembg_session()
+
+    uploaded_file = st.file_uploader("ارفع صورة", type=["png", "jpg", "jpeg", "webp"], key="rembg_uploader")
+
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file).convert("RGB")
+        st.image(image, caption="الصورة الأصلية")
+
+        with st.spinner("جاري نزع الخلفية..."):
+            result_image = remove(image, session=rembg_session)
+
+        st.success("تم!")
+        st.image(result_image, caption="بعد نزع الخلفية")
+
+        buf = io.BytesIO()
+        result_image.save(buf, format="PNG")
+        st.download_button("تحميل الصورة", buf.getvalue(), file_name="no_background.png", mime="image/png")
