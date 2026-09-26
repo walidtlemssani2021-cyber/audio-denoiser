@@ -1,7 +1,5 @@
 streamlit
-torch
-numpy
 pillow
+numpy
+onnxruntime
 huggingface-hub
-safetensors
-spandrel
