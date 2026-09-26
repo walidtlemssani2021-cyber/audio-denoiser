@@ -28,7 +28,7 @@ st.markdown("""
 
 mode = st.radio(
     "اختر الميزة",
-    ["رفع جودة الصورة (x4plus)", "نزع خلفية الصورة"],
+    ["رفع جودة الصورة", "نزع خلفية الصورة"],
     horizontal=True,
     label_visibility="collapsed",
 )
@@ -39,22 +39,22 @@ st.write("")
 @st.cache_resource
 def load_upscale_model():
     model_path = hf_hub_download(
-        repo_id="fernandotonon/QtMeshEditor-realesrgan-onnx",
-        filename="RealESRGAN_x4plus.onnx"
+        repo_id="Heliosoph/realesrgan-onnx",
+        filename="realesr-general-x4v3.onnx"
     )
-    session = ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
-    return session
+    return ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
 
 
 @st.cache_resource
 def load_rembg_session():
-    return new_session("birefnet-general-lite")
+    return new_session("u2net")
 
 
 # ---------------- رفع جودة الصورة ----------------
-if mode == "رفع جودة الصورة (x4plus)":
+if mode == "رفع جودة الصورة":
     load_rembg_session.clear()  # تفريغ نموذج نزع الخلفية من الذاكرة لو كان محمّل
-    with st.spinner("جاري تحميل النموذج... (قد يستغرق دقيقة)"):
+
+    with st.spinner("جاري تحميل النموذج..."):
         session = load_upscale_model()
 
     uploaded_file = st.file_uploader("ارفع صورة", type=["png", "jpg", "jpeg", "webp"], key="upscale_uploader")
@@ -63,15 +63,14 @@ if mode == "رفع جودة الصورة (x4plus)":
         image = Image.open(uploaded_file).convert("RGB")
         st.image(image, caption="الصورة الأصلية")
 
-        # تصغير الصورة (مهم لتقليل الذاكرة)
-        MAX_INPUT_SIZE = 400
+        MAX_INPUT_SIZE = 800
         if max(image.size) > MAX_INPUT_SIZE:
             image.thumbnail((MAX_INPUT_SIZE, MAX_INPUT_SIZE), Image.LANCZOS)
             st.info(f"تم تصغير الصورة إلى {image.size} لتقليل استهلاك الذاكرة.")
 
-        with st.spinner("جاري رفع الجودة... (قد يستغرق وقتاً)"):
+        with st.spinner("جاري رفع الجودة..."):
             img_array = np.asarray(image, dtype=np.float32) / 255.0
-            img_array = img_array.transpose(2, 0, 1)[None, ...]  # [1, 3, H, W]
+            img_array = img_array.transpose(2, 0, 1)[None, ...]
 
             output = session.run(None, {"input": img_array})[0][0]
 
@@ -83,12 +82,13 @@ if mode == "رفع جودة الصورة (x4plus)":
 
         buf = io.BytesIO()
         result_image.save(buf, format="PNG")
-        st.download_button("تحميل الصورة", buf.getvalue(), file_name="upscaled_x4plus.png", mime="image/png")
+        st.download_button("تحميل الصورة", buf.getvalue(), file_name="upscaled.png", mime="image/png")
 
 # ---------------- نزع خلفية الصورة ----------------
 else:
     load_upscale_model.clear()  # تفريغ نموذج رفع الجودة من الذاكرة لو كان محمّل
-    with st.spinner("جاري تحميل النموذج... (قد يستغرق دقيقة)"):
+
+    with st.spinner("جاري تحميل النموذج..."):
         rembg_session = load_rembg_session()
 
     uploaded_file = st.file_uploader("ارفع صورة", type=["png", "jpg", "jpeg", "webp"], key="rembg_uploader")
@@ -97,7 +97,6 @@ else:
         image = Image.open(uploaded_file).convert("RGB")
         st.image(image, caption="الصورة الأصلية")
 
-        # تصغير الصورة (مهم لتقليل الذاكرة) — النموذج أصلاً يشتغل بدقة محدودة داخلياً
         MAX_BG_INPUT_SIZE = 1200
         if max(image.size) > MAX_BG_INPUT_SIZE:
             image.thumbnail((MAX_BG_INPUT_SIZE, MAX_BG_INPUT_SIZE), Image.LANCZOS)
