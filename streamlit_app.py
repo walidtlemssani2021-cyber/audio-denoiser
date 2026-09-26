@@ -86,10 +86,9 @@ if mode == "رفع جودة الصورة":
 
 # ---------------- نزع خلفية الصورة ----------------
 else:
-    load_upscale_model.clear()  # تفريغ نموذج رفع الجودة من الذاكرة لو كان محمّل
-
-    with st.spinner("جاري تحميل النموذج..."):
+    with st.spinner("جاري تحميل النماذج..."):
         rembg_session = load_rembg_session()
+        upscale_session = load_upscale_model()
 
     uploaded_file = st.file_uploader("ارفع صورة", type=["png", "jpg", "jpeg", "webp"], key="rembg_uploader")
 
@@ -103,11 +102,34 @@ else:
             st.info(f"تم تصغير الصورة إلى {image.size} لتقليل استهلاك الذاكرة.")
 
         with st.spinner("جاري نزع الخلفية..."):
-            result_image = remove(image, session=rembg_session)
+            no_bg_image = remove(image, session=rembg_session)  # RGBA
+
+        # فصل قناة الشفافية (alpha) عن الألوان (RGB) لأن نموذج رفع الجودة يتعامل مع 3 قنوات فقط
+        rgb_part = no_bg_image.convert("RGB")
+        alpha_part = no_bg_image.split()[-1]
+
+        MAX_UPSCALE_INPUT_SIZE = 800
+        if max(rgb_part.size) > MAX_UPSCALE_INPUT_SIZE:
+            rgb_part.thumbnail((MAX_UPSCALE_INPUT_SIZE, MAX_UPSCALE_INPUT_SIZE), Image.LANCZOS)
+            alpha_part = alpha_part.resize(rgb_part.size, Image.LANCZOS)
+            st.info(f"تم تصغير الصورة إلى {rgb_part.size} قبل رفع الجودة لتقليل استهلاك الذاكرة.")
+
+        with st.spinner("جاري رفع جودة النتيجة..."):
+            img_array = np.asarray(rgb_part, dtype=np.float32) / 255.0
+            img_array = img_array.transpose(2, 0, 1)[None, ...]
+
+            output = upscale_session.run(None, {"input": img_array})[0][0]
+
+            output = (output.transpose(1, 2, 0) * 255).clip(0, 255).astype(np.uint8)
+            upscaled_rgb = Image.fromarray(output)
+
+            # تكبير قناة الشفافية لنفس حجم الصورة بعد رفع الجودة
+            upscaled_alpha = alpha_part.resize(upscaled_rgb.size, Image.LANCZOS)
+            result_image = Image.merge("RGBA", (*upscaled_rgb.split(), upscaled_alpha))
 
         st.success("تم!")
-        st.image(result_image, caption="بعد نزع الخلفية")
+        st.image(result_image, caption="بعد نزع الخلفية ورفع الجودة")
 
         buf = io.BytesIO()
         result_image.save(buf, format="PNG")
-        st.download_button("تحميل الصورة", buf.getvalue(), file_name="no_background.png", mime="image/png")
+        st.download_button("تحميل الصورة", buf.getvalue(), file_name="no_background_upscaled.png", mime="image/png")
