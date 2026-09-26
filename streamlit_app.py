@@ -95,6 +95,12 @@ else:
         image = Image.open(uploaded_file).convert("RGB")
         st.image(image, caption="الصورة الأصلية")
 
+        # تصغير الصورة (مهم لتقليل الذاكرة) — النموذج أصلاً يشتغل بدقة محدودة داخلياً
+        MAX_BG_INPUT_SIZE = 1200
+        if max(image.size) > MAX_BG_INPUT_SIZE:
+            image.thumbnail((MAX_BG_INPUT_SIZE, MAX_BG_INPUT_SIZE), Image.LANCZOS)
+            st.info(f"تم تصغير الصورة إلى {image.size} لتقليل استهلاك الذاكرة.")
+
         with st.spinner("جاري نزع الخلفية..."):
             result_image = remove(image, session=rembg_session)
 
