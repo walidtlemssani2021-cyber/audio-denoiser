@@ -1,6 +1,7 @@
 streamlit
-PyMuPDF
-pdf2image
-pytesseract
-Pillow
-argostranslate
+torch
+numpy
+pillow
+huggingface-hub
+safetensors
+spandrel
