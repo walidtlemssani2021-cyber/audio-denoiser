@@ -201,6 +201,11 @@ details.faq-item p { color: var(--muted); font-size: 13px; line-height: 1.5; pad
 
 html { scroll-behavior: smooth; }
 
+@keyframes reveal-on-scroll {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .floating-start-btn {
   position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
   z-index: 999;
@@ -214,6 +219,9 @@ html { scroll-behavior: smooth; }
   font-size: 14px;
   text-decoration: none;
   box-shadow: 0 0 24px rgba(194,77,255,0.45);
+  animation: reveal-on-scroll linear both;
+  animation-timeline: scroll(root block);
+  animation-range: 150px 350px;
 }
 .bottom-spacer { height: 90px; }
 </style>
