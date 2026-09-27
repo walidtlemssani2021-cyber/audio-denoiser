@@ -199,17 +199,23 @@ details.faq-item summary::after {
 details.faq-item[open] summary::after { transform: rotate(45deg); }
 details.faq-item p { color: var(--muted); font-size: 13px; line-height: 1.5; padding: 0 0 16px; margin: 0; }
 
-.fixed-cta-marker + div[data-testid="stHorizontalBlock"] {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
-  background: rgba(5,5,10,0.92); backdrop-filter: blur(10px);
-  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid var(--border);
-  margin: 0 !important;
+html { scroll-behavior: smooth; }
+
+.floating-start-btn {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  z-index: 999;
+  display: inline-block;
+  padding: 14px 32px;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
+  color: #05050a !important;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  box-shadow: 0 0 24px rgba(194,77,255,0.45);
 }
-.fixed-cta-marker + div[data-testid="stHorizontalBlock"] button {
-  border-radius: 100px !important; padding: 10px 0 !important; font-size: 13px !important;
-}
-.bottom-spacer { height: 84px; }
+.bottom-spacer { height: 90px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -241,7 +247,7 @@ if st.session_state.page == "home":
     load_rembg_session.clear()
 
     st.markdown("""
-    <div class="hero">
+    <div class="hero" id="top">
       <div class="wordmark">PIXLY</div>
       <div class="chip">Powered by open-source AI models</div>
       <h1>Sharper photos,<br><span class="accent">cleaner cutouts.</span></h1>
@@ -332,18 +338,9 @@ if st.session_state.page == "home":
 
     <div class="bottom-spacer"></div>
 
-    <div class="fixed-cta-marker"></div>
+    <a href="#top" class="floating-start-btn">Let's start</a>
     """, unsafe_allow_html=True)
 
-    fcol1, fcol2 = st.columns(2)
-    with fcol1:
-        if st.button("Upscale", type="primary", use_container_width=True, key="upscale_float"):
-            go_to("upscale")
-            st.rerun()
-    with fcol2:
-        if st.button("Remove BG", type="secondary", use_container_width=True, key="remove_bg_float"):
-            go_to("remove_bg")
-            st.rerun()
 elif st.session_state.page == "upscale":
     if st.button("← Back", type="secondary"):
         go_to("home")
