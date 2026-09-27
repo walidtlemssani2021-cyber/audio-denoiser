@@ -158,6 +158,30 @@ button[kind="secondary"] {
   padding: 24px 10px 36px; border-top: 1px solid var(--border); margin-top: 40px;
 }
 
+.section-title-large {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 27px;
+  color: var(--text);
+  text-align: center;
+  margin: 44px 0 20px;
+}
+
+.intro-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 22px;
+  background: linear-gradient(180deg, rgba(77,232,255,0.06), rgba(194,77,255,0.06)), var(--surface);
+  box-shadow: 0 0 30px rgba(194,77,255,0.10);
+}
+.intro-card p {
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.8;
+  margin: 0;
+}
+.intro-card strong { color: var(--accent-a); font-weight: 600; }
+
 .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .stat-tile {
   position: relative; overflow: hidden;
@@ -266,6 +290,11 @@ if st.session_state.page == "home":
         st.rerun()
 
     st.markdown("""
+    <div class="section-title-large">What is Pixly?</div>
+    <div class="intro-card">
+      <p>Pixly is a recently launched website dedicated to photo editing. It currently offers two options: the first is <strong>upscaling photo quality</strong>, and the second is <strong>removing photo backgrounds</strong> — powered by two AI models, Real-ESRGAN and U²-Net.</p>
+    </div>
+
     <div class="section-title">What Pixly does</div>
     <div class="features">
       <div class="feature-card">
