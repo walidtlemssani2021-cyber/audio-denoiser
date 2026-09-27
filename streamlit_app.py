@@ -100,26 +100,35 @@ div[data-testid="stFileUploader"] {
   font-weight: 600 !important;
   box-shadow: 0 0 22px rgba(194,77,255,0.35);
 }
+
+button[kind="primary"] {
+  background: linear-gradient(90deg, var(--accent-a), var(--accent-b)) !important;
+  color: #05050a !important;
+  border: none !important;
+  border-radius: 100px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 0 22px rgba(194,77,255,0.35);
+  width: 100%;
+}
+
+button[kind="secondary"] {
+  background: transparent !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 100px !important;
+  width: 100%;
+}
+
+.back-link { color: var(--muted); font-size: 14px; }
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown("""
-<div class="hero">
-  <div class="wordmark">PIXLY</div>
-  <div class="chip">Powered by open-source AI models</div>
-  <h1>Sharper photos,<br><span class="accent">cleaner cutouts.</span></h1>
-  <p>Upload a photo. Pixly upscales the details or removes the background in seconds.</p>
-</div>
-""", unsafe_allow_html=True)
+if "page" not in st.session_state:
+    st.session_state.page = "home"
 
-mode = st.radio(
-    "Choose a tool",
-    ["Upscale Photo", "Remove Background"],
-    horizontal=True,
-    label_visibility="collapsed",
-)
 
-st.write("")
+def go_to(page_name):
+    st.session_state.page = page_name
 
 
 @st.cache_resource
@@ -136,9 +145,37 @@ def load_rembg_session():
     return new_session("u2net")
 
 
-# ---------------- Upscale Photo ----------------
-if mode == "Upscale Photo":
-    load_rembg_session.clear()  # free background-removal model from memory if loaded
+# ==================== HOME PAGE ====================
+if st.session_state.page == "home":
+    load_upscale_model.clear()  # no tool selected yet, keep memory free
+    load_rembg_session.clear()
+
+    st.markdown("""
+    <div class="hero">
+      <div class="wordmark">PIXLY</div>
+      <div class="chip">Powered by open-source AI models</div>
+      <h1>Sharper photos,<br><span class="accent">cleaner cutouts.</span></h1>
+      <p>Upload a photo. Pixly upscales the details or removes the background in seconds.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.write("")
+    if st.button("Upscale Photo", type="primary", use_container_width=True):
+        go_to("upscale")
+        st.rerun()
+
+    st.write("")
+    if st.button("Remove Background", type="secondary", use_container_width=True):
+        go_to("remove_bg")
+        st.rerun()
+
+# ==================== UPSCALE PAGE ====================
+elif st.session_state.page == "upscale":
+    if st.button("← Back", type="secondary"):
+        go_to("home")
+        st.rerun()
+
+    load_rembg_session.clear()
 
     with st.spinner("Loading model..."):
         session = load_upscale_model()
@@ -180,8 +217,12 @@ if mode == "Upscale Photo":
         result_image.save(buf, format="PNG")
         st.download_button("Download", buf.getvalue(), file_name="upscaled.png", mime="image/png")
 
-# ---------------- Remove Background ----------------
+# ==================== REMOVE BACKGROUND PAGE ====================
 else:
+    if st.button("← Back", type="secondary"):
+        go_to("home")
+        st.rerun()
+
     with st.spinner("Loading models..."):
         rembg_session = load_rembg_session()
         upscale_session = load_upscale_model()
