@@ -123,8 +123,8 @@ button[kind="secondary"] {
 
 .section-title {
   font-family: 'Fraunces', serif;
-  font-weight: 600;
-  font-size: 19px;
+  font-weight: 700;
+  font-size: 27px;
   color: var(--text);
   text-align: center;
   margin: 44px 0 20px;
