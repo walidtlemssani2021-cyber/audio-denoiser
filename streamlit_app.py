@@ -6,29 +6,115 @@ import onnxruntime as ort
 from huggingface_hub import hf_hub_download
 from rembg import remove, new_session
 
-st.set_page_config(page_title="أدوات الصور بالذكاء الاصطناعي", layout="centered")
+st.set_page_config(page_title="PIXLY — AI Photo Tools", layout="centered")
 
 st.markdown("""
 <style>
-.stApp { background: #000000 !important; }
-.hero { text-align: center; padding: 20px 10px; }
-.hero h1 { color: #ffffff; font-family: 'Fraunces', serif; font-size: 32px; }
-.hero p { color: #a3a3a3; font-size: 15px; }
-.stDownloadButton button { background: #ffffff !important; color: #000000 !important; border-radius: 100px !important; }
-div[role="radiogroup"] { justify-content: center; }
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --bg: #05050a;
+  --surface: #0e0e16;
+  --border: #202028;
+  --text: #f5f5f7;
+  --muted: #8a8a98;
+  --accent-a: #4de8ff;
+  --accent-b: #c24dff;
+}
+
+html, body, [class*="css"] { font-family: 'Inter', -apple-system, sans-serif; }
+
+.stApp {
+  background-color: var(--bg) !important;
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(77,232,255,0.14), transparent 42%),
+    radial-gradient(circle at 85% 8%, rgba(194,77,255,0.14), transparent 42%);
+}
+
+.hero { text-align: center; padding: 40px 10px 8px; }
+
+.hero .wordmark {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 5px;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.hero .chip {
+  display: inline-block;
+  padding: 6px 18px;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 12px;
+  color: var(--muted);
+  background: rgba(255,255,255,0.03);
+  margin-bottom: 26px;
+}
+
+.hero h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 38px;
+  line-height: 1.18;
+  color: var(--text);
+  margin: 0;
+}
+
+.hero h1 .accent {
+  background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero p {
+  color: var(--muted);
+  font-size: 15px;
+  margin: 18px auto 0;
+  max-width: 380px;
+}
+
+div[role="radiogroup"] { justify-content: center; gap: 10px; margin-top: 30px; }
+
+div[role="radiogroup"] label {
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 6px 18px;
+  background: var(--surface);
+}
+
+div[data-testid="stFileUploader"] {
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  padding: 4px;
+  background: var(--surface);
+}
+
+.stDownloadButton button {
+  background: linear-gradient(90deg, var(--accent-a), var(--accent-b)) !important;
+  color: #05050a !important;
+  border: none !important;
+  border-radius: 100px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 0 22px rgba(194,77,255,0.35);
+}
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <div class="hero">
-  <h1>أدوات الصور بالذكاء الاصطناعي</h1>
-  <p>رفع الجودة أو نزع الخلفية بضغطة زر</p>
+  <div class="wordmark">PIXLY</div>
+  <div class="chip">Powered by open-source AI models</div>
+  <h1>Sharper photos,<br><span class="accent">cleaner cutouts.</span></h1>
+  <p>Upload a photo. Pixly upscales the details or removes the background in seconds.</p>
 </div>
 """, unsafe_allow_html=True)
 
 mode = st.radio(
-    "اختر الميزة",
-    ["رفع جودة الصورة", "نزع خلفية الصورة"],
+    "Choose a tool",
+    ["Upscale Photo", "Remove Background"],
     horizontal=True,
     label_visibility="collapsed",
 )
@@ -50,14 +136,14 @@ def load_rembg_session():
     return new_session("u2net")
 
 
-# ---------------- رفع جودة الصورة ----------------
-if mode == "رفع جودة الصورة":
-    load_rembg_session.clear()  # تفريغ نموذج نزع الخلفية من الذاكرة لو كان محمّل
+# ---------------- Upscale Photo ----------------
+if mode == "Upscale Photo":
+    load_rembg_session.clear()  # free background-removal model from memory if loaded
 
-    with st.spinner("جاري تحميل النموذج..."):
+    with st.spinner("Loading model..."):
         session = load_upscale_model()
 
-    uploaded_file = st.file_uploader("ارفع صورة", type=["png", "jpg", "jpeg", "webp"], key="upscale_uploader")
+    uploaded_file = st.file_uploader("Upload a photo", type=["png", "jpg", "jpeg", "webp"], key="upscale_uploader")
 
     if uploaded_file is not None:
         file_key = f"upscale_{uploaded_file.name}_{uploaded_file.size}"
@@ -68,9 +154,9 @@ if mode == "رفع جودة الصورة":
             MAX_INPUT_SIZE = 800
             if max(image.size) > MAX_INPUT_SIZE:
                 image.thumbnail((MAX_INPUT_SIZE, MAX_INPUT_SIZE), Image.LANCZOS)
-                st.info(f"تم تصغير الصورة إلى {image.size} لتقليل استهلاك الذاكرة.")
+                st.info(f"Resized to {image.size} to reduce memory usage.")
 
-            with st.spinner("جاري رفع الجودة..."):
+            with st.spinner("Upscaling..."):
                 img_array = np.asarray(image, dtype=np.float32) / 255.0
                 img_array = img_array.transpose(2, 0, 1)[None, ...]
 
@@ -86,21 +172,21 @@ if mode == "رفع جودة الصورة":
         image = st.session_state.upscale_original
         result_image = st.session_state.upscale_result
 
-        st.image(image, caption="الصورة الأصلية")
-        st.success("تم!")
-        st.image(result_image, caption="بعد التحسين")
+        st.image(image, caption="Original")
+        st.success("Done!")
+        st.image(result_image, caption="Upscaled")
 
         buf = io.BytesIO()
         result_image.save(buf, format="PNG")
-        st.download_button("تحميل الصورة", buf.getvalue(), file_name="upscaled.png", mime="image/png")
+        st.download_button("Download", buf.getvalue(), file_name="upscaled.png", mime="image/png")
 
-# ---------------- نزع خلفية الصورة ----------------
+# ---------------- Remove Background ----------------
 else:
-    with st.spinner("جاري تحميل النماذج..."):
+    with st.spinner("Loading models..."):
         rembg_session = load_rembg_session()
         upscale_session = load_upscale_model()
 
-    uploaded_file = st.file_uploader("ارفع صورة", type=["png", "jpg", "jpeg", "webp"], key="rembg_uploader")
+    uploaded_file = st.file_uploader("Upload a photo", type=["png", "jpg", "jpeg", "webp"], key="rembg_uploader")
 
     if uploaded_file is not None:
         file_key = f"rembg_{uploaded_file.name}_{uploaded_file.size}"
@@ -111,12 +197,12 @@ else:
             MAX_BG_INPUT_SIZE = 2000
             if max(image.size) > MAX_BG_INPUT_SIZE:
                 image.thumbnail((MAX_BG_INPUT_SIZE, MAX_BG_INPUT_SIZE), Image.LANCZOS)
-                st.info(f"تم تصغير الصورة إلى {image.size} لتقليل استهلاك الذاكرة.")
+                st.info(f"Resized to {image.size} to reduce memory usage.")
 
-            with st.spinner("جاري نزع الخلفية..."):
+            with st.spinner("Removing background..."):
                 no_bg_image = remove(image, session=rembg_session)  # RGBA
 
-            # فصل قناة الشفافية (alpha) عن الألوان (RGB) لأن نموذج رفع الجودة يتعامل مع 3 قنوات فقط
+            # Split alpha (transparency) from RGB, since the upscale model only accepts 3 channels
             rgb_part = no_bg_image.convert("RGB")
             alpha_part = no_bg_image.split()[-1]
 
@@ -124,9 +210,9 @@ else:
             if max(rgb_part.size) > MAX_UPSCALE_INPUT_SIZE:
                 rgb_part.thumbnail((MAX_UPSCALE_INPUT_SIZE, MAX_UPSCALE_INPUT_SIZE), Image.LANCZOS)
                 alpha_part = alpha_part.resize(rgb_part.size, Image.LANCZOS)
-                st.info(f"تم تصغير الصورة إلى {rgb_part.size} قبل رفع الجودة لتقليل استهلاك الذاكرة.")
+                st.info(f"Resized to {rgb_part.size} before upscaling to reduce memory usage.")
 
-            with st.spinner("جاري رفع جودة النتيجة..."):
+            with st.spinner("Upscaling result..."):
                 img_array = np.asarray(rgb_part, dtype=np.float32) / 255.0
                 img_array = img_array.transpose(2, 0, 1)[None, ...]
 
@@ -135,7 +221,7 @@ else:
                 output = (output.transpose(1, 2, 0) * 255).clip(0, 255).astype(np.uint8)
                 upscaled_rgb = Image.fromarray(output)
 
-                # تكبير قناة الشفافية لنفس حجم الصورة بعد رفع الجودة
+                # Resize alpha channel to match the upscaled size
                 upscaled_alpha = alpha_part.resize(upscaled_rgb.size, Image.LANCZOS)
                 result_image = Image.merge("RGBA", (*upscaled_rgb.split(), upscaled_alpha))
 
@@ -146,10 +232,10 @@ else:
         image = st.session_state.rembg_original
         result_image = st.session_state.rembg_result
 
-        st.image(image, caption="الصورة الأصلية")
-        st.success("تم!")
-        st.image(result_image, caption="بعد نزع الخلفية ورفع الجودة")
+        st.image(image, caption="Original")
+        st.success("Done!")
+        st.image(result_image, caption="Background removed + upscaled")
 
         buf = io.BytesIO()
         result_image.save(buf, format="PNG")
-        st.download_button("تحميل الصورة", buf.getvalue(), file_name="no_background_upscaled.png", mime="image/png")
+        st.download_button("Download", buf.getvalue(), file_name="no_background_upscaled.png", mime="image/png")
