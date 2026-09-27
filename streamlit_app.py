@@ -1,5 +1,6 @@
 import io
 import streamlit as st
+import streamlit.components.v1 as components
 from PIL import Image
 import numpy as np
 import onnxruntime as ort
@@ -219,9 +220,13 @@ html { scroll-behavior: smooth; }
   font-size: 14px;
   text-decoration: none;
   box-shadow: 0 0 24px rgba(194,77,255,0.45);
-  animation: reveal-on-scroll linear both;
-  animation-timeline: scroll(root block);
-  animation-range: 150px 350px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.floating-start-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 .bottom-spacer { height: 90px; }
 </style>
@@ -346,8 +351,40 @@ if st.session_state.page == "home":
 
     <div class="bottom-spacer"></div>
 
-    <a href="#top" class="floating-start-btn">Let's start</a>
+    <a href="#top" id="lets-start-btn" class="floating-start-btn">Let's start</a>
     """, unsafe_allow_html=True)
+
+    components.html("""
+    <script>
+    (function() {
+        function attach() {
+            var doc = window.parent.document;
+            var btn = doc.getElementById('lets-start-btn');
+            if (!btn) { setTimeout(attach, 300); return; }
+
+            var container = doc.querySelector('section.main')
+                || doc.querySelector('[data-testid="stAppViewContainer"]')
+                || doc.querySelector('[data-testid="stMain"]')
+                || doc.scrollingElement
+                || doc.documentElement;
+
+            function onScroll() {
+                var scrollTop = (container && container.scrollTop) || window.parent.scrollY || 0;
+                if (scrollTop > 150) {
+                    btn.classList.add('visible');
+                } else {
+                    btn.classList.remove('visible');
+                }
+            }
+
+            if (container) container.addEventListener('scroll', onScroll);
+            window.parent.addEventListener('scroll', onScroll);
+            onScroll();
+        }
+        attach();
+    })();
+    </script>
+    """, height=0)
 
 elif st.session_state.page == "upscale":
     if st.button("← Back", type="secondary"):
