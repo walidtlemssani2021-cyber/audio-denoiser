@@ -112,9 +112,9 @@ button[kind="primary"] {
 }
 
 button[kind="secondary"] {
-  background: transparent !important;
-  color: var(--text) !important;
-  border: 1px solid var(--border) !important;
+  background: rgba(194,77,255,0.10) !important;
+  color: var(--accent-b) !important;
+  border: 1px solid var(--accent-b) !important;
   border-radius: 100px !important;
   width: 100%;
 }
