@@ -207,6 +207,18 @@ if st.session_state.page == "home":
         st.rerun()
 
     st.markdown("""
+    <div class="section-title">What Pixly does</div>
+    <div class="features">
+      <div class="feature-card">
+        <h3>Upscale Photo</h3>
+        <p>Increases resolution up to 4x and recovers sharper detail using Real-ESRGAN.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Remove Background</h3>
+        <p>Isolates the subject into a transparent PNG using U²-Net, then sharpens the result automatically.</p>
+      </div>
+    </div>
+
     <div class="section-title">How it works</div>
     <div class="steps">
       <div class="step">
@@ -220,18 +232,6 @@ if st.session_state.page == "home":
       <div class="step">
         <div class="step-num">3</div>
         <div class="step-text">Download the result<span class="step-sub">Full-resolution PNG</span></div>
-      </div>
-    </div>
-
-    <div class="section-title">What Pixly does</div>
-    <div class="features">
-      <div class="feature-card">
-        <h3>Upscale Photo</h3>
-        <p>Increases resolution up to 4x and recovers sharper detail using Real-ESRGAN.</p>
-      </div>
-      <div class="feature-card">
-        <h3>Remove Background</h3>
-        <p>Isolates the subject into a transparent PNG using U²-Net, then sharpens the result automatically.</p>
       </div>
     </div>
 
