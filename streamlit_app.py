@@ -158,24 +158,58 @@ button[kind="secondary"] {
   padding: 24px 10px 36px; border-top: 1px solid var(--border); margin-top: 40px;
 }
 
-.specs-card {
+.specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-tile {
+  position: relative; overflow: hidden;
   border: 1px solid var(--border); border-radius: 14px;
-  padding: 18px 20px; background: var(--surface);
+  padding: 16px; background: var(--surface);
 }
-.specs-card ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.9; }
-.specs-card li strong { color: var(--text); font-weight: 500; }
+.stat-tile::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
+}
+.stat-tile .stat-value { font-family: 'Fraunces', serif; font-weight: 600; font-size: 19px; color: var(--text); }
+.stat-tile .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.stat-tile.wide { grid-column: 1 / -1; }
+.stat-tile.wide .stat-value { font-size: 15px; }
 
 .privacy-card {
-  border: 1px solid var(--border); border-radius: 14px;
-  padding: 18px 20px; background: var(--surface);
-  color: var(--muted); font-size: 13px; line-height: 1.6;
+  border-left: 3px solid var(--accent-a); border-radius: 10px;
+  background: var(--surface); padding: 18px 20px;
 }
+.privacy-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.privacy-list li { display: flex; align-items: flex-start; gap: 10px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.privacy-list li .check { color: var(--accent-a); font-weight: 700; flex-shrink: 0; }
 
-.faq { display: flex; flex-direction: column; gap: 16px; }
-.faq-item { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
-.faq-item:last-child { border-bottom: none; padding-bottom: 0; }
-.faq-item h4 { font-size: 14px; color: var(--text); margin: 0 0 6px; font-weight: 600; }
-.faq-item p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
+.faq { display: flex; flex-direction: column; gap: 10px; }
+details.faq-item {
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--surface); padding: 0 18px;
+}
+details.faq-item summary {
+  list-style: none; cursor: pointer; padding: 14px 0;
+  font-size: 14px; font-weight: 600; color: var(--text);
+  display: flex; justify-content: space-between; align-items: center;
+}
+details.faq-item summary::-webkit-details-marker { display: none; }
+details.faq-item summary::after {
+  content: '+'; font-size: 18px; color: var(--accent-a);
+  transition: transform 0.2s ease; margin-left: 12px; flex-shrink: 0;
+}
+details.faq-item[open] summary::after { transform: rotate(45deg); }
+details.faq-item p { color: var(--muted); font-size: 13px; line-height: 1.5; padding: 0 0 16px; margin: 0; }
+
+.fixed-cta-marker + div[data-testid="stHorizontalBlock"] {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 999;
+  background: rgba(5,5,10,0.92); backdrop-filter: blur(10px);
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border);
+  margin: 0 !important;
+}
+.fixed-cta-marker + div[data-testid="stHorizontalBlock"] button {
+  border-radius: 100px !important; padding: 10px 0 !important; font-size: 13px !important;
+}
+.bottom-spacer { height: 84px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -255,58 +289,61 @@ if st.session_state.page == "home":
     </div>
 
     <div class="section-title">Technical specs</div>
-    <div class="specs-card">
-      <ul>
-        <li><strong>Formats:</strong> PNG, JPG, JPEG, WEBP</li>
-        <li><strong>Max file size:</strong> 200MB per photo</li>
-        <li><strong>Upscale factor:</strong> 4x (Real-ESRGAN)</li>
-        <li><strong>Output:</strong> PNG, with transparency for background removal</li>
-        <li><strong>Processing:</strong> runs on CPU, typically a few seconds per photo</li>
-      </ul>
+    <div class="specs-grid">
+      <div class="stat-tile"><div class="stat-value">4x</div><div class="stat-label">Upscale factor</div></div>
+      <div class="stat-tile"><div class="stat-value">200MB</div><div class="stat-label">Max file size</div></div>
+      <div class="stat-tile"><div class="stat-value">Seconds</div><div class="stat-label">Processing time</div></div>
+      <div class="stat-tile"><div class="stat-value">CPU</div><div class="stat-label">Runs on</div></div>
+      <div class="stat-tile wide"><div class="stat-value">PNG · JPG · JPEG · WEBP</div><div class="stat-label">Supported formats</div></div>
     </div>
 
     <div class="section-title">Privacy</div>
     <div class="privacy-card">
-      Your photos are processed only for the duration of your session. They are not stored on any server, shared with third parties, or used to train any model. Once you close or refresh the page, the images are cleared from memory.
+      <ul class="privacy-list">
+        <li><span class="check">✓</span> Processed only for the duration of your session</li>
+        <li><span class="check">✓</span> Never stored on any server</li>
+        <li><span class="check">✓</span> Never shared with third parties or used to train any model</li>
+      </ul>
     </div>
 
     <div class="section-title">FAQ</div>
     <div class="faq">
-      <div class="faq-item">
-        <h4>Is Pixly free?</h4>
+      <details class="faq-item">
+        <summary>Is Pixly free?</summary>
         <p>Yes. Pixly is free to use and built entirely on open-source AI models.</p>
-      </div>
-      <div class="faq-item">
-        <h4>What image formats are supported?</h4>
+      </details>
+      <details class="faq-item">
+        <summary>What image formats are supported?</summary>
         <p>PNG, JPG, JPEG, and WEBP.</p>
-      </div>
-      <div class="faq-item">
-        <h4>Is there a file size limit?</h4>
+      </details>
+      <details class="faq-item">
+        <summary>Is there a file size limit?</summary>
         <p>Yes, up to 200MB per photo. Larger photos are automatically resized before processing to keep things fast.</p>
-      </div>
-      <div class="faq-item">
-        <h4>Are my photos stored?</h4>
+      </details>
+      <details class="faq-item">
+        <summary>Are my photos stored?</summary>
         <p>No. Photos are processed in memory for your session only and are never saved.</p>
-      </div>
+      </details>
     </div>
 
-    <div class="section-title">Ready to try it?</div>
-    """, unsafe_allow_html=True)
-
-    if st.button("Upscale Photo", type="primary", use_container_width=True, key="upscale_cta_bottom"):
-        go_to("upscale")
-        st.rerun()
-
-    st.write("")
-    if st.button("Remove Background", type="secondary", use_container_width=True, key="remove_bg_cta_bottom"):
-        go_to("remove_bg")
-        st.rerun()
-
-    st.markdown("""
     <div class="footer-credit">
       Built with open-source models — Real-ESRGAN (BSD-3-Clause) and U²-Net (Apache 2.0).
     </div>
+
+    <div class="bottom-spacer"></div>
+
+    <div class="fixed-cta-marker"></div>
     """, unsafe_allow_html=True)
+
+    fcol1, fcol2 = st.columns(2)
+    with fcol1:
+        if st.button("Upscale", type="primary", use_container_width=True, key="upscale_float"):
+            go_to("upscale")
+            st.rerun()
+    with fcol2:
+        if st.button("Remove BG", type="secondary", use_container_width=True, key="remove_bg_float"):
+            go_to("remove_bg")
+            st.rerun()
 elif st.session_state.page == "upscale":
     if st.button("← Back", type="secondary"):
         go_to("home")
