@@ -127,7 +127,7 @@ button[kind="secondary"] {
   font-size: 27px;
   color: var(--text);
   text-align: center;
-  margin: 44px 0 20px;
+  margin: 64px 0 24px;
 }
 
 .steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px; }
@@ -145,13 +145,24 @@ button[kind="secondary"] {
 .step-text { color: var(--text); font-size: 14px; line-height: 1.5; }
 .step-text .step-sub { color: var(--muted); font-size: 12px; display: block; margin-top: 2px; }
 
-.features { display: flex; flex-direction: column; gap: 12px; }
+.features { display: flex; flex-direction: column; gap: 14px; }
 .feature-card {
+  display: flex; align-items: flex-start; gap: 16px;
   border: 1px solid var(--border); border-radius: 14px;
-  padding: 18px; background: var(--surface);
+  padding: 20px; background: var(--surface);
+  border-left: 3px solid var(--feature-color);
 }
-.feature-card h3 { font-family: 'Fraunces', serif; font-size: 16px; color: var(--text); margin: 0 0 6px; }
-.feature-card p { color: var(--muted); font-size: 13px; margin: 0; line-height: 1.5; }
+.feature-card.upscale { --feature-color: var(--accent-a); }
+.feature-card.removebg { --feature-color: var(--accent-b); }
+.feature-icon {
+  flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; font-weight: 700;
+  background: var(--feature-color);
+  color: #05050a;
+}
+.feature-content h3 { font-family: 'Fraunces', serif; font-size: 16px; color: var(--text); margin: 0 0 6px; }
+.feature-content p { color: var(--muted); font-size: 13px; margin: 0; line-height: 1.5; }
 
 .footer-credit {
   text-align: center; color: var(--muted); font-size: 12px;
@@ -297,13 +308,19 @@ if st.session_state.page == "home":
 
     <div class="section-title">What Pixly does</div>
     <div class="features">
-      <div class="feature-card">
-        <h3>Upscale Photo</h3>
-        <p>Increases resolution up to 4x and recovers sharper detail using Real-ESRGAN.</p>
+      <div class="feature-card upscale">
+        <div class="feature-icon">4×</div>
+        <div class="feature-content">
+          <h3>Upscale Photo</h3>
+          <p>Increases resolution up to 4x and recovers sharper detail using Real-ESRGAN.</p>
+        </div>
       </div>
-      <div class="feature-card">
-        <h3>Remove Background</h3>
-        <p>Isolates the subject into a transparent PNG using U²-Net, then sharpens the result automatically.</p>
+      <div class="feature-card removebg">
+        <div class="feature-icon">✂</div>
+        <div class="feature-content">
+          <h3>Remove Background</h3>
+          <p>Isolates the subject into a transparent PNG using U²-Net, then sharpens the result automatically.</p>
+        </div>
       </div>
     </div>
 
