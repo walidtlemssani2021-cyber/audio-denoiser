@@ -157,6 +157,25 @@ button[kind="secondary"] {
   text-align: center; color: var(--muted); font-size: 12px;
   padding: 24px 10px 36px; border-top: 1px solid var(--border); margin-top: 40px;
 }
+
+.specs-card {
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 18px 20px; background: var(--surface);
+}
+.specs-card ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.9; }
+.specs-card li strong { color: var(--text); font-weight: 500; }
+
+.privacy-card {
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 18px 20px; background: var(--surface);
+  color: var(--muted); font-size: 13px; line-height: 1.6;
+}
+
+.faq { display: flex; flex-direction: column; gap: 16px; }
+.faq-item { border-bottom: 1px solid var(--border); padding-bottom: 16px; }
+.faq-item:last-child { border-bottom: none; padding-bottom: 0; }
+.faq-item h4 { font-size: 14px; color: var(--text); margin: 0 0 6px; font-weight: 600; }
+.faq-item p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.5; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -235,12 +254,59 @@ if st.session_state.page == "home":
       </div>
     </div>
 
+    <div class="section-title">Technical specs</div>
+    <div class="specs-card">
+      <ul>
+        <li><strong>Formats:</strong> PNG, JPG, JPEG, WEBP</li>
+        <li><strong>Max file size:</strong> 200MB per photo</li>
+        <li><strong>Upscale factor:</strong> 4x (Real-ESRGAN)</li>
+        <li><strong>Output:</strong> PNG, with transparency for background removal</li>
+        <li><strong>Processing:</strong> runs on CPU, typically a few seconds per photo</li>
+      </ul>
+    </div>
+
+    <div class="section-title">Privacy</div>
+    <div class="privacy-card">
+      Your photos are processed only for the duration of your session. They are not stored on any server, shared with third parties, or used to train any model. Once you close or refresh the page, the images are cleared from memory.
+    </div>
+
+    <div class="section-title">FAQ</div>
+    <div class="faq">
+      <div class="faq-item">
+        <h4>Is Pixly free?</h4>
+        <p>Yes. Pixly is free to use and built entirely on open-source AI models.</p>
+      </div>
+      <div class="faq-item">
+        <h4>What image formats are supported?</h4>
+        <p>PNG, JPG, JPEG, and WEBP.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Is there a file size limit?</h4>
+        <p>Yes, up to 200MB per photo. Larger photos are automatically resized before processing to keep things fast.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Are my photos stored?</h4>
+        <p>No. Photos are processed in memory for your session only and are never saved.</p>
+      </div>
+    </div>
+
+    <div class="section-title">Ready to try it?</div>
+    """, unsafe_allow_html=True)
+
+    if st.button("Upscale Photo", type="primary", use_container_width=True, key="upscale_cta_bottom"):
+        go_to("upscale")
+        st.rerun()
+
+    st.write("")
+    if st.button("Remove Background", type="secondary", use_container_width=True, key="remove_bg_cta_bottom"):
+        go_to("remove_bg")
+        st.rerun()
+
+    st.markdown("""
     <div class="footer-credit">
       Built with open-source models — Real-ESRGAN (BSD-3-Clause) and U²-Net (Apache 2.0).
     </div>
     """, unsafe_allow_html=True)
-
-# ==================== UPSCALE PAGE ====================
 elif st.session_state.page == "upscale":
     if st.button("← Back", type="secondary"):
         go_to("home")
