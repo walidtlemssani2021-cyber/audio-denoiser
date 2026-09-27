@@ -120,6 +120,43 @@ button[kind="secondary"] {
 }
 
 .back-link { color: var(--muted); font-size: 14px; }
+
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 19px;
+  color: var(--text);
+  text-align: center;
+  margin: 44px 0 20px;
+}
+
+.steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px; }
+.step {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px;
+}
+.step-num {
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 100px;
+  background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
+  color: #05050a; font-weight: 600; font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+}
+.step-text { color: var(--text); font-size: 14px; line-height: 1.5; }
+.step-text .step-sub { color: var(--muted); font-size: 12px; display: block; margin-top: 2px; }
+
+.features { display: flex; flex-direction: column; gap: 12px; }
+.feature-card {
+  border: 1px solid var(--border); border-radius: 14px;
+  padding: 18px; background: var(--surface);
+}
+.feature-card h3 { font-family: 'Fraunces', serif; font-size: 16px; color: var(--text); margin: 0 0 6px; }
+.feature-card p { color: var(--muted); font-size: 13px; margin: 0; line-height: 1.5; }
+
+.footer-credit {
+  text-align: center; color: var(--muted); font-size: 12px;
+  padding: 24px 10px 36px; border-top: 1px solid var(--border); margin-top: 40px;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -168,6 +205,40 @@ if st.session_state.page == "home":
     if st.button("Remove Background", type="secondary", use_container_width=True):
         go_to("remove_bg")
         st.rerun()
+
+    st.markdown("""
+    <div class="section-title">How it works</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Upload a photo<span class="step-sub">PNG, JPG, or WEBP</span></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Pixly processes it<span class="step-sub">Upscaling or background removal in seconds</span></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Download the result<span class="step-sub">Full-resolution PNG</span></div>
+      </div>
+    </div>
+
+    <div class="section-title">What Pixly does</div>
+    <div class="features">
+      <div class="feature-card">
+        <h3>Upscale Photo</h3>
+        <p>Increases resolution up to 4x and recovers sharper detail using Real-ESRGAN.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Remove Background</h3>
+        <p>Isolates the subject into a transparent PNG using U²-Net, then sharpens the result automatically.</p>
+      </div>
+    </div>
+
+    <div class="footer-credit">
+      Built with open-source models — Real-ESRGAN (BSD-3-Clause) and U²-Net (Apache 2.0).
+    </div>
+    """, unsafe_allow_html=True)
 
 # ==================== UPSCALE PAGE ====================
 elif st.session_state.page == "upscale":
