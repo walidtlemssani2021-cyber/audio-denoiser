@@ -201,17 +201,9 @@ details.faq-item p { color: var(--muted); font-size: 13px; line-height: 1.5; pad
 
 html { scroll-behavior: smooth; }
 
-.floating-start-wrapper {
-  position: sticky;
-  bottom: 20px;
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-  z-index: 999;
-  pointer-events: none;
-}
-
 .floating-start-btn {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  z-index: 999;
   display: inline-block;
   padding: 14px 32px;
   border-radius: 100px;
@@ -222,7 +214,6 @@ html { scroll-behavior: smooth; }
   font-size: 14px;
   text-decoration: none;
   box-shadow: 0 0 24px rgba(194,77,255,0.45);
-  pointer-events: auto;
 }
 .bottom-spacer { height: 90px; }
 </style>
@@ -275,12 +266,6 @@ if st.session_state.page == "home":
         st.rerun()
 
     st.markdown("""
-    <div class="floating-start-wrapper">
-      <a href="#top" class="floating-start-btn">Let's start</a>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
     <div class="section-title">What Pixly does</div>
     <div class="features">
       <div class="feature-card">
@@ -307,15 +292,6 @@ if st.session_state.page == "home":
         <div class="step-num">3</div>
         <div class="step-text">Download the result<span class="step-sub">Full-resolution PNG</span></div>
       </div>
-    </div>
-
-    <div class="section-title">Technical specs</div>
-    <div class="specs-grid">
-      <div class="stat-tile"><div class="stat-value">4x</div><div class="stat-label">Upscale factor</div></div>
-      <div class="stat-tile"><div class="stat-value">200MB</div><div class="stat-label">Max file size</div></div>
-      <div class="stat-tile"><div class="stat-value">Seconds</div><div class="stat-label">Processing time</div></div>
-      <div class="stat-tile"><div class="stat-value">CPU</div><div class="stat-label">Runs on</div></div>
-      <div class="stat-tile wide"><div class="stat-value">PNG · JPG · JPEG · WEBP</div><div class="stat-label">Supported formats</div></div>
     </div>
 
     <div class="section-title">Privacy</div>
@@ -350,6 +326,10 @@ if st.session_state.page == "home":
     <div class="footer-credit">
       Built with open-source models — Real-ESRGAN (BSD-3-Clause) and U²-Net (Apache 2.0).
     </div>
+
+    <div class="bottom-spacer"></div>
+
+    <a href="#top" class="floating-start-btn">Let's start</a>
     """, unsafe_allow_html=True)
 
 elif st.session_state.page == "upscale":
