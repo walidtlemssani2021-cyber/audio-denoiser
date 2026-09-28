@@ -6,7 +6,7 @@ import onnxruntime as ort
 from huggingface_hub import hf_hub_download
 from rembg import remove, new_session
 
-st.set_page_config(page_title="PIXLY — AI Photo Tools", layout="centered")
+st.set_page_config(page_title="PIXLY | AI Photo Tools", layout="centered")
 
 st.markdown("""
 <style>
@@ -44,10 +44,12 @@ html, body, [class*="css"] { font-family: 'Inter', -apple-system, sans-serif; }
 
 .hero .chip {
   display: inline-block;
-  padding: 6px 18px;
+  max-width: 92%;
+  padding: 8px 18px;
   border: 1px solid var(--border);
-  border-radius: 100px;
+  border-radius: 18px;
   font-size: 12px;
+  line-height: 1.5;
   color: var(--muted);
   background: rgba(255,255,255,0.03);
   margin-bottom: 26px;
@@ -109,6 +111,7 @@ button[kind="primary"] {
   font-weight: 600 !important;
   box-shadow: 0 0 22px rgba(194,77,255,0.35);
   width: 100%;
+  transition: box-shadow 1.8s ease-in 0.5s;
 }
 
 button[kind="secondary"] {
@@ -117,6 +120,18 @@ button[kind="secondary"] {
   border: 1px solid var(--accent-b) !important;
   border-radius: 100px !important;
   width: 100%;
+  box-shadow: 0 0 0 rgba(194,77,255,0);
+  transition: box-shadow 1.8s ease-in 0.5s;
+}
+
+/* glow both tool buttons when "Let's start" is pressed; fades out slowly after release */
+.stApp:has(.floating-start-btn:active) button[kind="primary"] {
+  box-shadow: 0 0 55px 10px rgba(77,232,255,0.85) !important;
+  transition: none;
+}
+.stApp:has(.floating-start-btn:active) button[kind="secondary"] {
+  box-shadow: 0 0 55px 10px rgba(194,77,255,0.9) !important;
+  transition: none;
 }
 
 .back-link { color: var(--muted); font-size: 14px; }
@@ -166,7 +181,7 @@ button[kind="secondary"] {
 
 .footer-credit {
   text-align: center; color: var(--muted); font-size: 12px;
-  padding: 24px 10px 36px; border-top: 1px solid var(--border); margin-top: 40px;
+  padding: 46px 10px 36px; border-top: 1px solid var(--border); margin-top: 40px;
 }
 
 .section-title-large {
@@ -284,7 +299,7 @@ if st.session_state.page == "home":
     st.markdown("""
     <div class="hero" id="top">
       <div class="wordmark">PIXLY</div>
-      <div class="chip">Beta — running at limited capacity</div>
+      <div class="chip">Notice: the site is currently in beta and is not running at full capacity</div>
       <h1>Sharper photos,<br><span class="accent">cleaner cutouts.</span></h1>
       <p>Upload a photo. Pixly upscales the details or removes the background in seconds.</p>
     </div>
@@ -303,7 +318,7 @@ if st.session_state.page == "home":
     st.markdown("""
     <div class="section-title-large">What is Pixly?</div>
     <div class="intro-card">
-      <p>Pixly is a recently launched website dedicated to photo editing. It currently offers two options: the first is <strong>upscaling photo quality</strong>, and the second is <strong>removing photo backgrounds</strong> — powered by two AI models, Real-ESRGAN and U²-Net.</p>
+      <p>Pixly is a recently launched website dedicated to photo editing. It currently offers two options: the first is <strong>upscaling photo quality</strong>, and the second is <strong>removing photo backgrounds</strong>. Both are powered by two AI models, Real-ESRGAN and U²-Net.</p>
     </div>
 
     <div class="section-title">What Pixly does</div>
