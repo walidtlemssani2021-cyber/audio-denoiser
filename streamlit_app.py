@@ -284,7 +284,7 @@ if st.session_state.page == "home":
     st.markdown("""
     <div class="hero" id="top">
       <div class="wordmark">PIXLY</div>
-      <div class="chip">Powered by open-source AI models</div>
+      <div class="chip">Beta — running at limited capacity</div>
       <h1>Sharper photos,<br><span class="accent">cleaner cutouts.</span></h1>
       <p>Upload a photo. Pixly upscales the details or removes the background in seconds.</p>
     </div>
@@ -370,7 +370,7 @@ if st.session_state.page == "home":
     </div>
 
     <div class="footer-credit">
-      Built with open-source models — Real-ESRGAN (BSD-3-Clause) and U²-Net (Apache 2.0).
+      © 2026 PIXLY. All rights reserved.
     </div>
 
     <div class="bottom-spacer"></div>
