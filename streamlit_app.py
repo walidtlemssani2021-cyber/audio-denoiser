@@ -7,16 +7,15 @@ from huggingface_hub import hf_hub_download
 from rembg import remove, new_session
 
 # ==================== إعدادات الأمان ====================
-MAX_FILE_SIZE_MB = 10  # حد أقصى 10MB بدل 200MB
+MAX_FILE_SIZE_MB = 10
 MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
-MAX_INPUT_PIXELS = 25_000_000  # 25 مليون بكسل (لمنع decompression bombs)
+MAX_INPUT_PIXELS = 25_000_000
 ALLOWED_FORMATS = {"PNG", "JPEG", "WEBP"}
 
-# التوقيعات الثنائية المسموح بها (file signatures)
 ALLOWED_SIGNATURES = {
     b"\x89PNG\r\n\x1a\n": "PNG",
     b"\xff\xd8\xff": "JPEG",
-    b"RIFF": "WEBP",  # يجب التحقق الإضافي من WEBP
+    b"RIFF": "WEBP",
 }
 
 st.set_page_config(
@@ -25,71 +24,52 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ==================== دالة التحقق من الملف ====================
-def validate_uploaded_file(uploaded_file) -> tuple[bool, str]:
-    """
-    يتحقق من أن الملف المرفوع صورة حقيقية وآمنة.
-    يعيد (صحيح/خطأ، رسالة).
-    """
-    # 1. التحقق من الحجم
+
+def validate_uploaded_file(uploaded_file):
     if uploaded_file.size > MAX_FILE_SIZE_BYTES:
-        return False, f"حجم الملف يتجاوز الحد المسموح ({MAX_FILE_SIZE_MB}MB)."
-
+        return False, f"File size exceeds {MAX_FILE_SIZE_MB}MB."
     if uploaded_file.size == 0:
-        return False, "الملف فارغ."
+        return False, "Empty file."
 
-    # 2. قراءة أول 16 بايت للتحقق من التوقيع
     header = uploaded_file.read(16)
     uploaded_file.seek(0)
 
     if not header:
-        return False, "تعذر قراءة الملف."
+        return False, "Cannot read file."
 
-    # 3. التحقق من التوقيع الثنائي
-    signature_matched = False
-    for sig in ALLOWED_SIGNATURES:
-        if header.startswith(sig):
-            signature_matched = True
-            break
-
-    # التحقق الخاص بـ WEBP (RIFF....WEBP)
+    sig_ok = any(header.startswith(s) for s in ALLOWED_SIGNATURES)
     if header.startswith(b"RIFF") and header[8:12] == b"WEBP":
-        signature_matched = True
+        sig_ok = True
     elif header.startswith(b"RIFF"):
-        signature_matched = False
+        sig_ok = False
 
-    if not signature_matched:
-        return False, "نوع الملف غير مسموح. يُسمح فقط بـ PNG و JPG و WEBP."
+    if not sig_ok:
+        return False, "File type not allowed."
 
-    # 4. التحقق من أن Pillow يستطيع فتحه فعلاً + فحص decompression bomb
     try:
         uploaded_file.seek(0)
         img = Image.open(uploaded_file)
-        img.verify()  # فحص البنية
+        img.verify()
 
-        # إعادة الفتح بعد verify (لأن verify يغلق الصورة)
         uploaded_file.seek(0)
         img = Image.open(uploaded_file)
 
         if img.format not in ALLOWED_FORMATS:
-            return False, f"صيغة غير مسموحة: {img.format}"
+            return False, f"Format not allowed: {img.format}"
 
-        width, height = img.size
-        if width * height > MAX_INPUT_PIXELS:
-            return False, f"أبعاد الصورة كبيرة جدًا ({width}x{height}). الحد الأقصى 25MP."
-
-        if width < 8 or height < 8:
-            return False, "الصورة صغيرة جدًا."
-
+        w, h = img.size
+        if w * h > MAX_INPUT_PIXELS:
+            return False, f"Image too large ({w}x{h})."
+        if w < 8 or h < 8:
+            return False, "Image too small."
     except Exception:
-        return False, "الملف تالف أو ليس صورة صالحة."
+        return False, "Corrupted or invalid image."
 
     uploaded_file.seek(0)
     return True, "ok"
 
 
-def safe_open_image(uploaded_file) -> Image.Image | None:
-    """فتح آمن للصورة بعد التحقق."""
+def safe_open_image(uploaded_file):
     try:
         uploaded_file.seek(0)
         img = Image.open(uploaded_file)
@@ -99,7 +79,6 @@ def safe_open_image(uploaded_file) -> Image.Image | None:
         return None
 
 
-# ==================== CSS (بدون تغيير) ====================
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap');
@@ -360,7 +339,7 @@ html { scroll-behavior: smooth; }
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== Session State ====================
+
 if "page" not in st.session_state:
     st.session_state.page = "home"
 
@@ -369,7 +348,6 @@ def go_to(page_name):
     st.session_state.page = page_name
 
 
-# ==================== تحميل النماذج (آمن) ====================
 @st.cache_resource(show_spinner=False)
 def load_upscale_model():
     try:
@@ -382,7 +360,7 @@ def load_upscale_model():
             providers=["CPUExecutionProvider"],
         ), None
     except Exception as e:
-        return None, f"تعذر تحميل نموذج التكبير: {e}"
+        return None, f"Failed to load upscale model: {e}"
 
 
 @st.cache_resource(show_spinner=False)
@@ -390,11 +368,15 @@ def load_rembg_session():
     try:
         return new_session("u2net"), None
     except Exception as e:
-        return None, f"تعذر تحميل نموذج إزالة الخلفية: {e}"
+        return None, f"Failed to load background removal model: {e}"
 
 
 # ==================== الصفحة الرئيسية ====================
 if st.session_state.page == "home":
+    # تحرير الموديلات من الذاكرة عند الرجوع للصفحة الرئيسية
+    load_upscale_model.clear()
+    load_rembg_session.clear()
+
     st.markdown("""
     <div class="hero" id="top">
       <div class="wordmark">PIXLY</div>
@@ -514,7 +496,6 @@ elif st.session_state.page == "upscale":
     )
 
     if uploaded_file is not None:
-        # ✅ التحقق الأمني
         ok, msg = validate_uploaded_file(uploaded_file)
         if not ok:
             st.error(msg)
@@ -525,7 +506,7 @@ elif st.session_state.page == "upscale":
         if st.session_state.get("upscale_key") != file_key:
             image = safe_open_image(uploaded_file)
             if image is None:
-                st.error("تعذر فتح الصورة.")
+                st.error("Cannot open image.")
                 st.stop()
 
             image = image.convert("RGB")
@@ -545,7 +526,7 @@ elif st.session_state.page == "upscale":
                     output = (output.transpose(1, 2, 0) * 255).clip(0, 255).astype(np.uint8)
                     result_image = Image.fromarray(output)
             except Exception:
-                st.error("حدث خطأ أثناء معالجة الصورة.")
+                st.error("Error while processing the image.")
                 st.stop()
 
             st.session_state.upscale_key = file_key
@@ -586,7 +567,6 @@ else:
     )
 
     if uploaded_file is not None:
-        # ✅ التحقق الأمني
         ok, msg = validate_uploaded_file(uploaded_file)
         if not ok:
             st.error(msg)
@@ -597,7 +577,7 @@ else:
         if st.session_state.get("rembg_key") != file_key:
             image = safe_open_image(uploaded_file)
             if image is None:
-                st.error("تعذر فتح الصورة.")
+                st.error("Cannot open image.")
                 st.stop()
 
             image = image.convert("RGB")
@@ -632,7 +612,7 @@ else:
                     upscaled_alpha = alpha_part.resize(upscaled_rgb.size, Image.LANCZOS)
                     result_image = Image.merge("RGBA", (*upscaled_rgb.split(), upscaled_alpha))
             except Exception:
-                st.error("حدث خطأ أثناء معالجة الصورة.")
+                st.error("Error while processing the image.")
                 st.stop()
 
             st.session_state.rembg_key = file_key
