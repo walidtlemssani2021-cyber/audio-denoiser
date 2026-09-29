@@ -6,100 +6,8 @@ import onnxruntime as ort
 from huggingface_hub import hf_hub_download
 from rembg import remove, new_session
 
-# ==================== إعدادات الأمان ====================
-MAX_FILE_SIZE_MB = 10  # حد أقصى 10MB بدل 200MB
-MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
-MAX_INPUT_PIXELS = 25_000_000  # 25 مليون بكسل (لمنع decompression bombs)
-ALLOWED_FORMATS = {"PNG", "JPEG", "WEBP"}
+st.set_page_config(page_title="PIXLY | AI Photo Tools", layout="centered")
 
-# التوقيعات الثنائية المسموح بها (file signatures)
-ALLOWED_SIGNATURES = {
-    b"\x89PNG\r\n\x1a\n": "PNG",
-    b"\xff\xd8\xff": "JPEG",
-    b"RIFF": "WEBP",  # يجب التحقق الإضافي من WEBP
-}
-
-st.set_page_config(
-    page_title="PIXLY | AI Photo Tools",
-    layout="centered",
-    initial_sidebar_state="collapsed",
-)
-
-# ==================== دالة التحقق من الملف ====================
-def validate_uploaded_file(uploaded_file) -> tuple[bool, str]:
-    """
-    يتحقق من أن الملف المرفوع صورة حقيقية وآمنة.
-    يعيد (صحيح/خطأ، رسالة).
-    """
-    # 1. التحقق من الحجم
-    if uploaded_file.size > MAX_FILE_SIZE_BYTES:
-        return False, f"حجم الملف يتجاوز الحد المسموح ({MAX_FILE_SIZE_MB}MB)."
-
-    if uploaded_file.size == 0:
-        return False, "الملف فارغ."
-
-    # 2. قراءة أول 16 بايت للتحقق من التوقيع
-    header = uploaded_file.read(16)
-    uploaded_file.seek(0)
-
-    if not header:
-        return False, "تعذر قراءة الملف."
-
-    # 3. التحقق من التوقيع الثنائي
-    signature_matched = False
-    for sig in ALLOWED_SIGNATURES:
-        if header.startswith(sig):
-            signature_matched = True
-            break
-
-    # التحقق الخاص بـ WEBP (RIFF....WEBP)
-    if header.startswith(b"RIFF") and header[8:12] == b"WEBP":
-        signature_matched = True
-    elif header.startswith(b"RIFF"):
-        signature_matched = False
-
-    if not signature_matched:
-        return False, "نوع الملف غير مسموح. يُسمح فقط بـ PNG و JPG و WEBP."
-
-    # 4. التحقق من أن Pillow يستطيع فتحه فعلاً + فحص decompression bomb
-    try:
-        uploaded_file.seek(0)
-        img = Image.open(uploaded_file)
-        img.verify()  # فحص البنية
-
-        # إعادة الفتح بعد verify (لأن verify يغلق الصورة)
-        uploaded_file.seek(0)
-        img = Image.open(uploaded_file)
-
-        if img.format not in ALLOWED_FORMATS:
-            return False, f"صيغة غير مسموحة: {img.format}"
-
-        width, height = img.size
-        if width * height > MAX_INPUT_PIXELS:
-            return False, f"أبعاد الصورة كبيرة جدًا ({width}x{height}). الحد الأقصى 25MP."
-
-        if width < 8 or height < 8:
-            return False, "الصورة صغيرة جدًا."
-
-    except Exception:
-        return False, "الملف تالف أو ليس صورة صالحة."
-
-    uploaded_file.seek(0)
-    return True, "ok"
-
-
-def safe_open_image(uploaded_file) -> Image.Image | None:
-    """فتح آمن للصورة بعد التحقق."""
-    try:
-        uploaded_file.seek(0)
-        img = Image.open(uploaded_file)
-        img.load()
-        return img
-    except Exception:
-        return None
-
-
-# ==================== CSS (بدون تغيير) ====================
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap');
@@ -216,6 +124,7 @@ button[kind="secondary"] {
   transition: box-shadow 1.8s ease-in 0.5s;
 }
 
+/* glow both tool buttons when "Let's start" is pressed; fades out slowly after release */
 .stApp:has(.floating-start-btn:active) button[kind="primary"] {
   box-shadow: 0 0 55px 10px rgba(77,232,255,0.85) !important;
   transition: none;
@@ -360,7 +269,6 @@ html { scroll-behavior: smooth; }
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== Session State ====================
 if "page" not in st.session_state:
     st.session_state.page = "home"
 
@@ -369,32 +277,25 @@ def go_to(page_name):
     st.session_state.page = page_name
 
 
-# ==================== تحميل النماذج (آمن) ====================
-@st.cache_resource(show_spinner=False)
+@st.cache_resource
 def load_upscale_model():
-    try:
-        model_path = hf_hub_download(
-            repo_id="Heliosoph/realesrgan-onnx",
-            filename="realesr-general-x4v3.onnx",
-        )
-        return ort.InferenceSession(
-            model_path,
-            providers=["CPUExecutionProvider"],
-        ), None
-    except Exception as e:
-        return None, f"تعذر تحميل نموذج التكبير: {e}"
+    model_path = hf_hub_download(
+        repo_id="Heliosoph/realesrgan-onnx",
+        filename="realesr-general-x4v3.onnx"
+    )
+    return ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
 
 
-@st.cache_resource(show_spinner=False)
+@st.cache_resource
 def load_rembg_session():
-    try:
-        return new_session("u2net"), None
-    except Exception as e:
-        return None, f"تعذر تحميل نموذج إزالة الخلفية: {e}"
+    return new_session("u2net")
 
 
-# ==================== الصفحة الرئيسية ====================
+# ==================== HOME PAGE ====================
 if st.session_state.page == "home":
+    load_upscale_model.clear()  # no tool selected yet, keep memory free
+    load_rembg_session.clear()
+
     st.markdown("""
     <div class="hero" id="top">
       <div class="wordmark">PIXLY</div>
@@ -442,7 +343,7 @@ if st.session_state.page == "home":
     <div class="steps">
       <div class="step">
         <div class="step-num">1</div>
-        <div class="step-text">Upload a photo<span class="step-sub">PNG, JPG, or WEBP (max 10MB)</span></div>
+        <div class="step-text">Upload a photo<span class="step-sub">PNG, JPG, or WEBP</span></div>
       </div>
       <div class="step">
         <div class="step-num">2</div>
@@ -475,7 +376,7 @@ if st.session_state.page == "home":
       </details>
       <details class="faq-item">
         <summary>Is there a file size limit?</summary>
-        <p>Yes, up to 10MB per photo. Larger photos are automatically resized before processing to keep things fast.</p>
+        <p>Yes, up to 200MB per photo. Larger photos are automatically resized before processing to keep things fast.</p>
       </details>
       <details class="faq-item">
         <summary>Are my photos stored?</summary>
@@ -492,61 +393,37 @@ if st.session_state.page == "home":
     <a href="#top" class="floating-start-btn">Let's start</a>
     """, unsafe_allow_html=True)
 
-
-# ==================== صفحة التكبير ====================
 elif st.session_state.page == "upscale":
     if st.button("← Back", type="secondary"):
         go_to("home")
         st.rerun()
 
+    load_rembg_session.clear()
+
     with st.spinner("Loading model..."):
-        session, err = load_upscale_model()
+        session = load_upscale_model()
 
-    if err:
-        st.error(err)
-        st.stop()
-
-    uploaded_file = st.file_uploader(
-        "Upload a photo",
-        type=["png", "jpg", "jpeg", "webp"],
-        key="upscale_uploader",
-        help=f"Max {MAX_FILE_SIZE_MB}MB",
-    )
+    uploaded_file = st.file_uploader("Upload a photo", type=["png", "jpg", "jpeg", "webp"], key="upscale_uploader")
 
     if uploaded_file is not None:
-        # ✅ التحقق الأمني
-        ok, msg = validate_uploaded_file(uploaded_file)
-        if not ok:
-            st.error(msg)
-            st.stop()
-
         file_key = f"upscale_{uploaded_file.name}_{uploaded_file.size}"
 
         if st.session_state.get("upscale_key") != file_key:
-            image = safe_open_image(uploaded_file)
-            if image is None:
-                st.error("تعذر فتح الصورة.")
-                st.stop()
-
-            image = image.convert("RGB")
+            image = Image.open(uploaded_file).convert("RGB")
 
             MAX_INPUT_SIZE = 800
             if max(image.size) > MAX_INPUT_SIZE:
                 image.thumbnail((MAX_INPUT_SIZE, MAX_INPUT_SIZE), Image.LANCZOS)
                 st.info(f"Resized to {image.size} to reduce memory usage.")
 
-            try:
-                with st.spinner("Upscaling..."):
-                    img_array = np.asarray(image, dtype=np.float32) / 255.0
-                    img_array = img_array.transpose(2, 0, 1)[None, ...]
+            with st.spinner("Upscaling..."):
+                img_array = np.asarray(image, dtype=np.float32) / 255.0
+                img_array = img_array.transpose(2, 0, 1)[None, ...]
 
-                    output = session.run(None, {"input": img_array})[0][0]
+                output = session.run(None, {"input": img_array})[0][0]
 
-                    output = (output.transpose(1, 2, 0) * 255).clip(0, 255).astype(np.uint8)
-                    result_image = Image.fromarray(output)
-            except Exception:
-                st.error("حدث خطأ أثناء معالجة الصورة.")
-                st.stop()
+                output = (output.transpose(1, 2, 0) * 255).clip(0, 255).astype(np.uint8)
+                result_image = Image.fromarray(output)
 
             st.session_state.upscale_key = file_key
             st.session_state.upscale_original = image
@@ -563,77 +440,54 @@ elif st.session_state.page == "upscale":
         result_image.save(buf, format="PNG")
         st.download_button("Download", buf.getvalue(), file_name="upscaled.png", mime="image/png")
 
-
-# ==================== صفحة إزالة الخلفية ====================
+# ==================== REMOVE BACKGROUND PAGE ====================
 else:
     if st.button("← Back", type="secondary"):
         go_to("home")
         st.rerun()
 
     with st.spinner("Loading models..."):
-        rembg_session, err1 = load_rembg_session()
-        upscale_session, err2 = load_upscale_model()
+        rembg_session = load_rembg_session()
+        upscale_session = load_upscale_model()
 
-    if err1 or err2:
-        st.error(err1 or err2)
-        st.stop()
-
-    uploaded_file = st.file_uploader(
-        "Upload a photo",
-        type=["png", "jpg", "jpeg", "webp"],
-        key="rembg_uploader",
-        help=f"Max {MAX_FILE_SIZE_MB}MB",
-    )
+    uploaded_file = st.file_uploader("Upload a photo", type=["png", "jpg", "jpeg", "webp"], key="rembg_uploader")
 
     if uploaded_file is not None:
-        # ✅ التحقق الأمني
-        ok, msg = validate_uploaded_file(uploaded_file)
-        if not ok:
-            st.error(msg)
-            st.stop()
-
         file_key = f"rembg_{uploaded_file.name}_{uploaded_file.size}"
 
         if st.session_state.get("rembg_key") != file_key:
-            image = safe_open_image(uploaded_file)
-            if image is None:
-                st.error("تعذر فتح الصورة.")
-                st.stop()
-
-            image = image.convert("RGB")
+            image = Image.open(uploaded_file).convert("RGB")
 
             MAX_BG_INPUT_SIZE = 2000
             if max(image.size) > MAX_BG_INPUT_SIZE:
                 image.thumbnail((MAX_BG_INPUT_SIZE, MAX_BG_INPUT_SIZE), Image.LANCZOS)
                 st.info(f"Resized to {image.size} to reduce memory usage.")
 
-            try:
-                with st.spinner("Removing background..."):
-                    no_bg_image = remove(image, session=rembg_session)
+            with st.spinner("Removing background..."):
+                no_bg_image = remove(image, session=rembg_session)  # RGBA
 
-                rgb_part = no_bg_image.convert("RGB")
-                alpha_part = no_bg_image.split()[-1]
+            # Split alpha (transparency) from RGB, since the upscale model only accepts 3 channels
+            rgb_part = no_bg_image.convert("RGB")
+            alpha_part = no_bg_image.split()[-1]
 
-                MAX_UPSCALE_INPUT_SIZE = 800
-                if max(rgb_part.size) > MAX_UPSCALE_INPUT_SIZE:
-                    rgb_part.thumbnail((MAX_UPSCALE_INPUT_SIZE, MAX_UPSCALE_INPUT_SIZE), Image.LANCZOS)
-                    alpha_part = alpha_part.resize(rgb_part.size, Image.LANCZOS)
-                    st.info(f"Resized to {rgb_part.size} before upscaling to reduce memory usage.")
+            MAX_UPSCALE_INPUT_SIZE = 800
+            if max(rgb_part.size) > MAX_UPSCALE_INPUT_SIZE:
+                rgb_part.thumbnail((MAX_UPSCALE_INPUT_SIZE, MAX_UPSCALE_INPUT_SIZE), Image.LANCZOS)
+                alpha_part = alpha_part.resize(rgb_part.size, Image.LANCZOS)
+                st.info(f"Resized to {rgb_part.size} before upscaling to reduce memory usage.")
 
-                with st.spinner("Upscaling result..."):
-                    img_array = np.asarray(rgb_part, dtype=np.float32) / 255.0
-                    img_array = img_array.transpose(2, 0, 1)[None, ...]
+            with st.spinner("Upscaling result..."):
+                img_array = np.asarray(rgb_part, dtype=np.float32) / 255.0
+                img_array = img_array.transpose(2, 0, 1)[None, ...]
 
-                    output = upscale_session.run(None, {"input": img_array})[0][0]
+                output = upscale_session.run(None, {"input": img_array})[0][0]
 
-                    output = (output.transpose(1, 2, 0) * 255).clip(0, 255).astype(np.uint8)
-                    upscaled_rgb = Image.fromarray(output)
+                output = (output.transpose(1, 2, 0) * 255).clip(0, 255).astype(np.uint8)
+                upscaled_rgb = Image.fromarray(output)
 
-                    upscaled_alpha = alpha_part.resize(upscaled_rgb.size, Image.LANCZOS)
-                    result_image = Image.merge("RGBA", (*upscaled_rgb.split(), upscaled_alpha))
-            except Exception:
-                st.error("حدث خطأ أثناء معالجة الصورة.")
-                st.stop()
+                # Resize alpha channel to match the upscaled size
+                upscaled_alpha = alpha_part.resize(upscaled_rgb.size, Image.LANCZOS)
+                result_image = Image.merge("RGBA", (*upscaled_rgb.split(), upscaled_alpha))
 
             st.session_state.rembg_key = file_key
             st.session_state.rembg_original = image
