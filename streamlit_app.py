@@ -348,35 +348,27 @@ def go_to(page_name):
     st.session_state.page = page_name
 
 
+# ملاحظة: try/except صارت خارج الدوال المخزّنة بالكاش، عشان فشل مؤقت
+# (مثلاً مشكلة شبكة) ما ينحفظ بالكاش ويترجع لكل الزوار الجايين بعده.
 @st.cache_resource(show_spinner=False)
 def load_upscale_model():
-    try:
-        model_path = hf_hub_download(
-            repo_id="Heliosoph/realesrgan-onnx",
-            filename="realesr-general-x4v3.onnx",
-        )
-        return ort.InferenceSession(
-            model_path,
-            providers=["CPUExecutionProvider"],
-        ), None
-    except Exception as e:
-        return None, f"Failed to load upscale model: {e}"
+    model_path = hf_hub_download(
+        repo_id="Heliosoph/realesrgan-onnx",
+        filename="realesr-general-x4v3.onnx",
+    )
+    return ort.InferenceSession(
+        model_path,
+        providers=["CPUExecutionProvider"],
+    )
 
 
 @st.cache_resource(show_spinner=False)
 def load_rembg_session():
-    try:
-        return new_session("u2net"), None
-    except Exception as e:
-        return None, f"Failed to load background removal model: {e}"
+    return new_session("u2net")
 
 
 # ==================== الصفحة الرئيسية ====================
 if st.session_state.page == "home":
-    # تحرير الموديلات من الذاكرة عند الرجوع للصفحة الرئيسية
-    load_upscale_model.clear()
-    load_rembg_session.clear()
-
     st.markdown("""
     <div class="hero" id="top">
       <div class="wordmark">PIXLY</div>
@@ -440,7 +432,7 @@ if st.session_state.page == "home":
     <div class="privacy-card">
       <ul class="privacy-list">
         <li><span class="check">✓</span> Processed only for the duration of your session</li>
-        <li><span class="check">✓</span> Never stored on any server</li>
+        <li><span class="check">✓</span> Not saved to disk or any database — processed in memory only</li>
         <li><span class="check">✓</span> Never shared with third parties or used to train any model</li>
       </ul>
     </div>
@@ -461,7 +453,7 @@ if st.session_state.page == "home":
       </details>
       <details class="faq-item">
         <summary>Are my photos stored?</summary>
-        <p>No. Photos are processed in memory for your session only and are never saved.</p>
+        <p>No. Photos are processed in memory for your session only, not saved to disk or any database.</p>
       </details>
     </div>
 
@@ -481,11 +473,11 @@ elif st.session_state.page == "upscale":
         go_to("home")
         st.rerun()
 
-    with st.spinner("Loading model..."):
-        session, err = load_upscale_model()
-
-    if err:
-        st.error(err)
+    try:
+        with st.spinner("Loading model..."):
+            session = load_upscale_model()
+    except Exception:
+        st.error("Failed to load the upscale model. Please try again shortly.")
         st.stop()
 
     uploaded_file = st.file_uploader(
@@ -551,12 +543,12 @@ else:
         go_to("home")
         st.rerun()
 
-    with st.spinner("Loading models..."):
-        rembg_session, err1 = load_rembg_session()
-        upscale_session, err2 = load_upscale_model()
-
-    if err1 or err2:
-        st.error(err1 or err2)
+    try:
+        with st.spinner("Loading models..."):
+            rembg_session = load_rembg_session()
+            upscale_session = load_upscale_model()
+    except Exception:
+        st.error("Failed to load the AI models. Please try again shortly.")
         st.stop()
 
     uploaded_file = st.file_uploader(
