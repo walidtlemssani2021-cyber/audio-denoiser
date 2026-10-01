@@ -369,10 +369,6 @@ def load_rembg_session():
 
 # ==================== الصفحة الرئيسية ====================
 if st.session_state.page == "home":
-    # تحرير الموديلات من الذاكرة عند الرجوع للصفحة الرئيسية
-    load_upscale_model.clear()
-    load_rembg_session.clear()
-
     st.markdown("""
     <div class="hero" id="top">
       <div class="wordmark">PIXLY</div>
