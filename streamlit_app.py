@@ -1,554 +1,673 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="NEUTRON CIPHER",
+    page_title="NEUTRON CIPHER — Encrypt in Starlight",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
 # ═══════════════════════════════════════
-# CSS
+# GLOBAL CSS
 # ═══════════════════════════════════════
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;800&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;800;900&display=swap');
 
-    * { font-family: 'JetBrains Mono', monospace !important; }
+    /* ═══ Reset ═══ */
+    * { box-sizing: border-box; }
 
-    .stApp {
-        background: #000000;
+    html, body, .stApp {
+        background: #050507 !important;
+        color: #e8e8ea;
+        font-family: 'Inter', sans-serif !important;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    #MainMenu, footer, header, [data-testid="stToolbar"] { visibility: hidden; }
+
+    .stApp > header { display: none; }
+
+    /* animated grid background */
+    .stApp::before {
+        content: '';
+        position: fixed;
+        inset: 0;
         background-image:
-            radial-gradient(ellipse at top, rgba(0, 255, 136, 0.06) 0%, transparent 50%),
-            radial-gradient(ellipse at bottom right, rgba(0, 150, 255, 0.04) 0%, transparent 50%),
             linear-gradient(rgba(0, 255, 136, 0.025) 1px, transparent 1px),
             linear-gradient(90deg, rgba(0, 255, 136, 0.025) 1px, transparent 1px);
-        background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
-        color: #00ff88;
+        background-size: 60px 60px;
+        pointer-events: none;
+        z-index: 0;
+        mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 20%, transparent 90%);
     }
 
-    #MainMenu, footer, header { visibility: hidden; }
+    /* ambient glow */
+    .stApp::after {
+        content: '';
+        position: fixed;
+        top: -30%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120%;
+        height: 80%;
+        background: radial-gradient(ellipse at center, rgba(0, 255, 136, 0.10), transparent 60%);
+        pointer-events: none;
+        z-index: 0;
+        filter: blur(80px);
+    }
+
+    .block-container {
+        max-width: 1280px !important;
+        padding: 2rem 3rem 6rem 3rem !important;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* ═══ TYPOGRAPHY ═══ */
+    h1, h2, h3, h4, h5 { font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -0.02em; }
+    p { font-family: 'Inter', sans-serif; line-height: 1.7; }
+
+    /* ═══ NAVBAR ═══ */
+    .nav-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0 2rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        margin-bottom: 2rem;
+    }
+    .nav-logo {
+        font-family: 'Orbitron', sans-serif !important;
+        font-weight: 900;
+        font-size: 1.1rem;
+        letter-spacing: 4px;
+        color: #00ff88;
+        text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+    }
+    .nav-logo span { color: #ffffff; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
+    .nav-link {
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 0.72rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.5);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    .nav-link:hover { color: #00ff88; }
+    .nav-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 0.7rem;
+        color: #00ff88;
+        letter-spacing: 2px;
+    }
+    .nav-dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: #00ff88;
+        box-shadow: 0 0 10px #00ff88;
+        animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.8); }
+    }
 
     /* ═══ HERO ═══ */
-    .hero {
-        min-height: 90vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+    .hero-wrap {
+        padding: 5rem 0 6rem 0;
         text-align: center;
         position: relative;
-        padding: 4rem 2rem;
     }
-
-    .hero-badge {
+    .hero-eyebrow {
         display: inline-block;
-        padding: 0.5rem 1.5rem;
-        border: 1px solid rgba(0, 255, 136, 0.4);
-        color: #00ff88;
+        font-family: 'JetBrains Mono', monospace !important;
         font-size: 0.7rem;
-        letter-spacing: 4px;
-        text-transform: uppercase;
-        margin-bottom: 2rem;
-        opacity: 0.8;
-    }
-
-    .hero-badge::before { content: '◉ '; animation: pulse 2s infinite; }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.3; }
-    }
-
-    .cyber-title {
-        font-family: 'Orbitron', sans-serif !important;
-        font-size: clamp(3rem, 9vw, 8rem);
-        font-weight: 900;
-        color: #00ff88;
-        text-shadow:
-            0 0 10px #00ff88,
-            0 0 30px #00ff88,
-            0 0 60px rgba(0, 255, 136, 0.6),
-            0 0 100px rgba(0, 255, 136, 0.3);
-        letter-spacing: 10px;
-        line-height: 1;
-        margin: 0;
-        animation: flicker 4s infinite alternate;
-    }
-
-    @keyframes flicker {
-        0%, 100% { opacity: 1; }
-        93% { opacity: 1; }
-        94% { opacity: 0.6; }
-        95% { opacity: 1; }
-        97% { opacity: 0.8; }
-        98% { opacity: 1; }
-    }
-
-    .hero-subtitle {
-        font-size: clamp(0.9rem, 1.5vw, 1.1rem);
-        color: rgba(0, 255, 136, 0.7);
         letter-spacing: 6px;
         text-transform: uppercase;
-        margin: 2rem 0;
-        max-width: 800px;
+        color: rgba(0, 255, 136, 0.6);
+        padding: 0.5rem 1.2rem;
+        border: 1px solid rgba(0, 255, 136, 0.25);
+        border-radius: 100px;
+        margin-bottom: 2.5rem;
+    }
+    .hero-title {
+        font-family: 'Orbitron', sans-serif !important;
+        font-size: clamp(2.5rem, 7vw, 6.5rem);
+        font-weight: 900;
+        letter-spacing: -0.01em;
+        line-height: 1;
+        margin: 0;
+        background: linear-gradient(180deg, #ffffff 0%, #00ff88 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 40px rgba(0, 255, 136, 0.4));
+    }
+    .hero-title .accent {
+        color: #00ff88;
+        -webkit-text-fill-color: #00ff88;
+        text-shadow: 0 0 40px rgba(0, 255, 136, 0.8);
+    }
+    .hero-tag {
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 0.85rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.4);
+        margin-top: 2rem;
+    }
+    .hero-desc {
+        font-size: 1.05rem;
+        color: rgba(255, 255, 255, 0.55);
+        max-width: 620px;
+        margin: 2rem auto 3rem auto;
+        line-height: 1.9;
+    }
+
+    /* ═══ DIVIDER ═══ */
+    .divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.4), transparent);
+        margin: 0 auto;
+        max-width: 700px;
+    }
+
+    /* ═══ SECTION ═══ */
+    .sec {
+        padding: 6rem 0;
+    }
+    .sec-label {
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 0.7rem;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: rgba(0, 255, 136, 0.5);
+        margin-bottom: 1.5rem;
+    }
+    .sec-title {
+        font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        color: #ffffff;
+        margin: 0 0 1rem 0;
+        max-width: 700px;
+    }
+    .sec-title .accent {
+        color: #00ff88;
+        text-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+    }
+    .sec-desc {
+        font-size: 1rem;
+        color: rgba(255, 255, 255, 0.5);
+        max-width: 620px;
+        line-height: 1.9;
+        margin: 0 0 3.5rem 0;
+    }
+
+    /* ═══ FEATURE GRID ═══ */
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .cell {
+        background: #050507;
+        padding: 2.5rem 2rem;
+        position: relative;
+        transition: background 0.3s ease;
+    }
+    .cell:hover { background: rgba(0, 255, 136, 0.03); }
+    .cell:hover .cell-icon { color: #00ff88; }
+    .cell-num {
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.25);
+        margin-bottom: 2rem;
+    }
+    .cell-icon {
+        font-size: 1.5rem;
+        color: rgba(255, 255, 255, 0.4);
+        margin-bottom: 1.5rem;
+        transition: color 0.3s ease;
+        display: block;
+    }
+    .cell-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.01em;
+    }
+    .cell-desc {
+        font-size: 0.88rem;
+        color: rgba(255, 255, 255, 0.45);
+        line-height: 1.75;
+    }
+
+    /* ═══ STEPS ═══ */
+    .step-row {
+        display: grid;
+        grid-template-columns: 80px 1fr;
+        gap: 2rem;
+        padding: 2.5rem 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        transition: padding 0.3s ease;
+    }
+    .step-row:last-child { border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+    .step-row:hover { padding-left: 1rem; }
+    .step-n {
+        font-family: 'Orbitron', sans-serif !important;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: rgba(0, 255, 136, 0.4);
+        letter-spacing: 2px;
+    }
+    .step-t {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+    }
+    .step-d {
+        font-size: 0.92rem;
+        color: rgba(255, 255, 255, 0.5);
         line-height: 1.8;
     }
 
-    .hero-desc {
-        font-family: 'Inter', sans-serif !important;
-        font-size: 1.05rem;
-        color: rgba(255, 255, 255, 0.5);
-        max-width: 700px;
-        line-height: 1.9;
-        margin: 2rem auto;
+    /* ═══ SPEC TABLE ═══ */
+    .spec-table {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.06);
     }
-
-    .cyber-line {
-        width: 80%;
-        height: 1px;
-        margin: 2rem auto;
-        background: linear-gradient(90deg, transparent, #00ff88, transparent);
-        box-shadow: 0 0 15px #00ff88;
+    .spec-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #050507;
+        padding: 1.2rem 1.5rem;
     }
-
-    /* ═══ SECTIONS ═══ */
-    .section {
-        padding: 6rem 2rem;
-        max-width: 1300px;
-        margin: 0 auto;
-    }
-
-    .section-label {
+    .spec-k {
+        font-family: 'JetBrains Mono', monospace !important;
         font-size: 0.7rem;
-        color: rgba(0, 255, 136, 0.5);
-        letter-spacing: 5px;
+        letter-spacing: 2px;
         text-transform: uppercase;
-        margin-bottom: 1rem;
+        color: rgba(255, 255, 255, 0.35);
+    }
+    .spec-v {
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        color: #00ff88;
     }
 
-    .section-title {
-        font-family: 'Orbitron', sans-serif !important;
-        font-size: clamp(1.8rem, 4vw, 3rem);
-        font-weight: 800;
-        color: #ffffff;
-        letter-spacing: 3px;
-        margin-bottom: 1rem;
-        line-height: 1.2;
-    }
-
-    .section-title span { color: #00ff88; text-shadow: 0 0 20px rgba(0, 255, 136, 0.6); }
-
-    .section-desc {
-        font-family: 'Inter', sans-serif !important;
-        font-size: 1rem;
-        color: rgba(255, 255, 255, 0.5);
-        max-width: 700px;
-        line-height: 1.9;
-        margin-bottom: 3rem;
-    }
-
-    /* ═══ FEATURE CARDS ═══ */
-    .feature-grid {
+    /* ═══ WARNING ═══ */
+    .warn-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 1.5rem;
         margin-top: 3rem;
     }
-
-    .feature-card {
-        background: rgba(0, 10, 5, 0.6);
-        border: 1px solid rgba(0, 255, 136, 0.2);
-        border-radius: 2px;
+    .warn-card {
+        border: 1px solid rgba(255, 46, 99, 0.25);
+        background: rgba(255, 46, 99, 0.03);
         padding: 2rem;
+        border-radius: 2px;
         position: relative;
-        transition: all 0.4s ease;
     }
-
-    .feature-card:hover {
-        border-color: #00ff88;
-        transform: translateY(-5px);
-        box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
-    }
-
-    .feature-card::before {
+    .warn-card::before {
         content: '';
         position: absolute;
         top: 0; left: 0;
-        width: 40px; height: 2px;
-        background: #00ff88;
+        width: 100%; height: 2px;
+        background: #ff2e63;
+        box-shadow: 0 0 15px rgba(255, 46, 99, 0.6);
     }
-
-    .feature-num {
+    .warn-icon {
         font-family: 'Orbitron', sans-serif !important;
-        font-size: 3rem;
-        font-weight: 900;
-        color: rgba(0, 255, 136, 0.15);
-        position: absolute;
-        top: 1rem;
-        right: 1.5rem;
-    }
-
-    .feature-icon {
-        font-size: 2rem;
+        color: #ff2e63;
+        font-size: 1.3rem;
+        font-weight: 800;
         margin-bottom: 1rem;
         display: block;
     }
-
-    .feature-title {
-        font-family: 'Orbitron', sans-serif !important;
-        font-size: 1rem;
+    .warn-t {
+        font-size: 0.98rem;
         font-weight: 700;
-        color: #00ff88;
-        letter-spacing: 2px;
-        margin-bottom: 1rem;
-        text-transform: uppercase;
-    }
-
-    .feature-desc {
-        font-family: 'Inter', sans-serif !important;
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.5);
-        line-height: 1.8;
-    }
-
-    /* ═══ STEPS ═══ */
-    .step {
-        display: flex;
-        gap: 2rem;
-        margin-bottom: 2rem;
-        padding: 2rem;
-        background: rgba(0, 10, 5, 0.4);
-        border-left: 2px solid rgba(0, 255, 136, 0.3);
-        transition: all 0.3s ease;
-    }
-
-    .step:hover {
-        border-left-color: #00ff88;
-        background: rgba(0, 255, 136, 0.03);
-    }
-
-    .step-num {
-        font-family: 'Orbitron', sans-serif !important;
-        font-size: 2.5rem;
-        font-weight: 900;
-        color: #00ff88;
-        min-width: 80px;
-        text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-    }
-
-    .step-content h4 {
-        font-family: 'Orbitron', sans-serif !important;
         color: #ffffff;
-        letter-spacing: 2px;
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-        text-transform: uppercase;
+        margin-bottom: 0.75rem;
     }
-
-    .step-content p {
-        font-family: 'Inter', sans-serif !important;
+    .warn-d {
+        font-size: 0.86rem;
         color: rgba(255, 255, 255, 0.5);
-        font-size: 0.9rem;
-        line-height: 1.8;
-    }
-
-    /* ═══ SPECS TABLE ═══ */
-    .specs {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1rem;
-        margin-top: 2rem;
-    }
-
-    .spec-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 1rem 1.5rem;
-        background: rgba(0, 10, 5, 0.4);
-        border: 1px solid rgba(0, 255, 136, 0.15);
-    }
-
-    .spec-key {
-        color: rgba(0, 255, 136, 0.6);
-        font-size: 0.8rem;
-        letter-spacing: 2px;
-    }
-
-    .spec-val {
-        color: #00ff88;
-        font-size: 0.85rem;
-        font-weight: 600;
+        line-height: 1.75;
     }
 
     /* ═══ CTA ═══ */
-    .cta-box {
+    .cta-wrap {
+        padding: 6rem 3rem;
         text-align: center;
-        padding: 5rem 2rem;
-        border: 1px solid rgba(0, 255, 136, 0.3);
-        background: radial-gradient(ellipse at center, rgba(0, 255, 136, 0.05), transparent);
-        margin: 4rem 0;
+        border: 1px solid rgba(0, 255, 136, 0.2);
+        background: radial-gradient(ellipse at center, rgba(0, 255, 136, 0.06), transparent 70%);
+        border-radius: 4px;
+        position: relative;
+        overflow: hidden;
     }
-
-    .cta-box h2 {
-        font-family: 'Orbitron', sans-serif !important;
-        font-size: clamp(1.5rem, 3vw, 2.5rem);
+    .cta-wrap::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(0, 255, 136, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 136, 0.04) 1px, transparent 1px);
+        background-size: 30px 30px;
+        mask-image: radial-gradient(ellipse at center, black, transparent 70%);
+    }
+    .cta-t {
+        font-size: clamp(1.5rem, 3vw, 2.4rem);
+        font-weight: 800;
         color: #ffffff;
-        letter-spacing: 4px;
         margin-bottom: 1rem;
+        position: relative;
     }
-
-    .cta-box p {
+    .cta-d {
+        font-size: 0.95rem;
         color: rgba(255, 255, 255, 0.5);
-        font-family: 'Inter', sans-serif !important;
-        margin-bottom: 2rem;
+        margin-bottom: 3rem;
+        position: relative;
     }
 
-    /* ═══ FOOTER ═══ */
-    .cyber-footer {
-        text-align: center;
-        color: rgba(0, 255, 136, 0.3);
-        padding: 4rem 0 2rem 0;
-        font-size: 0.7rem;
-        letter-spacing: 3px;
-        text-transform: uppercase;
-        border-top: 1px solid rgba(0, 255, 136, 0.1);
-        margin-top: 4rem;
-    }
-
-    /* ═══ BUTTONS (Streamlit) ═══ */
+    /* ═══ STREAMLIT BUTTONS ═══ */
     .stButton > button {
         background: transparent !important;
         color: #00ff88 !important;
-        border: 1px solid #00ff88 !important;
+        border: 1px solid rgba(0, 255, 136, 0.4) !important;
         border-radius: 2px !important;
-        padding: 0.9rem 2.5rem !important;
+        padding: 0.85rem 2rem !important;
         font-family: 'JetBrains Mono', monospace !important;
-        font-weight: 600 !important;
-        font-size: 0.85rem !important;
-        letter-spacing: 4px !important;
+        font-weight: 500 !important;
+        font-size: 0.78rem !important;
+        letter-spacing: 3px !important;
         text-transform: uppercase !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        position: relative;
+        overflow: hidden;
     }
-
     .stButton > button:hover {
         background: #00ff88 !important;
         color: #000000 !important;
-        box-shadow: 0 0 25px #00ff88, 0 0 50px rgba(0, 255, 136, 0.4) !important;
+        border-color: #00ff88 !important;
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.5), 0 0 60px rgba(0, 255, 136, 0.2) !important;
+        transform: translateY(-1px);
     }
+    .stButton > button:active { transform: translateY(0); }
 
-    /* hide streamlit default */
-    div[data-testid="stToolbar"] { display: none; }
+    /* ═══ FOOTER ═══ */
+    .foot {
+        margin-top: 6rem;
+        padding-top: 3rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'JetBrains Mono', monospace !important;
+        font-size: 0.68rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.25);
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    .foot-brand { color: rgba(0, 255, 136, 0.6); }
 </style>
 """, unsafe_allow_html=True)
+
+
+# ═══════════════════════════════════════
+# NAVBAR
+# ═══════════════════════════════════════
+st.markdown("""
+<div class="nav-bar">
+    <div class="nav-logo">NEUTRON<span>CIPHER</span></div>
+    <div class="nav-links">
+        <a class="nav-link" href="#features">Features</a>
+        <a class="nav-link" href="#protocol">Protocol</a>
+        <a class="nav-link" href="#specs">Specs</a>
+    </div>
+    <div class="nav-status"><div class="nav-dot"></div>OPERATIONAL</div>
+</div>
+""", unsafe_allow_html=True)
+
 
 # ═══════════════════════════════════════
 # HERO
 # ═══════════════════════════════════════
 st.markdown("""
-<div class="hero">
-    <div class="hero-badge">system online</div>
-    <h1 class="cyber-title">NEUTRON<br>CIPHER</h1>
-    <p class="hero-subtitle">[ hide your data in the sound of a dead star ]</p>
-    <div class="cyber-line"></div>
+<div class="hero-wrap">
+    <div class="hero-eyebrow">◉ System Online — v1.0</div>
+    <h1 class="hero-title">ENCRYPT<br>IN STARLIGHT.</h1>
+    <p class="hero-tag">[ hide your data in the sound of a dead star ]</p>
     <p class="hero-desc">
-        An experimental encryption system that transforms your messages 
-        into the pulsating rhythm of a neutron star. Every byte you write 
-        becomes a pulse. Every word becomes a signal. Every secret becomes 
-        a dying star, screaming across the void.
+        Neutron Cipher transforms your messages into the pulsating rhythm 
+        of a neutron star. Every byte becomes a pulse. Every word becomes 
+        a signal. Every secret becomes a dying star, screaming silently 
+        across the void.
     </p>
 </div>
 """, unsafe_allow_html=True)
 
-# ═══════════════════════════════════════
-# SECTION: FEATURES
-# ═══════════════════════════════════════
-st.markdown("""
-<div class="section">
-    <div class="section-label">// capabilities</div>
-    <h2 class="section-title">Built for the <span>paranoid</span> mind.</h2>
-    <p class="section-desc">
-        Every layer of Neutron Cipher is designed with one purpose: 
-        to make your message indistinguishable from cosmic noise.
-    </p>
-    <div class="feature-grid">
-        <div class="feature-card">
-            <div class="feature-num">01</div>
-            <div class="feature-icon">⚡</div>
-            <div class="feature-title">AES-128 Encryption</div>
-            <div class="feature-desc">Military-grade encryption using Fernet protocol. Your message is locked before it ever touches the waveform.</div>
-        </div>
-        <div class="feature-card">
-            <div class="feature-num">02</div>
-            <div class="feature-icon">🛡️</div>
-            <div class="feature-title">HMAC Integrity</div>
-            <div class="feature-desc">Every audio file carries its own cryptographic signature. Any tampering — even a single pulse — is instantly detected.</div>
-        </div>
-        <div class="feature-card">
-            <div class="feature-num">03</div>
-            <div class="feature-icon">🌟</div>
-            <div class="feature-title">Pulsar Carrier</div>
-            <div class="feature-desc">Your data rides on waves modeled after the Vela Pulsar — 10.9 pulses per second, echoing across the cosmos.</div>
-        </div>
-        <div class="feature-card">
-            <div class="feature-num">04</div>
-            <div class="feature-icon">🎵</div>
-            <div class="feature-title">Lossless FLAC</div>
-            <div class="feature-desc">Compressed without losing a single bit. 94% smaller than WAV, but identical in every measurable way.</div>
-        </div>
-        <div class="feature-card">
-            <div class="feature-num">05</div>
-            <div class="feature-icon">🔐</div>
-            <div class="feature-title">Zero Knowledge</div>
-            <div class="feature-desc">We never see your password. We never store your data. Everything happens in your browser, invisible to us.</div>
-        </div>
-        <div class="feature-card">
-            <div class="feature-num">06</div>
-            <div class="feature-icon">🌍</div>
-            <div class="feature-title">Universal Support</div>
-            <div class="feature-desc">Arabic, English, emojis, symbols, control characters — every byte is handled with the same precision.</div>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-st.markdown('<div class="cyber-line"></div>', unsafe_allow_html=True)
 
 # ═══════════════════════════════════════
-# SECTION: HOW IT WORKS
+# FEATURES
 # ═══════════════════════════════════════
 st.markdown("""
-<div class="section">
-    <div class="section-label">// protocol</div>
-    <h2 class="section-title">How it <span>works</span>.</h2>
-    <p class="section-desc">
-        Four layers of transformation. From plain text to cosmic signal.
+<div class="sec" id="features">
+    <div class="sec-label">// capabilities</div>
+    <h2 class="sec-title">Built for the <span class="accent">paranoid</span> mind.</h2>
+    <p class="sec-desc">
+        Every layer is designed with one purpose — to make your message 
+        indistinguishable from cosmic noise.
     </p>
 
-    <div class="step">
-        <div class="step-num">01</div>
-        <div class="step-content">
-            <h4>Encryption</h4>
-            <p>Your message is encrypted with Fernet (AES-128-CBC + HMAC-SHA256). A fresh random IV is generated for every operation, ensuring that the same message produces a different ciphertext every time.</p>
+    <div class="grid">
+        <div class="cell">
+            <div class="cell-num">/ 01</div>
+            <span class="cell-icon">⚡</span>
+            <div class="cell-title">AES-128 Encryption</div>
+            <div class="cell-desc">Military-grade encryption via Fernet protocol. Your message is locked before it ever touches the waveform.</div>
         </div>
-    </div>
-
-    <div class="step">
-        <div class="step-num">02</div>
-        <div class="step-content">
-            <h4>Pulse Mapping</h4>
-            <p>Each encrypted byte (0-255) is translated into a specific pulse intensity. The bytes flow into a continuous stream of pulses, spaced 92 milliseconds apart — matching the rhythm of the Vela Pulsar.</p>
+        <div class="cell">
+            <div class="cell-num">/ 02</div>
+            <span class="cell-icon">🛡</span>
+            <div class="cell-title">HMAC Integrity</div>
+            <div class="cell-desc">Every audio file carries its own cryptographic signature. Any tampering — even a single pulse — is instantly detected.</div>
         </div>
-    </div>
-
-    <div class="step">
-        <div class="step-num">03</div>
-        <div class="step-content">
-            <h4>Waveform Synthesis</h4>
-            <p>The pulses are rendered into an audio waveform at 44.1 kHz, with a sharp exponential envelope that mimics the electromagnetic signature of a real neutron star.</p>
+        <div class="cell">
+            <div class="cell-num">/ 03</div>
+            <span class="cell-icon">✦</span>
+            <div class="cell-title">Pulsar Carrier</div>
+            <div class="cell-desc">Your data rides on waves modeled after the Vela Pulsar — 10.9 pulses per second, echoing across the cosmos.</div>
         </div>
-    </div>
-
-    <div class="step">
-        <div class="step-num">04</div>
-        <div class="step-content">
-            <h4>Lossless Compression</h4>
-            <p>The final waveform is encoded as FLAC — a lossless audio format that reduces file size by up to 94% without sacrificing a single bit of data. Your message is now a star.</p>
+        <div class="cell">
+            <div class="cell-num">/ 04</div>
+            <span class="cell-icon">◐</span>
+            <div class="cell-title">Lossless FLAC</div>
+            <div class="cell-desc">Compressed without losing a single bit. 94% smaller than WAV, yet identical in every measurable way.</div>
+        </div>
+        <div class="cell">
+            <div class="cell-num">/ 05</div>
+            <span class="cell-icon">◈</span>
+            <div class="cell-title">Zero Knowledge</div>
+            <div class="cell-desc">We never see your password. We never store your data. Everything happens in memory, invisible to us.</div>
+        </div>
+        <div class="cell">
+            <div class="cell-num">/ 06</div>
+            <span class="cell-icon">◍</span>
+            <div class="cell-title">Universal Support</div>
+            <div class="cell-desc">Arabic, English, emojis, symbols, control characters — every byte is handled with the same precision.</div>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="cyber-line"></div>', unsafe_allow_html=True)
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
 
 # ═══════════════════════════════════════
-# SECTION: SPECS
+# PROTOCOL
 # ═══════════════════════════════════════
 st.markdown("""
-<div class="section">
-    <div class="section-label">// technical_specs</div>
-    <h2 class="section-title">System <span>specifications</span>.</h2>
-    <p class="section-desc">
-        Every parameter, every protocol, every constant.
+<div class="sec" id="protocol">
+    <div class="sec-label">// protocol</div>
+    <h2 class="sec-title">Four layers. <span class="accent">One signal.</span></h2>
+    <p class="sec-desc">
+        From plain text to cosmic transmission — a transformation in four acts.
     </p>
-    <div class="specs">
-        <div class="spec-item"><span class="spec-key">ENCRYPTION</span><span class="spec-val">FERNET / AES-128</span></div>
-        <div class="spec-item"><span class="spec-key">INTEGRITY</span><span class="spec-val">HMAC-SHA256</span></div>
-        <div class="spec-item"><span class="spec-key">KEY DERIVATION</span><span class="spec-val">SHA-256</span></div>
-        <div class="spec-item"><span class="spec-key">IV</span><span class="spec-val">RANDOM / SESSION</span></div>
-        <div class="spec-item"><span class="spec-key">CARRIER</span><span class="spec-val">VELA PULSAR</span></div>
-        <div class="spec-item"><span class="spec-key">PULSE RATE</span><span class="spec-val">10.9 Hz</span></div>
-        <div class="spec-item"><span class="spec-key">SAMPLE RATE</span><span class="spec-val">44100 Hz</span></div>
-        <div class="spec-item"><span class="spec-key">BIT DEPTH</span><span class="spec-val">16-BIT PCM</span></div>
-        <div class="spec-item"><span class="spec-key">CODEC</span><span class="spec-val">FLAC / LOSSLESS</span></div>
-        <div class="spec-item"><span class="spec-key">MAX PAYLOAD</span><span class="spec-val">2000 CHARACTERS</span></div>
-        <div class="spec-item"><span class="spec-key">COMPRESSION</span><span class="spec-val">~94%</span></div>
-        <div class="spec-item"><span class="spec-key">STATUS</span><span class="spec-val">● OPERATIONAL</span></div>
+
+    <div class="step-row">
+        <div class="step-n">01</div>
+        <div>
+            <div class="step-t">Encryption</div>
+            <div class="step-d">Your message is encrypted with Fernet (AES-128-CBC + HMAC-SHA256). A fresh random IV is generated for every operation — the same message produces a different ciphertext every single time.</div>
+        </div>
+    </div>
+    <div class="step-row">
+        <div class="step-n">02</div>
+        <div>
+            <div class="step-t">Pulse Mapping</div>
+            <div class="step-d">Each encrypted byte (0–255) is translated into a specific pulse intensity. The bytes flow into a continuous stream, spaced 92 milliseconds apart — matching the rhythm of the Vela Pulsar.</div>
+        </div>
+    </div>
+    <div class="step-row">
+        <div class="step-n">03</div>
+        <div>
+            <div class="step-t">Waveform Synthesis</div>
+            <div class="step-d">The pulses are rendered into an audio waveform at 44.1 kHz, with a sharp exponential envelope that mimics the electromagnetic signature of a real neutron star.</div>
+        </div>
+    </div>
+    <div class="step-row">
+        <div class="step-n">04</div>
+        <div>
+            <div class="step-t">Lossless Compression</div>
+            <div class="step-d">The waveform is encoded as FLAC — a lossless format that reduces file size by up to 94% without sacrificing a single bit of data. Your message is now a star.</div>
+        </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="cyber-line"></div>', unsafe_allow_html=True)
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
 
 # ═══════════════════════════════════════
-# SECTION: WARNING
+# SPECS
 # ═══════════════════════════════════════
 st.markdown("""
-<div class="section">
-    <div class="section-label">// security_notice</div>
-    <h2 class="section-title">Read <span>carefully</span>.</h2>
-    <p class="section-desc">
+<div class="sec" id="specs">
+    <div class="sec-label">// technical_specs</div>
+    <h2 class="sec-title">Every parameter. <span class="accent">Documented.</span></h2>
+    <p class="sec-desc">
+        Full transparency — the cryptographic primitives, constants, and constraints.
+    </p>
+
+    <div class="spec-table">
+        <div class="spec-row"><span class="spec-k">Encryption</span><span class="spec-v">FERNET / AES-128</span></div>
+        <div class="spec-row"><span class="spec-k">Integrity</span><span class="spec-v">HMAC-SHA256</span></div>
+        <div class="spec-row"><span class="spec-k">Key Derivation</span><span class="spec-v">SHA-256</span></div>
+        <div class="spec-row"><span class="spec-k">IV</span><span class="spec-v">RANDOM / SESSION</span></div>
+        <div class="spec-row"><span class="spec-k">Carrier</span><span class="spec-v">VELA PULSAR</span></div>
+        <div class="spec-row"><span class="spec-k">Pulse Rate</span><span class="spec-v">10.9 Hz</span></div>
+        <div class="spec-row"><span class="spec-k">Sample Rate</span><span class="spec-v">44100 Hz</span></div>
+        <div class="spec-row"><span class="spec-k">Bit Depth</span><span class="spec-v">16-BIT PCM</span></div>
+        <div class="spec-row"><span class="spec-k">Codec</span><span class="spec-v">FLAC / LOSSLESS</span></div>
+        <div class="spec-row"><span class="spec-k">Max Payload</span><span class="spec-v">2000 CHARS</span></div>
+        <div class="spec-row"><span class="spec-k">Compression</span><span class="spec-v">~94%</span></div>
+        <div class="spec-row"><span class="spec-k">Status</span><span class="spec-v">● OPERATIONAL</span></div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
+
+# ═══════════════════════════════════════
+# WARNINGS
+# ═══════════════════════════════════════
+st.markdown("""
+<div class="sec">
+    <div class="sec-label">// security_notice</div>
+    <h2 class="sec-title">Read <span class="accent">carefully.</span></h2>
+    <p class="sec-desc">
         Neutron Cipher is built on real cryptography. That means real consequences.
     </p>
 
-    <div class="step" style="border-left-color: #ff2e63;">
-        <div class="step-num" style="color: #ff2e63; text-shadow: 0 0 20px rgba(255, 46, 99, 0.5);">!</div>
-        <div class="step-content">
-            <h4>Lost passwords cannot be recovered.</h4>
-            <p>We do not store your password. We cannot reset it. If you forget it, your message is gone — forever, and by design.</p>
+    <div class="warn-grid">
+        <div class="warn-card">
+            <span class="warn-icon">!</span>
+            <div class="warn-t">Lost passwords cannot be recovered.</div>
+            <div class="warn-d">We do not store your password. We cannot reset it. If you forget it, your message is gone — forever, and by design.</div>
         </div>
-    </div>
-
-    <div class="step" style="border-left-color: #ff2e63;">
-        <div class="step-num" style="color: #ff2e63; text-shadow: 0 0 20px rgba(255, 46, 99, 0.5);">!</div>
-        <div class="step-content">
-            <h4>Modified audio will not decrypt.</h4>
-            <p>Every pulse carries a cryptographic signature. Trimming, compressing, or editing the audio will cause the integrity check to fail.</p>
+        <div class="warn-card">
+            <span class="warn-icon">!</span>
+            <div class="warn-t">Modified audio will not decrypt.</div>
+            <div class="warn-d">Every pulse carries a cryptographic signature. Trimming, compressing, or editing the audio will cause the integrity check to fail.</div>
         </div>
-    </div>
-
-    <div class="step" style="border-left-color: #ff2e63;">
-        <div class="step-num" style="color: #ff2e63; text-shadow: 0 0 20px rgba(255, 46, 99, 0.5);">!</div>
-        <div class="step-content">
-            <h4>Always share the FLAC file.</h4>
-            <p>Do not convert to MP3. Do not compress. Do not re-encode. Share the original FLAC file exactly as it was produced.</p>
+        <div class="warn-card">
+            <span class="warn-icon">!</span>
+            <div class="warn-t">Always share the FLAC file.</div>
+            <div class="warn-d">Do not convert to MP3. Do not compress. Do not re-encode. Share the original FLAC file exactly as it was produced.</div>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
+
 
 # ═══════════════════════════════════════
 # CTA
 # ═══════════════════════════════════════
 st.markdown("""
-<div class="cta-box">
-    <h2>Ready to become a star?</h2>
-    <p>Choose your path below.</p>
+<div class="cta-wrap">
+    <div class="cta-t">Ready to become a star?</div>
+    <div class="cta-d">Choose your path below.</div>
 </div>
 """, unsafe_allow_html=True)
 
-c1, c2, c3, c4 = st.columns([1, 1, 1, 1])
-with c2:
-    if st.button("⚡  ENCRYPT", use_container_width=True):
-        st.switch_page("pages/encrypt.py") if hasattr(st, "switch_page") else st.info("Navigate to Encrypt page")
-with c3:
-    if st.button("🔓  DECRYPT", use_container_width=True):
-        st.switch_page("pages/decrypt.py") if hasattr(st, "switch_page") else st.info("Navigate to Decrypt page")
+st.markdown("<br>", unsafe_allow_html=True)
 
-# ═══ FOOTER ═══
+col1, col2, col3, col4 = st.columns([1, 1.2, 1.2, 1])
+with col2:
+    if st.button("⚡  ENCRYPT MESSAGE", use_container_width=True):
+        try:
+            st.switch_page("pages/encrypt.py")
+        except:
+            st.info("Create pages/encrypt.py to enable this.")
+with col3:
+    if st.button("◈  DECRYPT AUDIO", use_container_width=True):
+        try:
+            st.switch_page("pages/decrypt.py")
+        except:
+            st.info("Create pages/decrypt.py to enable this.")
+
+
+# ═══════════════════════════════════════
+# FOOTER
+# ═══════════════════════════════════════
 st.markdown("""
-<div class="cyber-footer">
-    [ NEUTRON CIPHER v1.0 ] · ASTRONOMY × CRYPTOGRAPHY · 2026<br>
-    <span style="opacity: 0.4;">A message hidden in a dying star is a message that outlives the universe.</span>
+<div class="foot">
+    <div><span class="foot-brand">NEUTRON CIPHER</span> · v1.0 · 2026</div>
+    <div>ASTRONOMY × CRYPTOGRAPHY</div>
 </div>
 """, unsafe_allow_html=True)
