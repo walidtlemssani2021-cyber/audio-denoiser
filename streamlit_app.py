@@ -13,14 +13,18 @@ def html(code):
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&family=Orbitron:wght@400;700;900&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, .stApp, .stMarkdown, .stMarkdown *, p, div, span, h1, h2, h3, h4, h5 {
+    font-family: 'Chakra Petch', 'JetBrains Mono', sans-serif !important;
+    background-color: transparent;
+}
 
 html, body, .stApp {
     background: #000000 !important;
     color: #ffffff;
-    font-family: 'Space Grotesk', 'Inter', sans-serif !important;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
 }
@@ -35,9 +39,7 @@ html, body, .stApp {
     z-index: 3;
 }
 
-/* ═══════════════════════════════════════════
-   BACKGROUND LAYERS — Animated Mesh
-   ═══════════════════════════════════════════ */
+/* ═══ BACKGROUND ═══ */
 .bg-layer {
     position: fixed; inset: 0;
     z-index: 0; pointer-events: none;
@@ -97,15 +99,7 @@ html, body, .stApp {
     100% { background-position: 80px 80px; }
 }
 
-.bg-noise {
-    position: absolute; inset: 0;
-    opacity: 0.02;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* ═══════════════════════════════════════════
-   NAVBAR
-   ═══════════════════════════════════════════ */
+/* ═══ NAV ═══ */
 .nav {
     position: sticky; top: 0;
     display: flex; justify-content: space-between; align-items: center;
@@ -162,9 +156,7 @@ html, body, .stApp {
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-/* ═══════════════════════════════════════════
-   HERO
-   ═══════════════════════════════════════════ */
+/* ═══ HERO ═══ */
 .hero {
     padding: 8rem 0 6rem 0;
     text-align: center;
@@ -227,9 +219,7 @@ html, body, .stApp {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* ═══════════════════════════════════════════
-   SECTION
-   ═══════════════════════════════════════════ */
+/* ═══ SECTION ═══ */
 .sec {
     padding: 7rem 0;
     position: relative;
@@ -248,9 +238,10 @@ html, body, .stApp {
     box-shadow: 0 0 12px #00ff88;
 }
 .sec-title {
+    font-family: 'Chakra Petch', sans-serif !important;
     font-size: clamp(2rem, 4.5vw, 3.5rem);
     font-weight: 700;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
     line-height: 1.1;
     color: #fff;
     margin: 0 0 1.25rem 0;
@@ -272,20 +263,18 @@ html, body, .stApp {
     font-weight: 300;
 }
 
-/* ═══════════════════════════════════════════
-   FEATURE CARDS — Glassmorphism
-   ═══════════════════════════════════════════ */
+/* ═══ FEATURES — بدون أرقام أو أيقونات ═══ */
 .feat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.25rem;
 }
 .feat {
     position: relative;
-    padding: 2.5rem 2rem;
-    background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
+    padding: 2.5rem 2rem 2.5rem 2rem;
+    background: linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008));
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
     overflow: hidden;
     transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
     backdrop-filter: blur(20px);
@@ -295,70 +284,41 @@ html, body, .stApp {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0,255,136,0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgba(0,255,136,0.7), transparent);
     opacity: 0;
     transition: opacity 0.5s;
-}
-.feat::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(0,255,136,0.12), transparent 40%);
-    opacity: 0;
-    transition: opacity 0.5s;
-    pointer-events: none;
 }
 .feat:hover {
     transform: translateY(-6px);
-    border-color: rgba(0,255,136,0.35);
+    border-color: rgba(0,255,136,0.3);
     box-shadow:
         0 20px 60px rgba(0,0,0,0.5),
-        0 0 80px rgba(0,255,136,0.15);
-    background: linear-gradient(145deg, rgba(0,255,136,0.05), rgba(255,255,255,0.01));
+        0 0 80px rgba(0,255,136,0.12);
 }
 .feat:hover::before { opacity: 1; }
-.feat:hover::after { opacity: 1; }
-.feat-num {
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.7rem;
-    letter-spacing: 4px;
-    color: rgba(0,255,136,0.5);
-    margin-bottom: 2rem;
-    display: block;
-}
-.feat-ico {
-    width: 48px; height: 48px;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(0,255,136,0.08);
-    border: 1px solid rgba(0,255,136,0.2);
-    border-radius: 12px;
-    font-size: 1.3rem;
-    color: #00ff88;
-    margin-bottom: 1.5rem;
-    transition: all 0.5s;
-}
-.feat:hover .feat-ico {
-    background: rgba(0,255,136,0.15);
-    box-shadow: 0 0 30px rgba(0,255,136,0.4);
-    transform: scale(1.08) rotate(-4deg);
-}
 .feat-t {
-    font-size: 1.15rem;
+    font-family: 'Chakra Petch', sans-serif !important;
+    font-size: 1.2rem;
     font-weight: 600;
     color: #fff;
-    margin-bottom: 0.75rem;
-    letter-spacing: -0.01em;
+    margin-bottom: 0.9rem;
+    letter-spacing: 0.01em;
+}
+.feat-t::before {
+    content: '▸';
+    color: #00ff88;
+    margin-right: 0.6rem;
+    text-shadow: 0 0 15px #00ff88;
+    font-size: 1rem;
 }
 .feat-d {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     color: rgba(255,255,255,0.5);
-    line-height: 1.75;
+    line-height: 1.8;
     font-weight: 300;
 }
 
-/* ═══════════════════════════════════════════
-   STATS
-   ═══════════════════════════════════════════ */
+/* ═══ STATS ═══ */
 .stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -370,26 +330,13 @@ html, body, .stApp {
     text-align: center;
     background: linear-gradient(145deg, rgba(0,255,136,0.04), rgba(255,255,255,0.01));
     border: 1px solid rgba(0,255,136,0.15);
-    border-radius: 16px;
+    border-radius: 14px;
     transition: all 0.4s;
-    position: relative;
-    overflow: hidden;
-}
-.stat::before {
-    content: '';
-    position: absolute;
-    top: -50%; left: 50%;
-    transform: translateX(-50%);
-    width: 100%; height: 100%;
-    background: radial-gradient(circle, rgba(0,255,136,0.15), transparent 60%);
-    opacity: 0;
-    transition: opacity 0.4s;
 }
 .stat:hover {
     border-color: rgba(0,255,136,0.4);
     transform: translateY(-4px);
 }
-.stat:hover::before { opacity: 1; }
 .stat-n {
     font-family: 'Orbitron', sans-serif !important;
     font-size: 3rem;
@@ -400,7 +347,6 @@ html, body, .stApp {
     display: block;
     margin-bottom: 0.75rem;
     filter: drop-shadow(0 0 30px rgba(0,255,136,0.5));
-    position: relative;
 }
 .stat-l {
     font-family: 'JetBrains Mono', monospace !important;
@@ -408,15 +354,10 @@ html, body, .stApp {
     letter-spacing: 3px;
     text-transform: uppercase;
     color: rgba(255,255,255,0.4);
-    position: relative;
 }
 
-/* ═══════════════════════════════════════════
-   PROTOCOL STEPS
-   ═══════════════════════════════════════════ */
-.steps {
-    position: relative;
-}
+/* ═══ PROTOCOL STEPS ═══ */
+.steps { position: relative; }
 .steps::before {
     content: '';
     position: absolute;
@@ -455,11 +396,12 @@ html, body, .stApp {
     transform: scale(1.1);
 }
 .step-t {
-    font-size: 1.3rem;
+    font-family: 'Chakra Petch', sans-serif !important;
+    font-size: 1.35rem;
     font-weight: 600;
     color: #fff;
     margin-bottom: 0.75rem;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.01em;
 }
 .step-d {
     font-size: 0.95rem;
@@ -468,9 +410,7 @@ html, body, .stApp {
     font-weight: 300;
 }
 
-/* ═══════════════════════════════════════════
-   SPECS
-   ═══════════════════════════════════════════ */
+/* ═══ SPECS ═══ */
 .specs {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -492,22 +432,21 @@ html, body, .stApp {
     transform: translateX(4px);
 }
 .spec-k {
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.7rem;
-    letter-spacing: 2px;
+    font-family: 'Chakra Petch', sans-serif !important;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.45);
+    font-weight: 500;
 }
 .spec-v {
     font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     letter-spacing: 1px;
     color: #00ff88;
 }
 
-/* ═══════════════════════════════════════════
-   WARNINGS
-   ═══════════════════════════════════════════ */
+/* ═══ WARNINGS ═══ */
 .warns {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -518,7 +457,7 @@ html, body, .stApp {
     padding: 2rem;
     background: linear-gradient(145deg, rgba(255,46,99,0.04), rgba(255,255,255,0.01));
     border: 1px solid rgba(255,46,99,0.2);
-    border-radius: 16px;
+    border-radius: 14px;
     position: relative;
     transition: all 0.4s;
 }
@@ -527,34 +466,29 @@ html, body, .stApp {
     border-color: rgba(255,46,99,0.5);
     box-shadow: 0 20px 50px rgba(255,46,99,0.15);
 }
-.warn-ico {
-    width: 44px; height: 44px;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(255,46,99,0.1);
-    border: 1px solid rgba(255,46,99,0.3);
-    border-radius: 12px;
-    font-family: 'Orbitron', sans-serif !important;
-    color: #ff2e63;
-    font-size: 1.3rem;
-    font-weight: 800;
-    margin-bottom: 1.25rem;
-}
 .warn-t {
-    font-size: 1.05rem;
+    font-family: 'Chakra Petch', sans-serif !important;
+    font-size: 1.1rem;
     font-weight: 600;
     color: #fff;
     margin-bottom: 0.75rem;
+    letter-spacing: 0.01em;
+}
+.warn-t::before {
+    content: '▲';
+    color: #ff2e63;
+    margin-right: 0.6rem;
+    text-shadow: 0 0 15px #ff2e63;
+    font-size: 0.9rem;
 }
 .warn-d {
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     color: rgba(255,255,255,0.5);
-    line-height: 1.75;
+    line-height: 1.8;
     font-weight: 300;
 }
 
-/* ═══════════════════════════════════════════
-   FAQ
-   ═══════════════════════════════════════════ */
+/* ═══ FAQ ═══ */
 .faq {
     padding: 2rem 0;
     border-top: 1px solid rgba(255,255,255,0.06);
@@ -573,22 +507,21 @@ html, body, .stApp {
     padding-top: 4px;
 }
 .faq-q {
-    font-size: 1.15rem;
+    font-family: 'Chakra Petch', sans-serif !important;
+    font-size: 1.2rem;
     font-weight: 600;
     color: #fff;
     margin-bottom: 0.75rem;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.01em;
 }
 .faq-a {
     font-size: 0.95rem;
     color: rgba(255,255,255,0.5);
-    line-height: 1.8;
+    line-height: 1.85;
     font-weight: 300;
 }
 
-/* ═══════════════════════════════════════════
-   CTA
-   ═══════════════════════════════════════════ */
+/* ═══ CTA ═══ */
 .cta {
     padding: 7rem 3rem;
     text-align: center;
@@ -612,12 +545,13 @@ html, body, .stApp {
     mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
 }
 .cta-t {
+    font-family: 'Chakra Petch', sans-serif !important;
     font-size: clamp(2rem, 4vw, 3.2rem);
     font-weight: 700;
     color: #fff;
     margin-bottom: 1rem;
     position: relative;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.02em;
 }
 .cta-t em {
     font-style: normal;
@@ -633,57 +567,40 @@ html, body, .stApp {
     font-weight: 300;
 }
 
-/* ═══════════════════════════════════════════
-   BUTTONS
-   ═══════════════════════════════════════════ */
+/* ═══ BUTTONS ═══ */
 .stButton > button {
     background: linear-gradient(145deg, rgba(0,255,136,0.08), rgba(0,255,136,0.02)) !important;
     color: #00ff88 !important;
     border: 1px solid rgba(0,255,136,0.4) !important;
     border-radius: 12px !important;
     padding: 1rem 2rem !important;
-    font-family: 'JetBrains Mono', monospace !important;
-    font-weight: 500 !important;
-    font-size: 0.8rem !important;
+    font-family: 'Chakra Petch', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
     letter-spacing: 3px !important;
     text-transform: uppercase !important;
     transition: all 0.4s cubic-bezier(0.4,0,0.2,1) !important;
     width: 100% !important;
-    position: relative;
-    overflow: hidden;
-}
-.stButton > button::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, #00ff88, #00d4ff);
-    opacity: 0;
-    transition: opacity 0.4s;
-    z-index: -1;
 }
 .stButton > button:hover {
     color: #000 !important;
-    border-color: transparent !important;
+    background: #00ff88 !important;
+    border-color: #00ff88 !important;
     box-shadow:
         0 0 40px rgba(0,255,136,0.6),
-        0 0 80px rgba(0,255,136,0.3),
-        inset 0 0 20px rgba(255,255,255,0.2) !important;
+        0 0 80px rgba(0,255,136,0.3) !important;
     transform: translateY(-3px);
 }
-.stButton > button:hover::before { opacity: 1; }
-.stButton > button:active { transform: translateY(-1px); }
 
-/* ═══════════════════════════════════════════
-   INPUTS
-   ═══════════════════════════════════════════ */
+/* ═══ INPUTS ═══ */
 .stTextInput > div > div > input,
 .stTextArea > div > div > textarea {
     background: rgba(0,0,0,0.5) !important;
     border: 1px solid rgba(0,255,136,0.25) !important;
     border-radius: 12px !important;
     color: #fff !important;
-    font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.9rem !important;
+    font-family: 'Chakra Petch', sans-serif !important;
+    font-size: 0.95rem !important;
     padding: 1rem 1.25rem !important;
     transition: all 0.3s !important;
 }
@@ -691,12 +608,9 @@ html, body, .stApp {
 .stTextArea > div > div > textarea:focus {
     border-color: #00ff88 !important;
     box-shadow: 0 0 30px rgba(0,255,136,0.3) !important;
-    background: rgba(0,255,136,0.02) !important;
 }
 
-/* ═══════════════════════════════════════════
-   FOOTER
-   ═══════════════════════════════════════════ */
+/* ═══ FOOTER ═══ */
 .foot {
     margin-top: 8rem;
     padding-top: 3rem;
@@ -717,7 +631,6 @@ html, body, .stApp {
     text-shadow: 0 0 20px rgba(0,255,136,0.5);
 }
 
-/* scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #000; }
 ::-webkit-scrollbar-thumb { background: rgba(0,255,136,0.3); border-radius: 3px; }
@@ -727,7 +640,7 @@ html, body, .stApp {
 
 
 # ═══════════════════════════════════════
-# BACKGROUND LAYERS
+# BACKGROUND
 # ═══════════════════════════════════════
 html("""
 <div class="bg-layer">
@@ -735,7 +648,6 @@ html("""
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
     <div class="bg-orb orb-3"></div>
-    <div class="bg-noise"></div>
 </div>
 """)
 
@@ -783,7 +695,7 @@ with c3:
 
 
 # ═══════════════════════════════════════
-# FEATURES
+# FEATURES — مبسطة
 # ═══════════════════════════════════════
 html("""
 <div class="sec" id="features">
@@ -791,12 +703,12 @@ html("""
     <h2 class="sec-title">Built for the <em>paranoid</em> mind.</h2>
     <p class="sec-desc">Every layer is designed with one purpose — to make your message indistinguishable from cosmic noise.</p>
     <div class="feat-grid">
-        <div class="feat"><span class="feat-num">/ 01</span><div class="feat-ico">⚡</div><div class="feat-t">AES-128 Encryption</div><div class="feat-d">Military-grade encryption via Fernet. Your message is locked before it ever touches the waveform.</div></div>
-        <div class="feat"><span class="feat-num">/ 02</span><div class="feat-ico">◈</div><div class="feat-t">HMAC Integrity</div><div class="feat-d">Every file carries its own cryptographic signature. Any tampering — even a single pulse — is instantly detected.</div></div>
-        <div class="feat"><span class="feat-num">/ 03</span><div class="feat-ico">✦</div><div class="feat-t">Pulsar Carrier</div><div class="feat-d">Your data rides on waves modeled after the Vela Pulsar — 10.9 pulses per second, echoing across the cosmos.</div></div>
-        <div class="feat"><span class="feat-num">/ 04</span><div class="feat-ico">◐</div><div class="feat-t">Lossless FLAC</div><div class="feat-d">Compressed without losing a single bit. 94% smaller than WAV, yet identical in every measurable way.</div></div>
-        <div class="feat"><span class="feat-num">/ 05</span><div class="feat-ico">○</div><div class="feat-t">Zero Knowledge</div><div class="feat-d">We never see your password. We never store your data. Everything happens in memory, invisible to us.</div></div>
-        <div class="feat"><span class="feat-num">/ 06</span><div class="feat-ico">◎</div><div class="feat-t">Universal Support</div><div class="feat-d">Arabic, English, emojis, symbols, control characters — every byte is handled with the same precision.</div></div>
+        <div class="feat"><div class="feat-t">AES-128 Encryption</div><div class="feat-d">Military-grade encryption via Fernet. Your message is locked before it ever touches the waveform.</div></div>
+        <div class="feat"><div class="feat-t">HMAC Integrity</div><div class="feat-d">Every file carries its own cryptographic signature. Any tampering — even a single pulse — is instantly detected.</div></div>
+        <div class="feat"><div class="feat-t">Pulsar Carrier</div><div class="feat-d">Your data rides on waves modeled after the Vela Pulsar — 10.9 pulses per second, echoing across the cosmos.</div></div>
+        <div class="feat"><div class="feat-t">Lossless FLAC</div><div class="feat-d">Compressed without losing a single bit. 94% smaller than WAV, yet identical in every measurable way.</div></div>
+        <div class="feat"><div class="feat-t">Zero Knowledge</div><div class="feat-d">We never see your password. We never store your data. Everything happens in memory, invisible to us.</div></div>
+        <div class="feat"><div class="feat-t">Universal Support</div><div class="feat-d">Arabic, English, emojis, symbols, control characters — every byte is handled with the same precision.</div></div>
     </div>
 </div>
 """)
@@ -881,9 +793,9 @@ html("""
     <h2 class="sec-title">Read <em>carefully.</em></h2>
     <p class="sec-desc">Neutron Cipher is built on real cryptography. That means real consequences.</p>
     <div class="warns">
-        <div class="warn"><div class="warn-ico">!</div><div class="warn-t">Lost passwords cannot be recovered.</div><div class="warn-d">We do not store your password. We cannot reset it. If you forget it, your message is gone — forever, and by design.</div></div>
-        <div class="warn"><div class="warn-ico">!</div><div class="warn-t">Modified audio will not decrypt.</div><div class="warn-d">Every pulse carries a cryptographic signature. Trimming, compressing, or editing the audio will cause the integrity check to fail.</div></div>
-        <div class="warn"><div class="warn-ico">!</div><div class="warn-t">Always share the FLAC file.</div><div class="warn-d">Do not convert to MP3. Do not compress. Do not re-encode. Share the original FLAC file exactly as it was produced.</div></div>
+        <div class="warn"><div class="warn-t">Lost passwords cannot be recovered.</div><div class="warn-d">We do not store your password. We cannot reset it. If you forget it, your message is gone — forever, and by design.</div></div>
+        <div class="warn"><div class="warn-t">Modified audio will not decrypt.</div><div class="warn-d">Every pulse carries a cryptographic signature. Trimming, compressing, or editing the audio will cause the integrity check to fail.</div></div>
+        <div class="warn"><div class="warn-t">Always share the FLAC file.</div><div class="warn-d">Do not convert to MP3. Do not compress. Do not re-encode. Share the original FLAC file exactly as it was produced.</div></div>
     </div>
 </div>
 """)
