@@ -13,12 +13,12 @@ def html(code):
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&family=Orbitron:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&family=Orbitron:wght@400;700;900&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body, .stApp, .stMarkdown, .stMarkdown *, p, div, span, h1, h2, h3, h4, h5 {
-    font-family: 'Chakra Petch', 'JetBrains Mono', sans-serif !important;
+    font-family: 'Space Grotesk', 'JetBrains Mono', sans-serif !important;
     background-color: transparent;
 }
 
@@ -238,10 +238,10 @@ html, body, .stApp {
     box-shadow: 0 0 12px #00ff88;
 }
 .sec-title {
-    font-family: 'Chakra Petch', sans-serif !important;
+    font-family: 'Space Grotesk', sans-serif !important;
     font-size: clamp(2rem, 4.5vw, 3.5rem);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
     line-height: 1.1;
     color: #fff;
     margin: 0 0 1.25rem 0;
@@ -263,7 +263,7 @@ html, body, .stApp {
     font-weight: 300;
 }
 
-/* ═══ FEATURES — بدون أرقام أو أيقونات ═══ */
+/* ═══ FEATURES ═══ */
 .feat-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -271,7 +271,7 @@ html, body, .stApp {
 }
 .feat {
     position: relative;
-    padding: 2.5rem 2rem 2.5rem 2rem;
+    padding: 2.5rem 2rem;
     background: linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008));
     border: 1px solid rgba(255,255,255,0.07);
     border-radius: 14px;
@@ -297,12 +297,12 @@ html, body, .stApp {
 }
 .feat:hover::before { opacity: 1; }
 .feat-t {
-    font-family: 'Chakra Petch', sans-serif !important;
-    font-size: 1.2rem;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 1.25rem;
     font-weight: 600;
     color: #fff;
     margin-bottom: 0.9rem;
-    letter-spacing: 0.01em;
+    letter-spacing: -0.01em;
 }
 .feat-t::before {
     content: '▸';
@@ -356,7 +356,7 @@ html, body, .stApp {
     color: rgba(255,255,255,0.4);
 }
 
-/* ═══ PROTOCOL STEPS ═══ */
+/* ═══ PROTOCOL ═══ */
 .steps { position: relative; }
 .steps::before {
     content: '';
@@ -396,12 +396,12 @@ html, body, .stApp {
     transform: scale(1.1);
 }
 .step-t {
-    font-family: 'Chakra Petch', sans-serif !important;
+    font-family: 'Space Grotesk', sans-serif !important;
     font-size: 1.35rem;
     font-weight: 600;
     color: #fff;
     margin-bottom: 0.75rem;
-    letter-spacing: 0.01em;
+    letter-spacing: -0.01em;
 }
 .step-d {
     font-size: 0.95rem;
@@ -432,8 +432,8 @@ html, body, .stApp {
     transform: translateX(4px);
 }
 .spec-k {
-    font-family: 'Chakra Petch', sans-serif !important;
-    font-size: 0.85rem;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 0.88rem;
     letter-spacing: 0.5px;
     text-transform: uppercase;
     color: rgba(255,255,255,0.45);
@@ -467,12 +467,12 @@ html, body, .stApp {
     box-shadow: 0 20px 50px rgba(255,46,99,0.15);
 }
 .warn-t {
-    font-family: 'Chakra Petch', sans-serif !important;
-    font-size: 1.1rem;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 1.15rem;
     font-weight: 600;
     color: #fff;
     margin-bottom: 0.75rem;
-    letter-spacing: 0.01em;
+    letter-spacing: -0.01em;
 }
 .warn-t::before {
     content: '▲';
@@ -507,12 +507,12 @@ html, body, .stApp {
     padding-top: 4px;
 }
 .faq-q {
-    font-family: 'Chakra Petch', sans-serif !important;
-    font-size: 1.2rem;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 1.25rem;
     font-weight: 600;
     color: #fff;
     margin-bottom: 0.75rem;
-    letter-spacing: 0.01em;
+    letter-spacing: -0.01em;
 }
 .faq-a {
     font-size: 0.95rem;
@@ -545,13 +545,13 @@ html, body, .stApp {
     mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
 }
 .cta-t {
-    font-family: 'Chakra Petch', sans-serif !important;
+    font-family: 'Space Grotesk', sans-serif !important;
     font-size: clamp(2rem, 4vw, 3.2rem);
     font-weight: 700;
     color: #fff;
     margin-bottom: 1rem;
     position: relative;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
 }
 .cta-t em {
     font-style: normal;
@@ -574,7 +574,7 @@ html, body, .stApp {
     border: 1px solid rgba(0,255,136,0.4) !important;
     border-radius: 12px !important;
     padding: 1rem 2rem !important;
-    font-family: 'Chakra Petch', sans-serif !important;
+    font-family: 'Space Grotesk', sans-serif !important;
     font-weight: 600 !important;
     font-size: 0.85rem !important;
     letter-spacing: 3px !important;
@@ -599,7 +599,7 @@ html, body, .stApp {
     border: 1px solid rgba(0,255,136,0.25) !important;
     border-radius: 12px !important;
     color: #fff !important;
-    font-family: 'Chakra Petch', sans-serif !important;
+    font-family: 'Space Grotesk', sans-serif !important;
     font-size: 0.95rem !important;
     padding: 1rem 1.25rem !important;
     transition: all 0.3s !important;
@@ -639,9 +639,7 @@ html, body, .stApp {
 """, unsafe_allow_html=True)
 
 
-# ═══════════════════════════════════════
-# BACKGROUND
-# ═══════════════════════════════════════
+# ═══ BACKGROUND ═══
 html("""
 <div class="bg-layer">
     <div class="bg-grid"></div>
@@ -651,10 +649,7 @@ html("""
 </div>
 """)
 
-
-# ═══════════════════════════════════════
-# NAV
-# ═══════════════════════════════════════
+# ═══ NAV ═══
 html("""
 <div class="nav">
     <div class="nav-brand">NEUTRON<span>CIPHER</span></div>
@@ -668,10 +663,7 @@ html("""
 </div>
 """)
 
-
-# ═══════════════════════════════════════
-# HERO
-# ═══════════════════════════════════════
+# ═══ HERO ═══
 html("""
 <div class="hero">
     <div class="hero-badge">System Online — v1.0</div>
@@ -694,9 +686,7 @@ with c3:
         st.switch_page("pages/decrypt.py")
 
 
-# ═══════════════════════════════════════
-# FEATURES — مبسطة
-# ═══════════════════════════════════════
+# ═══ FEATURES ═══
 html("""
 <div class="sec" id="features">
     <div class="sec-label">// capabilities</div>
@@ -715,10 +705,7 @@ html("""
 
 html('<div class="div"></div>')
 
-
-# ═══════════════════════════════════════
-# STATS
-# ═══════════════════════════════════════
+# ═══ STATS ═══
 html("""
 <div class="sec">
     <div class="sec-label">// by_the_numbers</div>
@@ -735,10 +722,7 @@ html("""
 
 html('<div class="div"></div>')
 
-
-# ═══════════════════════════════════════
-# PROTOCOL
-# ═══════════════════════════════════════
+# ═══ PROTOCOL ═══
 html("""
 <div class="sec" id="protocol">
     <div class="sec-label">// protocol</div>
@@ -755,10 +739,7 @@ html("""
 
 html('<div class="div"></div>')
 
-
-# ═══════════════════════════════════════
-# SPECS
-# ═══════════════════════════════════════
+# ═══ SPECS ═══
 html("""
 <div class="sec" id="specs">
     <div class="sec-label">// technical_specs</div>
@@ -783,10 +764,7 @@ html("""
 
 html('<div class="div"></div>')
 
-
-# ═══════════════════════════════════════
-# WARNINGS
-# ═══════════════════════════════════════
+# ═══ WARNINGS ═══
 html("""
 <div class="sec">
     <div class="sec-label">// security_notice</div>
@@ -802,10 +780,7 @@ html("""
 
 html('<div class="div"></div>')
 
-
-# ═══════════════════════════════════════
-# FAQ
-# ═══════════════════════════════════════
+# ═══ FAQ ═══
 html("""
 <div class="sec" id="faq">
     <div class="sec-label">// faq</div>
@@ -820,10 +795,7 @@ html("""
 </div>
 """)
 
-
-# ═══════════════════════════════════════
-# CTA
-# ═══════════════════════════════════════
+# ═══ CTA ═══
 html("""
 <div class="cta">
     <div class="cta-t">Ready to become a <em>star?</em></div>
@@ -841,10 +813,7 @@ with c3:
     if st.button("◈  DECRYPT AUDIO", use_container_width=True, key="cta2"):
         st.switch_page("pages/decrypt.py")
 
-
-# ═══════════════════════════════════════
-# FOOTER
-# ═══════════════════════════════════════
+# ═══ FOOTER ═══
 html("""
 <div class="foot">
     <div><span class="foot-brand">NEUTRON CIPHER</span> · v1.0 · 2026</div>
