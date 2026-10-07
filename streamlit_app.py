@@ -363,10 +363,9 @@ html("""
 # ═══════════════════════════════════════════════════════════════
 html(f"""
 <div class="hero">
-    <div class="hero-badge"><i></i>SOUND-BASED ENCRYPTION · V2.0</div>
+    <div class="hero-badge"><i></i>DM SAFELY AND SECURE YOUR PRIVACY WITH</div>
     <h1 class="hero-name">CRYPTORIAN</h1>
-    <p class="hero-tagline">TURN YOUR WORDS INTO THE SOUND OF A DYING STAR</p>
-    <p class="hero-tagline">ONLY THOSE WHO HOLD THE KEY CAN HEAR THE MESSAGE HIDDEN WITHIN THE PULSE</p>
+    <p class="hero-tagline">TURN YOUR WORDS INTO AN ENCRYPTED DEAD STAR'S SOUND</p>
     {STAR}
 </div>
 """)
