@@ -1,16 +1,25 @@
 import streamlit as st
 
+# ═══════════════════════════════════════════════════════════════
+# PAGE CONFIG
+# ═══════════════════════════════════════════════════════════════
 st.set_page_config(
-    page_title="NEUTRON CIPHER",
+    page_title="CRYPTORIAN",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
+# ═══════════════════════════════════════════════════════════════
+# HTML HELPER
+# ═══════════════════════════════════════════════════════════════
 def html(code):
     clean = "".join(line.strip() for line in code.split("\n"))
     st.markdown(clean, unsafe_allow_html=True)
 
+# ═══════════════════════════════════════════════════════════════
+# GLOBAL CSS
+# ═══════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&family=Orbitron:wght@400;700;900&display=swap');
@@ -39,7 +48,6 @@ html, body, .stApp {
     z-index: 3;
 }
 
-/* ═══ BACKGROUND ═══ */
 .bg-layer { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .bg-orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.5; will-change: transform; }
 .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, #00ff88 0%, transparent 70%); top: -200px; left: -100px; animation: float1 20s ease-in-out infinite; }
@@ -58,7 +66,6 @@ html, body, .stApp {
 }
 @keyframes gridShift { 0% { background-position: 0 0; } 100% { background-position: 80px 80px; } }
 
-/* ═══ NAV ═══ */
 .nav {
     position: sticky; top: 0;
     display: flex; justify-content: space-between; align-items: center;
@@ -82,7 +89,6 @@ html, body, .stApp {
     animation: spin 8s linear infinite;
 }
 @keyframes spin { 0% { transform: rotate(45deg); } 100% { transform: rotate(405deg); } }
-.nav-brand span { color: #fff; }
 .nav-links { display: flex; gap: 2.5rem; }
 .nav-link {
     font-family: 'JetBrains Mono', monospace !important;
@@ -97,7 +103,6 @@ html, body, .stApp {
 .nav-dot { width: 6px; height: 6px; border-radius: 50%; background: #00ff88; box-shadow: 0 0 12px #00ff88; animation: blink 1.8s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-/* ═══ HERO ═══ */
 .hero { padding: 8rem 0 6rem 0; text-align: center; position: relative; }
 .hero-badge {
     display: inline-flex; align-items: center; gap: 0.6rem;
@@ -133,7 +138,6 @@ html, body, .stApp {
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ═══ SECTION ═══ */
 .sec { padding: 7rem 0; position: relative; }
 .sec-label {
     display: inline-flex; align-items: center; gap: 0.75rem;
@@ -161,7 +165,6 @@ html, body, .stApp {
     margin: 0 0 4rem 0; font-weight: 300;
 }
 
-/* ═══ FEATURES ═══ */
 .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.25rem; }
 .feat {
     position: relative; padding: 2.5rem 2rem;
@@ -189,7 +192,6 @@ html, body, .stApp {
 .feat-t::before { content: '▸'; color: #00ff88; margin-right: 0.6rem; text-shadow: 0 0 15px #00ff88; font-size: 1rem; }
 .feat-d { font-size: 0.92rem; color: rgba(255,255,255,0.5); line-height: 1.8; font-weight: 300; }
 
-/* ═══ STATS ═══ */
 .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 3rem; }
 .stat {
     padding: 3rem 1.5rem; text-align: center;
@@ -212,7 +214,6 @@ html, body, .stApp {
     text-transform: uppercase; color: rgba(255,255,255,0.4);
 }
 
-/* ═══ PROTOCOL ═══ */
 .steps { position: relative; }
 .steps::before {
     content: ''; position: absolute; left: 32px; top: 0; bottom: 0; width: 1px;
@@ -242,7 +243,6 @@ html, body, .stApp {
 }
 .step-d { font-size: 0.95rem; color: rgba(255,255,255,0.5); line-height: 1.85; font-weight: 300; }
 
-/* ═══ SPECS ═══ */
 .specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.75rem; }
 .spec {
     display: flex; justify-content: space-between; align-items: center;
@@ -260,7 +260,6 @@ html, body, .stApp {
 }
 .spec-v { font-family: 'JetBrains Mono', monospace !important; font-size: 0.78rem; letter-spacing: 1px; color: #00ff88; }
 
-/* ═══ WARNINGS ═══ */
 .warns { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
 .warn {
     padding: 2rem;
@@ -278,7 +277,6 @@ html, body, .stApp {
 .warn-t::before { content: '▲'; color: #ff2e63; margin-right: 0.6rem; text-shadow: 0 0 15px #ff2e63; font-size: 0.9rem; }
 .warn-d { font-size: 0.92rem; color: rgba(255,255,255,0.5); line-height: 1.8; font-weight: 300; }
 
-/* ═══ FAQ ═══ */
 .faq {
     padding: 2rem 0;
     border-top: 1px solid rgba(255,255,255,0.06);
@@ -296,7 +294,6 @@ html, body, .stApp {
 }
 .faq-a { font-size: 0.95rem; color: rgba(255,255,255,0.5); line-height: 1.85; font-weight: 300; }
 
-/* ═══ CTA ═══ */
 .cta {
     padding: 7rem 3rem; text-align: center;
     border: 1px solid rgba(0,255,136,0.25); border-radius: 24px;
@@ -323,7 +320,6 @@ html, body, .stApp {
 }
 .cta-d { font-size: 1.05rem; color: rgba(255,255,255,0.5); position: relative; font-weight: 300; }
 
-/* ═══ BUTTONS ═══ */
 .stButton > button {
     background: linear-gradient(145deg, rgba(0,255,136,0.08), rgba(0,255,136,0.02)) !important;
     color: #00ff88 !important;
@@ -346,25 +342,6 @@ html, body, .stApp {
     transform: translateY(-3px);
 }
 
-/* ═══ INPUTS ═══ */
-.stTextInput > div > div > input,
-.stTextArea > div > div > textarea {
-    background: rgba(0,0,0,0.5) !important;
-    border: 1px solid rgba(0,255,136,0.25) !important;
-    border-radius: 12px !important;
-    color: #fff !important;
-    font-family: 'Space Grotesk', sans-serif !important;
-    font-size: 0.95rem !important;
-    padding: 1rem 1.25rem !important;
-    transition: all 0.3s !important;
-}
-.stTextInput > div > div > input:focus,
-.stTextArea > div > div > textarea:focus {
-    border-color: #00ff88 !important;
-    box-shadow: 0 0 30px rgba(0,255,136,0.3) !important;
-}
-
-/* ═══ FOOTER ═══ */
 .foot {
     margin-top: 8rem; padding-top: 3rem;
     border-top: 1px solid rgba(255,255,255,0.06);
@@ -383,8 +360,9 @@ html, body, .stApp {
 </style>
 """, unsafe_allow_html=True)
 
-
-# ═══ BACKGROUND ═══
+# ═══════════════════════════════════════════════════════════════
+# BACKGROUND
+# ═══════════════════════════════════════════════════════════════
 html("""
 <div class="bg-layer">
     <div class="bg-grid"></div>
@@ -394,10 +372,12 @@ html("""
 </div>
 """)
 
-# ═══ NAV ═══
+# ═══════════════════════════════════════════════════════════════
+# NAV
+# ═══════════════════════════════════════════════════════════════
 html("""
 <div class="nav">
-    <div class="nav-brand">NEUTRON<span>CIPHER</span></div>
+    <div class="nav-brand">CRYPTORIAN</div>
     <div class="nav-links">
         <a href="#features" class="nav-link">Features</a>
         <a href="#protocol" class="nav-link">Protocol</a>
@@ -408,139 +388,146 @@ html("""
 </div>
 """)
 
-# ═══ HERO ═══
+# ═══════════════════════════════════════════════════════════════
+# HERO
+# ═══════════════════════════════════════════════════════════════
 html("""
 <div class="hero">
-    <div class="hero-badge">SYSTEM ONLINE — V1.0</div>
+    <div class="hero-badge">SOUND-BASED ENCRYPTION — V2.0</div>
     <h1 class="hero-title">ENCRYPT<br>IN STARLIGHT.</h1>
     <p class="hero-sub">[ HIDE YOUR DATA IN THE SOUND OF A DEAD STAR ]</p>
     <p class="hero-desc">
-        Transform your messages into the pulsating rhythm of a neutron star.
-        Every byte becomes a pulse. Every word becomes a signal.
-        Every secret becomes a dying star, screaming silently across the void.
+        Cryptorian converts your messages into a modified version of a neutron star's sound.
+        Every character becomes a pulse. Every word becomes a signal.
+        Every secret becomes a dying star, echoing across the void.
     </p>
 </div>
 """)
 
-c1, c2, c3, c4 = st.columns([1, 1.3, 1.3, 1])
-with c2:
-    if st.button("⚡  ENCRYPT MESSAGE", use_container_width=True):
-        st.switch_page("pages/encrypt.py")
-with c3:
-    if st.button("◈  DECRYPT AUDIO", use_container_width=True):
-        st.switch_page("pages/decrypt.py")
-
-
-# ═══ FEATURES ═══
+# ═══════════════════════════════════════════════════════════════
+# FEATURES
+# ═══════════════════════════════════════════════════════════════
 html("""
 <div class="sec" id="features">
     <div class="sec-label">// CAPABILITIES</div>
     <h2 class="sec-title">BUILT FOR THE <em>PARANOID</em> MIND.</h2>
     <p class="sec-desc">Every layer is designed with one purpose — to make your message indistinguishable from cosmic noise.</p>
     <div class="feat-grid">
-        <div class="feat"><div class="feat-t">AES-128 ENCRYPTION</div><div class="feat-d">Military-grade encryption via Fernet. Your message is locked before it ever touches the waveform.</div></div>
-        <div class="feat"><div class="feat-t">HMAC INTEGRITY</div><div class="feat-d">Every file carries its own cryptographic signature. Any tampering — even a single pulse — is instantly detected.</div></div>
-        <div class="feat"><div class="feat-t">PULSAR CARRIER</div><div class="feat-d">Your data rides on waves modeled after the Vela Pulsar — 10.9 pulses per second, echoing across the cosmos.</div></div>
-        <div class="feat"><div class="feat-t">LOSSLESS FLAC</div><div class="feat-d">Compressed without losing a single bit. 94% smaller than WAV, yet identical in every measurable way.</div></div>
-        <div class="feat"><div class="feat-t">ZERO KNOWLEDGE</div><div class="feat-d">We never see your password. We never store your data. Everything happens in memory, invisible to us.</div></div>
-        <div class="feat"><div class="feat-t">UNIVERSAL SUPPORT</div><div class="feat-d">Arabic, English, emojis, symbols, control characters — every byte is handled with the same precision.</div></div>
+        <div class="feat"><div class="feat-t">NEUTRON SOUND</div><div class="feat-d">Your message rides on waves modeled after a neutron star's sound. Each character becomes a unique pulse.</div></div>
+        <div class="feat"><div class="feat-t">91 SIGNATURES</div><div class="feat-d">Each character (letter, digit, symbol) has a unique sonic signature. No two signatures are alike.</div></div>
+        <div class="feat"><div class="feat-t">KEY SHUFFLING</div><div class="feat-d">The secret key reorders the signatures. Same character, different pulse — every time.</div></div>
+        <div class="feat"><div class="feat-t">LENGTH HEADER</div><div class="feat-d">The text length is embedded in the audio. Decryption knows exactly when to stop.</div></div>
+        <div class="feat"><div class="feat-t">3 SHAPES</div><div class="feat-d">Each signature has one of 3 pulse shapes. This ensures that similar characters remain distinct.</div></div>
+        <div class="feat"><div class="feat-t">WAV & FLAC</div><div class="feat-d">Choose uncompressed WAV for universal playback, or FLAC for 80% size saving.</div></div>
     </div>
 </div>
 """)
 
 html('<div class="div"></div>')
 
-# ═══ STATS ═══
+# ═══════════════════════════════════════════════════════════════
+# STATS
+# ═══════════════════════════════════════════════════════════════
 html("""
 <div class="sec">
     <div class="sec-label">// BY THE NUMBERS</div>
     <h2 class="sec-title">NUMBERS THAT <em>MATTER.</em></h2>
     <div class="stats">
-        <div class="stat"><span class="stat-n">10.9</span><span class="stat-l">PULSES / SECOND</span></div>
-        <div class="stat"><span class="stat-n">44.1</span><span class="stat-l">KHZ SAMPLE RATE</span></div>
+        <div class="stat"><span class="stat-n">91</span><span class="stat-l">SIGNATURES</span></div>
+        <div class="stat"><span class="stat-n">44100</span><span class="stat-l">SAMPLE RATE</span></div>
         <div class="stat"><span class="stat-n">2000</span><span class="stat-l">MAX CHARACTERS</span></div>
-        <div class="stat"><span class="stat-n">94%</span><span class="stat-l">COMPRESSION</span></div>
-        <div class="stat"><span class="stat-n">128</span><span class="stat-l">BIT AES KEY</span></div>
+        <div class="stat"><span class="stat-n">80%</span><span class="stat-l">FLAC SAVING</span></div>
+        <div class="stat"><span class="stat-n">3</span><span class="stat-l">PULSE SHAPES</span></div>
     </div>
 </div>
 """)
 
 html('<div class="div"></div>')
 
-# ═══ PROTOCOL ═══
+# ═══════════════════════════════════════════════════════════════
+# PROTOCOL
+# ═══════════════════════════════════════════════════════════════
 html("""
 <div class="sec" id="protocol">
     <div class="sec-label">// PROTOCOL</div>
     <h2 class="sec-title">FOUR LAYERS. <em>ONE SIGNAL.</em></h2>
     <p class="sec-desc">From plain text to cosmic transmission — a transformation in four acts.</p>
     <div class="steps">
-        <div class="step"><div class="step-n">01</div><div><div class="step-t">ENCRYPTION</div><div class="step-d">Your message is encrypted with Fernet (AES-128-CBC + HMAC-SHA256). A fresh random IV is generated for every operation — the same message produces a different ciphertext every single time.</div></div></div>
-        <div class="step"><div class="step-n">02</div><div><div class="step-t">PULSE MAPPING</div><div class="step-d">Each encrypted byte (0–255) is translated into a specific pulse intensity. The bytes flow into a continuous stream, spaced 92 milliseconds apart — matching the rhythm of the Vela Pulsar.</div></div></div>
-        <div class="step"><div class="step-n">03</div><div><div class="step-t">WAVEFORM SYNTHESIS</div><div class="step-d">The pulses are rendered into an audio waveform at 44.1 kHz, with a sharp exponential envelope that mimics the electromagnetic signature of a real neutron star.</div></div></div>
-        <div class="step"><div class="step-n">04</div><div><div class="step-t">LOSSLESS COMPRESSION</div><div class="step-d">The waveform is encoded as FLAC — a lossless format that reduces file size by up to 94% without sacrificing a single bit. Your message is now a star.</div></div></div>
+        <div class="step"><div class="step-n">01</div><div><div class="step-t">VALIDATION</div><div class="step-d">The system validates both the message and the key. The message must use only supported characters and must not exceed 2000 characters. The key must contain only letters and spaces.</div></div></div>
+        <div class="step"><div class="step-n">02</div><div><div class="step-t">SHUFFLING</div><div class="step-d">The key's character count determines the number of shuffles. Each shuffle uses a fixed seed. The result is a stable, reproducible reordering of all 91 signatures.</div></div></div>
+        <div class="step"><div class="step-n">03</div><div><div class="step-t">PULSE MAPPING</div><div class="step-d">Each character is mapped to its shuffled signature. The signature defines the pulse count, intensity, gap, and shape. The frequency and duration remain fixed to preserve the star-like sound.</div></div></div>
+        <div class="step"><div class="step-n">04</div><div><div class="step-t">HEADER & OUTPUT</div><div class="step-d">A 16-sample header stores the text length. The resulting waveform is saved as WAV (uncompressed) or FLAC (lossless compression).</div></div></div>
     </div>
 </div>
 """)
 
 html('<div class="div"></div>')
 
-# ═══ SPECS ═══
+# ═══════════════════════════════════════════════════════════════
+# SPECS
+# ═══════════════════════════════════════════════════════════════
 html("""
 <div class="sec" id="specs">
     <div class="sec-label">// TECHNICAL SPECS</div>
     <h2 class="sec-title">EVERY PARAMETER. <em>DOCUMENTED.</em></h2>
-    <p class="sec-desc">Full transparency — the cryptographic primitives, constants, and constraints.</p>
+    <p class="sec-desc">Full transparency — every constant, range, and constraint.</p>
     <div class="specs">
-        <div class="spec"><span class="spec-k">ENCRYPTION</span><span class="spec-v">FERNET / AES-128</span></div>
-        <div class="spec"><span class="spec-k">INTEGRITY</span><span class="spec-v">HMAC-SHA256</span></div>
-        <div class="spec"><span class="spec-k">KEY DERIVATION</span><span class="spec-v">SHA-256</span></div>
-        <div class="spec"><span class="spec-k">IV</span><span class="spec-v">RANDOM / SESSION</span></div>
-        <div class="spec"><span class="spec-k">CARRIER</span><span class="spec-v">VELA PULSAR</span></div>
-        <div class="spec"><span class="spec-k">PULSE RATE</span><span class="spec-v">10.9 HZ</span></div>
+        <div class="spec"><span class="spec-k">SIGNATURES</span><span class="spec-v">91</span></div>
         <div class="spec"><span class="spec-k">SAMPLE RATE</span><span class="spec-v">44100 HZ</span></div>
-        <div class="spec"><span class="spec-k">BIT DEPTH</span><span class="spec-v">16-BIT PCM</span></div>
-        <div class="spec"><span class="spec-k">CODEC</span><span class="spec-v">FLAC / LOSSLESS</span></div>
-        <div class="spec"><span class="spec-k">MAX PAYLOAD</span><span class="spec-v">2000 CHARS</span></div>
-        <div class="spec"><span class="spec-k">COMPRESSION</span><span class="spec-v">~94%</span></div>
-        <div class="spec"><span class="spec-k">STATUS</span><span class="spec-v">● OPERATIONAL</span></div>
+        <div class="spec"><span class="spec-k">FREQUENCY</span><span class="spec-v">200 HZ (FIXED)</span></div>
+        <div class="spec"><span class="spec-k">DURATION</span><span class="spec-v">0.03 S (FIXED)</span></div>
+        <div class="spec"><span class="spec-k">PULSE COUNT</span><span class="spec-v">2-3</span></div>
+        <div class="spec"><span class="spec-k">INTENSITY</span><span class="spec-v">0.10-0.95</span></div>
+        <div class="spec"><span class="spec-k">GAP</span><span class="spec-v">0.020-0.030 S</span></div>
+        <div class="spec"><span class="spec-k">SHAPE IDS</span><span class="spec-v">0, 1, 2</span></div>
+        <div class="spec"><span class="spec-k">FREQ RATIO</span><span class="spec-v">0.30</span></div>
+        <div class="spec"><span class="spec-k">HEADER SIZE</span><span class="spec-v">16 SAMPLES</span></div>
+        <div class="spec"><span class="spec-k">MAX TEXT</span><span class="spec-v">2000 CHARS</span></div>
+        <div class="spec"><span class="spec-k">CODECS</span><span class="spec-v">WAV / FLAC</span></div>
     </div>
 </div>
 """)
 
 html('<div class="div"></div>')
 
-# ═══ WARNINGS ═══
+# ═══════════════════════════════════════════════════════════════
+# WARNINGS
+# ═══════════════════════════════════════════════════════════════
 html("""
 <div class="sec">
     <div class="sec-label">// SECURITY NOTICE</div>
     <h2 class="sec-title">READ <em>CAREFULLY.</em></h2>
-    <p class="sec-desc">Neutron Cipher is built on real cryptography. That means real consequences.</p>
+    <p class="sec-desc">Cryptorian is built on real constraints. That means real consequences.</p>
     <div class="warns">
-        <div class="warn"><div class="warn-t">LOST PASSWORDS CANNOT BE RECOVERED.</div><div class="warn-d">We do not store your password. We cannot reset it. If you forget it, your message is gone — forever, and by design.</div></div>
-        <div class="warn"><div class="warn-t">MODIFIED AUDIO WILL NOT DECRYPT.</div><div class="warn-d">Every pulse carries a cryptographic signature. Trimming, compressing, or editing the audio will cause the integrity check to fail.</div></div>
-        <div class="warn"><div class="warn-t">ALWAYS SHARE THE FLAC FILE.</div><div class="warn-d">Do not convert to MP3. Do not compress. Do not re-encode. Share the original FLAC file exactly as it was produced.</div></div>
+        <div class="warn"><div class="warn-t">THE KEY IS NEVER SAVED.</div><div class="warn-d">The key is not stored anywhere. If you forget it, the message cannot be recovered. There is no password recovery.</div></div>
+        <div class="warn"><div class="warn-t">DO NOT MODIFY THE AUDIO.</div><div class="warn-d">Any modification (trimming, compressing, or converting) will corrupt the encryption. Share the original file as-is.</div></div>
+        <div class="warn"><div class="warn-t">SHARE THE KEY SEPARATELY.</div><div class="warn-d">Never send the key together with the audio file. Use a separate secure channel for the key.</div></div>
     </div>
 </div>
 """)
 
 html('<div class="div"></div>')
 
-# ═══ FAQ ═══
+# ═══════════════════════════════════════════════════════════════
+# FAQ
+# ═══════════════════════════════════════════════════════════════
 html("""
 <div class="sec" id="faq">
     <div class="sec-label">// FAQ</div>
     <h2 class="sec-title">QUESTIONS. <em>ANSWERED.</em></h2>
     <p class="sec-desc">Everything you need to know before you trust us with your secrets.</p>
-    <div class="faq"><div class="faq-n">Q1</div><div><div class="faq-q">IS MY DATA STORED ON YOUR SERVERS?</div><div class="faq-a">Never. Everything happens in your browser's memory. We have no database, no logs, no backups.</div></div></div>
-    <div class="faq"><div class="faq-n">Q2</div><div><div class="faq-q">WHAT ENCRYPTION ALGORITHM DO YOU USE?</div><div class="faq-a">Fernet, which combines AES-128-CBC for confidentiality with HMAC-SHA256 for integrity. It is the same protocol used by major financial institutions.</div></div></div>
-    <div class="faq"><div class="faq-n">Q3</div><div><div class="faq-q">CAN YOU RECOVER MY PASSWORD IF I LOSE IT?</div><div class="faq-a">No. By design, we cannot. Your password never leaves your device. If you lose it, the encrypted message is permanently unreadable.</div></div></div>
-    <div class="faq"><div class="faq-n">Q4</div><div><div class="faq-q">WHY DOES THE AUDIO HAVE TO BE FLAC?</div><div class="faq-a">FLAC is lossless — every bit is preserved. Lossy formats like MP3 alter the waveform and break the cryptographic signature, making decryption impossible.</div></div></div>
-    <div class="faq"><div class="faq-n">Q5</div><div><div class="faq-q">HOW LONG CAN MY MESSAGE BE?</div><div class="faq-a">Up to 2000 characters. This limit keeps file size reasonable while covering the vast majority of real-world messages.</div></div></div>
-    <div class="faq"><div class="faq-n">Q6</div><div><div class="faq-q">IS THIS OPEN SOURCE?</div><div class="faq-a">Yes. The entire codebase is published on GitHub for public audit. Cryptographic systems should never be trusted blindly.</div></div></div>
+    <div class="faq"><div class="faq-n">Q1</div><div><div class="faq-q">WHAT CHARACTERS ARE SUPPORTED?</div><div class="faq-a">Letters (a-z, A-Z), digits (0-9), 29 symbols, and spaces. Arabic characters and emojis are not supported.</div></div></div>
+    <div class="faq"><div class="faq-n">Q2</div><div><div class="faq-q">HOW LONG CAN MY MESSAGE BE?</div><div class="faq-a">Up to 2000 characters. Any message longer than that will be rejected by the system.</div></div></div>
+    <div class="faq"><div class="faq-n">Q3</div><div><div class="faq-q">WHAT ARE THE KEY RULES?</div><div class="faq-a">The key must contain only letters and spaces. Digits and symbols are rejected. The key is case-sensitive.</div></div></div>
+    <div class="faq"><div class="faq-n">Q4</div><div><div class="faq-q">CAN THE KEY BE RECOVERED?</div><div class="faq-a">No. The key is never saved. Without the correct key, the message cannot be decrypted.</div></div></div>
+    <div class="faq"><div class="faq-n">Q5</div><div><div class="faq-q">WHY WAV AND FLAC?</div><div class="faq-a">WAV is uncompressed and works on all devices. FLAC is lossless and saves ~80% of the size. Both preserve the encryption.</div></div></div>
+    <div class="faq"><div class="faq-n">Q6</div><div><div class="faq-q">CAN I MODIFY THE AUDIO FILE?</div><div class="faq-a">No. Any modification (trimming, compressing, or converting) will corrupt the encryption and make decryption impossible.</div></div></div>
 </div>
 """)
 
-# ═══ CTA ═══
+# ═══════════════════════════════════════════════════════════════
+# CTA
+# ═══════════════════════════════════════════════════════════════
 html("""
 <div class="cta">
     <div class="cta-t">READY TO BECOME A <em>STAR?</em></div>
@@ -550,18 +537,23 @@ html("""
 
 st.markdown("<br>", unsafe_allow_html=True)
 
+# ═══════════════════════════════════════════════════════════════
+# CTA BUTTONS
+# ═══════════════════════════════════════════════════════════════
 c1, c2, c3, c4 = st.columns([1, 1.3, 1.3, 1])
 with c2:
-    if st.button("⚡  ENCRYPT MESSAGE", use_container_width=True, key="cta1"):
-        st.switch_page("pages/encrypt.py")
+    if st.button("ENCRYPT MESSAGE", use_container_width=True):
+        st.info("The encryption page will be added soon.")
 with c3:
-    if st.button("◈  DECRYPT AUDIO", use_container_width=True, key="cta2"):
-        st.switch_page("pages/decrypt.py")
+    if st.button("DECRYPT AUDIO", use_container_width=True, key="decrypt_btn"):
+        st.info("The decryption page will be added soon.")
 
-# ═══ FOOTER ═══
+# ═══════════════════════════════════════════════════════════════
+# FOOTER
+# ═══════════════════════════════════════════════════════════════
 html("""
 <div class="foot">
-    <div><span class="foot-brand">NEUTRON CIPHER</span> · V1.0 · 2026</div>
-    <div>ASTRONOMY × CRYPTOGRAPHY</div>
+    <div><span class="foot-brand">CRYPTORIAN</span> · V2.0 · 2026</div>
+    <div>SOUND-BASED ENCRYPTION</div>
 </div>
 """)
