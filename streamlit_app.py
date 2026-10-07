@@ -150,12 +150,18 @@ def crypto_art():
 # ART 3 — TEXT ⇄ SOUND (smooth waveform, no center star)
 # ═══════════════════════════════════════════════════════════════
 def pipeline_art():
-    # Smooth natural waveform
+    # Smooth natural waveform — dense, varied
     points = []
-    n = 40
+    n = 60
     for i in range(n + 1):
         x = (i / n) * 400
-        y = 392 - (18 * math.sin(i * 0.7) + 8 * math.sin(i * 1.3 + 1) + 5 * math.cos(i * 2.1))
+        # layered sines = natural audio look
+        y = 392 - (
+            14 * math.sin(i * 0.55)
+            + 9 * math.sin(i * 1.15 + 1)
+            + 6 * math.cos(i * 1.9 + 0.5)
+            + 4 * math.sin(i * 2.7 + 2)
+        )
         points.append(f"{x:.1f},{y:.1f}")
     wave_d = "M" + " L".join(points)
 
@@ -164,7 +170,6 @@ def pipeline_art():
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 480">
 <defs>
-<radialGradient id="core"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#00ff88" stop-opacity=".8"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0"/></radialGradient>
 <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00ff88"/><stop offset="1" stop-color="#00d4ff"/></linearGradient>
 </defs>
 <style>
@@ -184,9 +189,8 @@ def pipeline_art():
 <rect width="520" height="480" fill="#02060a"/>
 
 <rect x="40" y="36" width="440" height="130" rx="12" fill="#00ff88" fill-opacity=".04" stroke="#00ff88" stroke-opacity=".45"/>
-<text x="60" y="62" font-family="monospace" font-size="11" letter-spacing="6" fill="#00ff88" opacity=".8">TEXT</text>
-<text x="60" y="116" font-family="monospace" font-size="22" font-weight="bold" fill="#00ff88">TEXT<tspan class="cur">_</tspan></text>
-<text x="60" y="148" font-family="monospace" font-size="11" fill="#00ff88" opacity=".35">01001101 01000101 01000101 01010100</text>
+<text x="60" y="62" font-family="monospace" font-size="11" letter-spacing="6" fill="#00ff88" opacity=".8">YOUR TEXT</text>
+<text x="60" y="116" font-family="monospace" font-size="22" font-weight="bold" fill="#00ff88">YOUR TEXT<tspan class="cur">_</tspan></text>
 
 <line class="flowD" x1="185" y1="176" x2="185" y2="294" stroke="#00ff88" stroke-width="2.5"/>
 <polygon points="173,292 197,292 185,310" fill="#00ff88"/>
@@ -310,7 +314,6 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .cta-t { font-family:'JetBrains Mono', monospace; font-weight:500; font-size:clamp(1.15rem, 2.8vw, 2.1rem); text-transform:uppercase; letter-spacing:.16em; line-height:1.5; color:#00ff88; text-shadow:0 0 28px rgba(0,255,136,.45); margin-bottom:1rem; position:relative; }
 .cta-d { font-family:'Space Grotesk', sans-serif; font-size:1.05rem; color:rgba(255,255,255,.62); position:relative; font-weight:300; }
 
-/* ═══ BUTTON (Orbitron — same as main title font) ═══ */
 .stButton > button {
     background:linear-gradient(145deg,rgba(0,255,136,.12),rgba(0,255,136,.03)) !important;
     color:#00ff88 !important;
@@ -378,7 +381,7 @@ html(f"""
 <div class="hero">
     <div class="hero-badge"><i></i>DM SAFELY AND SECURE YOUR PRIVACY WITH</div>
     <h1 class="hero-name">CRYPTORIAN</h1>
-    <p class="hero-tagline">TURN YOUR WORDS INTO AN ENCRYPTED DEAD STAR'S SOUND</p>
+    <p class="hero-tagline">USING AN ENCRYPTED MODIFIED NEUTRON STAR SOUND</p>
     {STAR}
 </div>
 """)
