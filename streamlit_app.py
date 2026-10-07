@@ -23,195 +23,197 @@ def svg_img(svg, cls, alt):
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 1 — NEUTRON STAR
+# ART 1 — NEUTRON STAR WITH RADIO WAVES
 # ═══════════════════════════════════════════════════════════════
 def star_art():
-    sph = ""
-    for a in (0, 20, 40, 60, 80, 100, 120, 140, 160):
-        rx = 80 * abs(math.cos(math.radians(a)))
-        sph += f'<ellipse cx="400" cy="400" rx="{rx:.1f}" ry="80"/>'
-    for lat in (-80, -60, -40, -20, 0, 20, 40, 60, 80):
-        r = 80 * math.cos(math.radians(lat))
-        y = 400 - 80 * math.sin(math.radians(lat))
-        sph += f'<ellipse cx="400" cy="{y:.1f}" rx="{r:.1f}" ry="{r * 0.22:.1f}"/>'
-
-    field = ""
-    for s in (140, 210, 280, 350):
-        field += f'<path d="M400 330 C{400 + s} 200 {400 + s} 600 400 470"/>'
-        field += f'<path d="M400 330 C{400 - s} 200 {400 - s} 600 400 470"/>'
-
-    stars = ""
     rnd = random.Random(7)
-    for _ in range(50):
+
+    # Starfield
+    stars = ""
+    for _ in range(70):
         x, y = rnd.randint(0, 800), rnd.randint(0, 800)
-        r = rnd.uniform(0.5, 1.8)
+        r = rnd.uniform(0.4, 1.6)
         o = rnd.uniform(0.2, 0.9)
         stars += f'<circle cx="{x}" cy="{y}" r="{r:.2f}" fill="#fff" opacity="{o:.2f}"/>'
 
-    pulses = ""
-    for i in range(6):
-        r = 120 + i * 40
-        pulses += f'<circle cx="400" cy="400" r="{r}" fill="none" stroke="#00ff88" stroke-opacity="{0.4 - i * 0.06:.2f}" stroke-width="1" stroke-dasharray="3 9"/>'
+    # Neutron sphere surface (lat/long lines)
+    sph = ""
+    for a in range(0, 180, 20):
+        rx = 90 * abs(math.cos(math.radians(a)))
+        sph += f'<ellipse cx="400" cy="400" rx="{rx:.1f}" ry="90"/>'
+    for lat in range(-80, 81, 20):
+        r = 90 * math.cos(math.radians(lat))
+        y = 400 - 90 * math.sin(math.radians(lat))
+        sph += f'<ellipse cx="400" cy="{y:.1f}" rx="{r:.1f}" ry="{r * 0.22:.1f}"/>'
+
+    # Magnetic dipole field lines
+    field = ""
+    for s in (150, 220, 300, 380, 460):
+        field += f'<path d="M400 310 C{400 + s} 150 {400 + s} 650 400 490" fill="none"/>'
+        field += f'<path d="M400 310 C{400 - s} 150 {400 - s} 650 400 490" fill="none"/>'
+
+    # Radio waves (concentric)
+    waves = ""
+    for i in range(8):
+        r = 110 + i * 42
+        waves += f'<circle cx="400" cy="400" r="{r}" fill="none" stroke="#00ff88" stroke-opacity="{0.5 - i * 0.05:.2f}" stroke-width="1.2" stroke-dasharray="2 10"/>'
+
+    # Orbiting particles
+    particles = ""
+    for i in range(12):
+        angle = i * 30
+        particles += f'<g class="rot-{i % 3}" style="transform-origin:400px 400px"><rect x="{400 + 260}" y="396" width="6" height="6" fill="#00ff88" transform="rotate({angle} 400 400)"/></g>'
+
+    # Sound waveform below
+    wave = ""
+    for i in range(40):
+        h = 8 + int(30 * abs(math.sin(i * 0.6 + rnd.random())))
+        x = 80 + i * 16
+        wave += f'<rect x="{x}" y="{700 - h / 2:.0f}" width="4" height="{h}" rx="2" fill="#00d4ff" opacity="{0.4 + 0.5 * abs(math.sin(i * 0.4)):.2f}"/>'
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
 <defs>
-<radialGradient id="halo"><stop offset="0" stop-color="#00d4ff" stop-opacity=".40"/><stop offset=".5" stop-color="#00ff88" stop-opacity=".15"/><stop offset="1" stop-color="#7b2ff7" stop-opacity="0"/></radialGradient>
-<radialGradient id="core"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="#baffd9"/><stop offset=".5" stop-color="#00ff88" stop-opacity=".9"/><stop offset="1" stop-color="#00ff88" stop-opacity="0"/></radialGradient>
-<linearGradient id="jet" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#00ff88" stop-opacity="1"/><stop offset=".4" stop-color="#00d4ff" stop-opacity=".6"/><stop offset="1" stop-color="#7b2ff7" stop-opacity="0"/></linearGradient>
-<linearGradient id="jet2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00ff88" stop-opacity="1"/><stop offset=".4" stop-color="#00d4ff" stop-opacity=".6"/><stop offset="1" stop-color="#7b2ff7" stop-opacity="0"/></linearGradient>
-<linearGradient id="ring" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#00d4ff"/><stop offset=".5" stop-color="#00ff88"/><stop offset="1" stop-color="#7b2ff7"/></linearGradient>
-<filter id="blur1"><feGaussianBlur stdDeviation="4"/></filter>
-<filter id="blur2"><feGaussianBlur stdDeviation="12"/></filter>
+<radialGradient id="halo"><stop offset="0" stop-color="#00d4ff" stop-opacity=".35"/><stop offset=".55" stop-color="#00ff88" stop-opacity=".12"/><stop offset="1" stop-color="#7b2ff7" stop-opacity="0"/></radialGradient>
+<radialGradient id="core"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="#baffd9"/><stop offset=".55" stop-color="#00ff88" stop-opacity=".9"/><stop offset="1" stop-color="#00ff88" stop-opacity="0"/></radialGradient>
+<filter id="b1"><feGaussianBlur stdDeviation="5"/></filter>
+<filter id="b2"><feGaussianBlur stdDeviation="14"/></filter>
+<filter id="b3"><feGaussianBlur stdDeviation="2"/></filter>
 </defs>
 <style>
-.rot1{{transform-origin:400px 400px;animation:spin 40s linear infinite}}
-.rot2{{transform-origin:400px 400px;animation:spin 25s linear infinite reverse}}
-.rot3{{transform-origin:400px 400px;animation:spin 60s linear infinite}}
-.pulse1{{transform-origin:400px 400px;animation:pulse 3s ease-in-out infinite}}
-@keyframes spin{{to{{transform:rotate(360deg)}}}}
-@keyframes pulse{{0%,100%{{opacity:.3;transform:scale(.95)}}50%{{opacity:1;transform:scale(1.05)}}}}
-.jet-a{{animation:jetA 2.5s ease-in-out infinite alternate}}
-@keyframes jetA{{from{{opacity:.6}}to{{opacity:1}}}}
+.rot-0 {{ animation: spin 40s linear infinite; }}
+.rot-1 {{ animation: spin 60s linear infinite reverse; }}
+.rot-2 {{ animation: spin 80s linear infinite; }}
+@keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+.wave1 {{ animation: wavePulse 3s ease-in-out infinite; transform-origin: 400px 400px; }}
+.wave2 {{ animation: wavePulse 3s ease-in-out infinite 0.5s; transform-origin: 400px 400px; }}
+.wave3 {{ animation: wavePulse 3s ease-in-out infinite 1s; transform-origin: 400px 400px; }}
+@keyframes wavePulse {{ 0%,100% {{ opacity: .2; transform: scale(.95); }} 50% {{ opacity: 1; transform: scale(1.05); }} }}
+.coreGlow {{ animation: corePulse 2s ease-in-out infinite; transform-origin: 400px 400px; }}
+@keyframes corePulse {{ 0%,100% {{ opacity: .85; transform: scale(1); }} 50% {{ opacity: 1; transform: scale(1.08); }} }}
+.soundPulse {{ animation: sp 1.5s ease-in-out infinite; }}
+@keyframes sp {{ 0%,100% {{ opacity: .5; }} 50% {{ opacity: 1; }} }}
 </style>
 
 <!-- Starfield -->
-<g opacity=".8">{stars}</g>
+<g>{stars}</g>
 
 <!-- Outer halo -->
-<circle cx="400" cy="400" r="380" fill="url(#halo)"/>
+<circle cx="400" cy="400" r="380" fill="url(#halo)" filter="url(#b2)"/>
 
-<!-- Pulsing waves -->
-<g class="pulse1">{pulses}</g>
+<!-- Radio waves -->
+<g class="wave1">{waves}</g>
+<g class="wave2" opacity=".6">{waves}</g>
+<g class="wave3" opacity=".4">{waves}</g>
 
-<!-- Rotating magnetic field lines -->
-<g class="rot1" fill="none" stroke="#00d4ff" stroke-opacity=".35" stroke-width="1.2">{field}</g>
+<!-- Magnetic field lines -->
+<g stroke="#00d4ff" stroke-opacity=".4" stroke-width="1.2" filter="url(#b3)">{field}</g>
+<g stroke="#00ff88" stroke-opacity=".2" stroke-width="1">{field}</g>
 
-<!-- Polar jets -->
-<g transform="rotate(20 400 400)">
-<polygon class="jet-a" points="400,380 350,-20 450,-20" fill="url(#jet)"/>
-<polygon class="jet-a" points="400,420 350,820 450,820" fill="url(#jet2)"/>
-</g>
+<!-- Equatorial ring -->
+<ellipse cx="400" cy="400" rx="330" ry="60" fill="none" stroke="#00d4ff" stroke-width="1" opacity=".3" stroke-dasharray="4 8"/>
+<ellipse cx="400" cy="400" rx="240" ry="44" fill="none" stroke="#00ff88" stroke-width="1" opacity=".25" stroke-dasharray="2 6"/>
 
-<!-- Equatorial rings -->
-<ellipse cx="400" cy="400" rx="340" ry="70" fill="none" stroke="url(#ring)" stroke-width="12" opacity=".35" filter="url(#blur2)"/>
-<ellipse class="rot2" cx="400" cy="400" rx="340" ry="70" fill="none" stroke="url(#ring)" stroke-width="3" stroke-dasharray="50 14"/>
-<ellipse class="rot3" cx="400" cy="400" rx="260" ry="54" fill="none" stroke="#00ff88" stroke-width="1.5" stroke-dasharray="6 10" opacity=".85"/>
+<!-- Orbiting particles -->
+<g>{particles}</g>
 
 <!-- Neutron star surface -->
-<g fill="none" stroke="#00ff88" stroke-opacity=".85" stroke-width="1.2">{sph}</g>
+<g fill="none" stroke="#00ff88" stroke-opacity=".9" stroke-width="1.2">{sph}</g>
 
 <!-- Core -->
-<circle cx="400" cy="400" r="110" fill="url(#core)" filter="url(#blur1)"/>
-<circle class="pulse1" cx="400" cy="400" r="110" fill="url(#core)"/>
+<circle class="coreGlow" cx="400" cy="400" r="110" fill="url(#core)" filter="url(#b1)"/>
 <circle cx="400" cy="400" r="22" fill="#fff"/>
-<circle cx="400" cy="400" r="40" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1"/>
+<circle cx="400" cy="400" r="42" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="1"/>
 
-<!-- Orbit particles -->
-<g class="rot1">
-<rect x="750" y="396" width="8" height="8" fill="#00ff88"/>
-<rect x="42" y="396" width="6" height="6" fill="#00d4ff"/>
-</g>
-<g class="rot2">
-<rect x="700" y="396" width="7" height="7" fill="#7b2ff7"/>
-<rect x="93" y="396" width="5" height="5" fill="#00ff88"/>
-</g>
+<!-- Sound waveform -->
+<g class="soundPulse">{wave}</g>
+<line x1="80" y1="700" x2="720" y2="700" stroke="#00d4ff" stroke-opacity=".25" stroke-width="1"/>
+<text x="400" y="755" font-family="monospace" font-size="10" fill="#00ff88" opacity=".5" text-anchor="middle" letter-spacing="6">RADIO PULSE SIGNAL</text>
 </svg>"""
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 2 — ENCRYPTION
+# ART 2 — ENCRYPTION (data particles)
 # ═══════════════════════════════════════════════════════════════
 def crypto_art():
     rnd = random.Random(5)
 
-    # Data columns (left)
-    left_cols = ""
-    for c in range(8):
-        chars = "".join(
-            f'<text x="{10 + c * 22}" y="{20 + r * 24}" opacity="{0.15 + 0.4 * rnd.random():.2f}">{rnd.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")}</text>'
-            for r in range(14)
-        )
-        left_cols += f'<g style="animation-delay:{rnd.random() * 3:.2f}s">{chars}</g>'
+    # Data particles (letters/digits) flowing
+    particles = ""
+    for i in range(60):
+        angle = rnd.uniform(0, 360)
+        radius = rnd.uniform(80, 220)
+        x = 260 + radius * math.cos(math.radians(angle))
+        y = 200 + radius * math.sin(math.radians(angle))
+        ch = rnd.choice("0123456789ABCDEF")
+        size = rnd.uniform(8, 13)
+        o = rnd.uniform(0.2, 0.9)
+        delay = rnd.uniform(0, 3)
+        particles += f'<text x="{x:.0f}" y="{y:.0f}" font-family="monospace" font-size="{size:.1f}" fill="#00ff88" opacity="{o:.2f}" style="animation-delay:{delay:.2f}s">{ch}</text>'
 
-    # Encrypted columns (right)
-    right_cols = ""
-    for c in range(8):
-        chars = "".join(
-            f'<text x="{340 + c * 22}" y="{20 + r * 24}" opacity="{0.15 + 0.4 * rnd.random():.2f}">{rnd.choice("0123456789ABCDEF")}</text>'
-            for r in range(14)
-        )
-        right_cols += f'<g style="animation-delay:{rnd.random() * 3:.2f}s">{chars}</g>'
+    # Incoming data streams (left)
+    left_stream = ""
+    for i in range(4):
+        y = 60 + i * 40
+        for j in range(8):
+            ch = rnd.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            left_stream += f'<text x="{20 + j * 18}" y="{y}" font-family="monospace" font-size="12" fill="#00ff88" opacity="{0.2 + j * 0.08:.2f}">{ch}</text>'
+
+    # Outgoing data streams (right)
+    right_stream = ""
+    for i in range(4):
+        y = 60 + i * 40
+        for j in range(8):
+            ch = rnd.choice("0123456789ABCDEF")
+            right_stream += f'<text x="{360 + j * 18}" y="{y}" font-family="monospace" font-size="12" fill="#00d4ff" opacity="{0.2 + j * 0.08:.2f}">{ch}</text>'
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400">
 <defs>
-<linearGradient id="shield" x1="0" y1="0" x2="1" y2="1">
-<stop offset="0" stop-color="#00d4ff"/>
-<stop offset=".5" stop-color="#00ff88"/>
-<stop offset="1" stop-color="#7b2ff7"/>
-</linearGradient>
-<radialGradient id="glow">
-<stop offset="0" stop-color="#00ff88" stop-opacity=".45"/>
-<stop offset="1" stop-color="#00ff88" stop-opacity="0"/>
-</radialGradient>
-<linearGradient id="beam" x1="0" x2="1" y1="0" y2="0">
-<stop offset="0" stop-color="#00d4ff" stop-opacity="0"/>
-<stop offset=".5" stop-color="#00ff88" stop-opacity="1"/>
-<stop offset="1" stop-color="#00d4ff" stop-opacity="0"/>
-</linearGradient>
-<filter id="b1"><feGaussianBlur stdDeviation="5"/></filter>
-<filter id="b2"><feGaussianBlur stdDeviation="12"/></filter>
+<radialGradient id="glow"><stop offset="0" stop-color="#00ff88" stop-opacity=".55"/><stop offset=".5" stop-color="#00d4ff" stop-opacity=".15"/><stop offset="1" stop-color="#7b2ff7" stop-opacity="0"/></radialGradient>
+<linearGradient id="beam" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#00ff88" stop-opacity="0"/><stop offset=".5" stop-color="#00ff88" stop-opacity=".9"/><stop offset="1" stop-color="#00ff88" stop-opacity="0"/></linearGradient>
+<filter id="bl"><feGaussianBlur stdDeviation="6"/></filter>
 </defs>
 <style>
-.cols-l g, .cols-r g {{animation: flick 3s ease-in-out infinite alternate}}
-@keyframes flick {{from{{opacity:.4}}to{{opacity:1}}}}
-.shield-glow {{animation: sg 2.5s ease-in-out infinite alternate}}
-@keyframes sg {{from{{opacity:.75}}to{{opacity:1}}}}
-.rot-ring {{transform-origin:260px 200px;animation: spin 25s linear infinite}}
-.rot-ring2 {{transform-origin:260px 200px;animation: spin 40s linear infinite reverse}}
-.lock-body {{animation: lock 1.8s steps(2) infinite}}
-@keyframes lock {{50%{{opacity:.85}}}}
-.beam1 {{animation: beam 2.2s ease-in-out infinite alternate}}
-.beam2 {{animation: beam 2.2s ease-in-out infinite alternate-reverse}}
-@keyframes beam {{from{{opacity:.3}}to{{opacity:1}}}}
+.streamL text {{ animation: fadeIn 2s ease-in-out infinite alternate; }}
+.streamR text {{ animation: fadeIn 2s ease-in-out infinite alternate-reverse; }}
+@keyframes fadeIn {{ from {{ opacity: .15; }} to {{ opacity: .8; }} }}
+.ring1 {{ transform-origin: 260px 200px; animation: spin 30s linear infinite; }}
+.ring2 {{ transform-origin: 260px 200px; animation: spin 20s linear infinite reverse; }}
+.ring3 {{ transform-origin: 260px 200px; animation: spin 45s linear infinite; }}
+@keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+.corePulse {{ transform-origin: 260px 200px; animation: cp 1.8s ease-in-out infinite; }}
+@keyframes cp {{ 0%,100% {{ opacity: .7; transform: scale(.92); }} 50% {{ opacity: 1; transform: scale(1.06); }} }}
+.particles text {{ animation: pf 4s ease-in-out infinite; }}
+@keyframes pf {{ 0%,100% {{ opacity: .2; }} 50% {{ opacity: 1; }} }}
 </style>
 
-<!-- Dark base -->
 <rect width="520" height="400" fill="#02060a"/>
 
-<!-- Left data (plain) -->
-<g class="cols-l" font-family="monospace" font-size="13" fill="#00ff88">{left_cols}</g>
-
-<!-- Right data (encrypted) -->
-<g class="cols-r" font-family="monospace" font-size="13" fill="#00d4ff">{right_cols}</g>
+<!-- Incoming data -->
+<g class="streamL" font-family="monospace">{left_stream}</g>
 
 <!-- Central glow -->
-<circle cx="260" cy="200" r="180" fill="url(#glow)" filter="url(#b2)"/>
+<circle cx="260" cy="200" r="200" fill="url(#glow)" filter="url(#bl)"/>
 
-<!-- Rotating rings -->
-<circle class="rot-ring" cx="260" cy="200" r="165" fill="none" stroke="#00d4ff" stroke-opacity=".55" stroke-width="2" stroke-dasharray="3 12"/>
-<circle class="rot-ring2" cx="260" cy="200" r="140" fill="none" stroke="#00ff88" stroke-opacity=".35" stroke-width="1.2" stroke-dasharray="20 6 4 6"/>
+<!-- Encryption rings -->
+<circle class="ring1" cx="260" cy="200" r="175" fill="none" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="2 14" opacity=".7"/>
+<circle class="ring2" cx="260" cy="200" r="140" fill="none" stroke="#00ff88" stroke-width="1.2" stroke-dasharray="40 8 4 8" opacity=".6"/>
+<circle class="ring3" cx="260" cy="200" r="105" fill="none" stroke="#7b2ff7" stroke-width="1.5" stroke-dasharray="6 12" opacity=".55"/>
 
-<!-- Beams converging -->
-<line class="beam1" x1="120" y1="200" x2="200" y2="200" stroke="url(#beam)" stroke-width="2"/>
-<line class="beam2" x1="320" y1="200" x2="400" y2="200" stroke="url(#beam)" stroke-width="2"/>
+<!-- Connecting beams -->
+<line x1="40" y1="200" x2="180" y2="200" stroke="url(#beam)" stroke-width="2"/>
+<line x1="340" y1="200" x2="480" y2="200" stroke="url(#beam)" stroke-width="2"/>
 
-<!-- Shield -->
-<g class="shield-glow">
-<path d="M260 40 L380 90 V200 C380 280 320 340 260 370 C200 340 140 280 140 200 V90 Z"
-      fill="none" stroke="url(#shield)" stroke-width="14" opacity=".45" filter="url(#b1)"/>
-<path d="M260 40 L380 90 V200 C380 280 320 340 260 370 C200 340 140 280 140 200 V90 Z"
-      fill="#02060a" fill-opacity=".95" stroke="url(#shield)" stroke-width="3"/>
-<path d="M260 70 L355 110 V200 C355 265 305 315 260 340 C215 315 165 265 165 200 V110 Z"
-      fill="none" stroke="#00ff88" stroke-opacity=".3" stroke-width="1.2"/>
-</g>
+<!-- Central encryption core -->
+<circle class="corePulse" cx="260" cy="200" r="70" fill="none" stroke="#00ff88" stroke-width="2"/>
+<circle cx="260" cy="200" r="50" fill="none" stroke="#00d4ff" stroke-width="1" opacity=".6"/>
+<circle cx="260" cy="200" r="20" fill="#00ff88" opacity=".25"/>
+<circle cx="260" cy="200" r="6" fill="#fff"/>
 
-<!-- Padlock -->
-<path d="M232 195 V175 a28 28 0 0 1 56 0 V195" fill="none" stroke="#00ff88" stroke-width="6" stroke-linecap="round"/>
-<rect x="212" y="195" width="96" height="76" rx="10" fill="#00ff88" fill-opacity=".15" stroke="#00ff88" stroke-width="4"/>
-<g class="lock-body">
-<circle cx="260" cy="228" r="8" fill="#fff"/>
-<rect x="256.5" y="233" width="7" height="22" rx="3" fill="#fff"/>
-</g>
+<!-- Outgoing encrypted data -->
+<g class="streamR" font-family="monospace">{right_stream}</g>
+
+<!-- Floating data particles -->
+<g class="particles" font-family="monospace" font-weight="bold">{particles}</g>
 
 <!-- Frame -->
 <rect x="1" y="1" width="518" height="398" fill="none" stroke="#00ff88" stroke-opacity=".25"/>
@@ -219,99 +221,107 @@ def crypto_art():
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 3 — TEXT → SOUND → TEXT
+# ART 3 — TEXT → SOUND → STAR (bidirectional)
 # ═══════════════════════════════════════════════════════════════
 def pipeline_art():
-    # Left text
-    left_text = "HELLO WORLD"
-    left_chars = ""
-    for i, ch in enumerate(left_text):
-        x = 20 + i * 15
-        left_chars += f'<text x="{x}" y="80" font-family="monospace" font-size="16" fill="#00ff88" opacity="{0.6 + 0.4 * (i % 3 == 0):.2f}">{ch}</text>'
-
-    # Right text
-    right_text = "HELLO WORLD"
-    right_chars = ""
-    for i, ch in enumerate(right_text):
-        x = 20 + i * 15
-        right_chars += f'<text x="{x}" y="440" font-family="monospace" font-size="16" fill="#00d4ff" opacity="{0.6 + 0.4 * (i % 3 == 0):.2f}">{ch}</text>'
-
-    # Middle waveform bars
-    bars = ""
     rnd = random.Random(3)
-    n = 30
-    for i in range(n):
-        h = 10 + int(40 * abs(math.sin(i * 0.7 + rnd.random())))
-        x = 20 + i * 16
-        o = 0.4 + 0.5 * abs(math.sin(i * 0.5))
-        bars += f'<rect x="{x}" y="{250 - h / 2:.0f}" width="6" height="{h}" rx="2" fill="#00ff88" opacity="{o:.2f}"/>'
 
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 520">
+    # Left: text blocks (abstract glyphs, no readable words)
+    left_glyphs = ""
+    for r in range(5):
+        y = 90 + r * 26
+        for c in range(6):
+            w = rnd.randint(6, 14)
+            left_glyphs += f'<rect x="{30 + c * 22}" y="{y}" width="{w}" height="4" rx="2" fill="#00ff88" opacity="{0.25 + 0.15 * c:.2f}"/>'
+            left_glyphs += f'<rect x="{30 + c * 22}" y="{y + 8}" width="{rnd.randint(8, 16)}" height="3" rx="1.5" fill="#00ff88" opacity="{0.15 + 0.1 * r:.2f}"/>'
+
+    # Right: sound waveform blocks
+    right_glyphs = ""
+    for r in range(5):
+        y = 90 + r * 26
+        for c in range(6):
+            h = 4 + int(8 * abs(math.sin(r * 1.7 + c * 0.9)))
+            right_glyphs += f'<rect x="{360 + c * 22}" y="{y + (8 - h) / 2:.0f}" width="10" height="{h}" rx="2" fill="#00d4ff" opacity="{0.3 + 0.1 * c:.2f}"/>'
+            right_glyphs += f'<rect x="{360 + c * 22 + 2}" y="{y + 12}" width="6" height="3" rx="1.5" fill="#00d4ff" opacity="{0.15 + 0.1 * r:.2f}"/>'
+
+    # Waveform bars in middle (top path)
+    bars_top = ""
+    for i in range(26):
+        h = 6 + int(28 * abs(math.sin(i * 0.6 + rnd.random())))
+        x = 60 + i * 16
+        bars_top += f'<rect x="{x}" y="{250 - h / 2:.0f}" width="5" height="{h}" rx="2" fill="#00ff88" opacity="{0.35 + 0.5 * abs(math.sin(i * 0.5)):.2f}"/>'
+
+    # Waveform bars in middle (bottom path)
+    bars_bot = ""
+    for i in range(26):
+        h = 6 + int(28 * abs(math.sin(i * 0.6 + rnd.random())))
+        x = 60 + i * 16
+        bars_bot += f'<rect x="{x}" y="{450 - h / 2:.0f}" width="5" height="{h}" rx="2" fill="#00d4ff" opacity="{0.35 + 0.5 * abs(math.sin(i * 0.4)):.2f}"/>'
+
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 560">
 <defs>
-<radialGradient id="core">
-<stop offset="0" stop-color="#fff"/>
-<stop offset=".3" stop-color="#00ff88" stop-opacity=".85"/>
-<stop offset="1" stop-color="#00ff88" stop-opacity="0"/>
-</radialGradient>
-<linearGradient id="jetL" x1="0" y1="0" x2="0" y2="1">
-<stop offset="0" stop-color="#00d4ff" stop-opacity="0"/>
-<stop offset=".5" stop-color="#00ff88" stop-opacity=".9"/>
-<stop offset="1" stop-color="#00d4ff" stop-opacity="0"/>
-</linearGradient>
-<linearGradient id="jetR" x1="0" y1="0" x2="0" y2="1">
-<stop offset="0" stop-color="#00d4ff" stop-opacity="0"/>
-<stop offset=".5" stop-color="#00d4ff" stop-opacity=".9"/>
-<stop offset="1" stop-color="#00d4ff" stop-opacity="0"/>
-</linearGradient>
-<filter id="blur3"><feGaussianBlur stdDeviation="6"/></filter>
+<radialGradient id="core"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="#00ff88" stop-opacity=".85"/><stop offset="1" stop-color="#00ff88" stop-opacity="0"/></radialGradient>
+<linearGradient id="arrT" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#00ff88" stop-opacity="0"/><stop offset=".5" stop-color="#00ff88"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0"/></linearGradient>
+<linearGradient id="arrB" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#00d4ff" stop-opacity="0"/><stop offset=".5" stop-color="#00d4ff"/><stop offset="1" stop-color="#00ff88" stop-opacity="0"/></linearGradient>
+<filter id="blurP"><feGaussianBlur stdDeviation="5"/></filter>
 </defs>
 <style>
-.f1{{animation:f 1.4s linear infinite}}
-.f2{{animation:f 1.4s linear infinite reverse}}
-.w1{{stroke-dasharray:800;stroke-dashoffset:800;animation:w 3s ease-out infinite alternate}}
-@keyframes w{{to{{stroke-dashoffset:0}}}}
-@keyframes f{{to{{stroke-dashoffset:-20}}}}
-.core-pulse{{transform-origin:260px:260px;animation:cp 2s ease-in-out infinite alternate}}
-@keyframes cp{{from{{opacity:.7;transform:scale(.9)}}to{{opacity:1;transform:scale(1.05)}}}}
+.flowT {{ animation: flow 3s linear infinite; }}
+.flowB {{ animation: flow 3s linear infinite reverse; }}
+@keyframes flow {{ to {{ stroke-dashoffset: -30; }} }}
+.corePulse {{ transform-origin: 260px 350px; animation: cp 1.8s ease-in-out infinite; }}
+@keyframes cp {{ 0%,100% {{ opacity: .75; transform: scale(.9); }} 50% {{ opacity: 1; transform: scale(1.1); }} }}
+.rot {{ transform-origin: 260px 350px; animation: spin 12s linear infinite; }}
+@keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+.barsT rect {{ animation: barP 1.6s ease-in-out infinite; }}
+.barsB rect {{ animation: barP 1.6s ease-in-out infinite reverse; }}
+@keyframes barP {{ 0%,100% {{ opacity: .4; }} 50% {{ opacity: 1; }} }}
 </style>
 
-<rect width="520" height="520" fill="#02060a"/>
+<rect width="520" height="560" fill="#02060a"/>
 
-<!-- Input text -->
-<g>{left_chars}</g>
-<text x="260" y="110" font-family="monospace" font-size="9" fill="#00ff88" opacity=".5" text-anchor="middle" letter-spacing="4">TEXT INPUT</text>
+<!-- TOP PATH: TEXT → SOUND -->
 
-<!-- Arrow down -->
-<line class="f1" x1="260" y1="130" x2="260" y2="165" stroke="#00ff88" stroke-width="2" stroke-dasharray="6 6"/>
-<polygon points="250,163 270,163 260,180" fill="#00ff88"/>
+<!-- Input text glyphs (top-left) -->
+<g>{left_glyphs}</g>
+<text x="260" y="55" font-family="monospace" font-size="9" fill="#00ff88" opacity=".55" text-anchor="middle" letter-spacing="5">TEXT DATA</text>
 
-<!-- Waveform area -->
-<rect x="10" y="185" width="500" height="150" fill="none" stroke="#00ff88" stroke-opacity=".2" rx="8"/>
-<g>{bars}</g>
-<text x="260" y="215" font-family="monospace" font-size="9" fill="#00ff88" opacity=".5" text-anchor="middle" letter-spacing="4">WAVEFORM</text>
+<!-- Arrow right → -->
+<line class="flowT" x1="170" y1="130" x2="350" y2="130" stroke="url(#arrT)" stroke-width="2" stroke-dasharray="6 8"/>
+<polygon points="350,124 370,130 350,136" fill="#00d4ff"/>
 
-<!-- Arrow down -->
-<line class="f1" x1="260" y1="350" x2="260" y2="385" stroke="#00ff88" stroke-width="2" stroke-dasharray="6 6"/>
-<polygon points="250,383 270,383 260,400" fill="#00ff88"/>
+<!-- Output waveform (top-right) -->
+<g>{right_glyphs}</g>
+<text x="260" y="55" font-family="monospace" font-size="9" fill="#00d4ff" opacity=".55" text-anchor="middle" letter-spacing="5">SOUND DATA</text>
 
-<!-- Neutron star core -->
-<circle class="core-pulse" cx="260" cy="460" r="40" fill="url(#core)" filter="url(#blur3)"/>
-<circle cx="260" cy="460" r="45" fill="none" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="6 5"/>
-<circle cx="260" cy="460" r="6" fill="#fff"/>
-<rect x="257" y="418" width="6" height="84" fill="url(#jetL)"/>
-<rect x="257" y="418" width="6" height="84" fill="url(#jetR)" opacity=".5"/>
+<!-- Middle waveform (top) -->
+<rect x="40" y="215" width="440" height="70" fill="none" stroke="#00ff88" stroke-opacity=".2" rx="8"/>
+<g class="barsT">{bars_top}</g>
+<text x="260" y="300" font-family="monospace" font-size="9" fill="#00ff88" opacity=".5" text-anchor="middle" letter-spacing="5">WAVEFORM</text>
 
-<!-- Output text -->
-<g>{right_chars}</g>
-<text x="260" y="500" font-family="monospace" font-size="9" fill="#00d4ff" opacity=".5" text-anchor="middle" letter-spacing="4">SIGNAL OUTPUT</text>
+<!-- Central neutron star core -->
+<circle class="corePulse" cx="260" cy="350" r="42" fill="url(#core)" filter="url(#blurP)"/>
+<circle class="rot" cx="260" cy="350" r="46" fill="none" stroke="#00d4ff" stroke-width="1.5" stroke-dasharray="6 5"/>
+<circle cx="260" cy="350" r="6" fill="#fff"/>
+<text x="260" y="410" font-family="monospace" font-size="9" fill="#00ff88" opacity=".55" text-anchor="middle" letter-spacing="5">STAR CORE</text>
+
+<!-- Middle waveform (bottom) -->
+<rect x="40" y="415" width="440" height="70" fill="none" stroke="#00d4ff" stroke-opacity=".2" rx="8"/>
+<g class="barsB">{bars_bot}</g>
+<text x="260" y="500" font-family="monospace" font-size="9" fill="#00d4ff" opacity=".5" text-anchor="middle" letter-spacing="5">WAVEFORM (reverse)</text>
+
+<!-- BOTTOM PATH: SOUND → TEXT -->
+
+<!-- Arrow left ← -->
+<line class="flowB" x1="350" y1="130" x2="170" y2="130" stroke="url(#arrB)" stroke-width="2" stroke-dasharray="6 8"/>
 
 <!-- Frame -->
-<rect x="1" y="1" width="518" height="518" fill="none" stroke="#00ff88" stroke-opacity=".25"/>
+<rect x="1" y="1" width="518" height="558" fill="none" stroke="#00ff88" stroke-opacity=".25"/>
 </svg>"""
 
 
-STAR = svg_img(star_art(), "hero-art", "Neutron star")
-NET = svg_img(crypto_art(), "art", "Encryption shield")
+STAR = svg_img(star_art(), "hero-art", "Neutron star with radio waves")
+NET = svg_img(crypto_art(), "art", "Encryption data flow")
 PIPE = svg_img(pipeline_art(), "art", "Text to sound pipeline")
 
 # ═══════════════════════════════════════════════════════════════
@@ -358,7 +368,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 
 .hero-tagline { font-family:'JetBrains Mono', monospace; font-size:clamp(.7rem, 1.3vw, .9rem); letter-spacing:.22em; text-transform:uppercase; color:rgba(0,255,136,.9); text-shadow:0 0 20px rgba(0,255,136,.6); margin:0 auto 0.9rem auto; max-width:950px; line-height:1.9; }
 
-.hero-art { display:block; width:min(100%,640px); margin:2.5rem auto 0 auto; mask-image:radial-gradient(circle closest-side,#000 80%,transparent 100%); }
+.hero-art { display:block; width:min(100%,640px); margin:2.5rem auto 0 auto; }
 .art { display:block; width:100%; max-width:520px; margin-top:1rem; border-radius:18px; border:1px solid rgba(0,255,136,.2); box-shadow:0 0 70px rgba(0,255,136,.08); }
 
 .stats-strip { display:grid; grid-template-columns:repeat(4,1fr); margin:4rem 0 2rem 0; border:1px solid rgba(0,255,136,.18); border-radius:20px; background:linear-gradient(145deg,rgba(0,255,136,.05),rgba(255,255,255,.01)); backdrop-filter:blur(20px); overflow:hidden; }
