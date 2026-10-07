@@ -20,7 +20,6 @@ def html(code):
 
 
 def svg_img(svg, cls, alt):
-    # إضافة بصمة زمنية لمنع المتصفح من تخزين الصورة مؤقتاً
     unique_svg = svg.replace("<svg ", f'<svg data-t="{time.time()}" ', 1)
     b64 = base64.b64encode(unique_svg.encode()).decode()
     return f'<img class="{cls}" alt="{alt}" src="data:image/svg+xml;base64,{b64}"/>'
@@ -188,14 +187,10 @@ def pipeline_art():
 </style>
 <rect width="520" height="480" fill="#02060a"/>
 
-<!-- TEXT BOX -->
 <rect x="40" y="36" width="440" height="130" rx="12" fill="#00ff88" fill-opacity=".04" stroke="#00ff88" stroke-opacity=".45"/>
-<!-- النص العلوي: TEXT -->
 <text x="60" y="62" font-family="monospace" font-size="11" letter-spacing="6" fill="#00ff88" opacity=".8">TEXT</text>
-<!-- النص السفلي: YOUR TEXT_ -->
 <text x="60" y="116" font-family="monospace" font-size="22" font-weight="bold" fill="#00ff88">YOUR TEXT<tspan class="cur">_</tspan></text>
 
-<!-- ARROWS -->
 <line class="flowD" x1="185" y1="176" x2="185" y2="294" stroke="#00ff88" stroke-width="2.5"/>
 <polygon points="173,292 197,292 185,310" fill="#00ff88"/>
 {down}
@@ -206,7 +201,6 @@ def pipeline_art():
 {up}
 <text x="352" y="244" font-family="monospace" font-size="11" letter-spacing="3" fill="#00d4ff">DECRYPT</text>
 
-<!-- SOUND BOX -->
 <rect x="40" y="314" width="440" height="130" rx="12" fill="#00d4ff" fill-opacity=".04" stroke="#00d4ff" stroke-opacity=".45"/>
 <text x="60" y="340" font-family="monospace" font-size="11" letter-spacing="6" fill="#00d4ff" opacity=".8">SOUND</text>
 <path transform="translate(60 0)" d="{wave_d}" fill="none" stroke="#00d4ff" stroke-opacity=".7" stroke-width="2.2" stroke-linejoin="round"/>
@@ -243,7 +237,7 @@ RIDGE = svg_img(ridge_art(), "banner", "Pulse profiles")
 # ═══════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&family=Fira+Code:wght@400;500;700&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
@@ -279,7 +273,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .hero-name { font-family:'Orbitron', sans-serif !important; font-weight:900; font-size:clamp(2rem, 9vw, 7rem); line-height:1; letter-spacing:.08em; margin:0 auto 2rem auto; padding:0; white-space:nowrap; background:linear-gradient(180deg,#fff 0%,#00ff88 60%,#00d4ff 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 70px rgba(0,255,136,.65)); animation:glow 4s ease-in-out infinite; }
 @keyframes glow { 50% { filter:drop-shadow(0 0 110px rgba(0,255,136,.95)); } }
 
-/* ═══ CYBERSECURITY TEXT STYLE ═══ */
+/* ═══ CYBERSECURITY TEXT — FIRA CODE + SCANLINE ═══ */
 .cyber-text-container {
     margin: 0 auto 0.9rem auto;
     max-width: 950px;
@@ -287,68 +281,47 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 }
 
 .cyber-text {
-    font-family: 'Share Tech Mono', 'Courier New', monospace !important;
-    font-size: clamp(0.75rem, 1.4vw, 1rem);
-    letter-spacing: 0.25em;
+    font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace !important;
+    font-weight: 500;
+    font-size: clamp(0.8rem, 1.5vw, 1.05rem);
+    letter-spacing: 0.22em;
     text-transform: uppercase;
     color: #00ff88;
-    text-shadow: 
-        0 0 5px #00ff88,
-        0 0 10px #00ff88,
-        0 0 20px rgba(0, 255, 136, 0.6),
-        0 0 40px rgba(0, 255, 136, 0.3);
+    text-shadow:
+        0 0 4px rgba(0, 255, 136, 0.9),
+        0 0 12px rgba(0, 255, 136, 0.7),
+        0 0 30px rgba(0, 255, 136, 0.4);
     position: relative;
     display: inline-block;
-    animation: cyberFlicker 3s infinite;
+    padding: 0.3rem 1rem;
+    border-right: 2px solid #00ff88;
+    animation: blinkCursor 0.9s step-end infinite;
 }
 
-/* تأثير التشويش (Glitch) */
-.cyber-text::before,
+/* خط المسح الأفقي (Scanline) */
 .cyber-text::after {
-    content: attr(data-text);
+    content: '';
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
-    overflow: hidden;
-    opacity: 0.8;
+    left: -10%;
+    width: 120%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00ff88, transparent);
+    box-shadow: 0 0 12px #00ff88, 0 0 25px rgba(0, 255, 136, 0.6);
+    animation: scanline 3s linear infinite;
+    pointer-events: none;
 }
 
-.cyber-text::before {
-    left: 2px;
-    text-shadow: -2px 0 #00d4ff;
-    animation: cyberGlitch 2s infinite linear alternate-reverse;
+@keyframes scanline {
+    0%   { top: 0%;   opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
 }
 
-.cyber-text::after {
-    left: -2px;
-    text-shadow: -2px 0 #7b2ff7, 2px 2px #00ff88;
-    animation: cyberGlitch2 3s infinite linear alternate-reverse;
-}
-
-@keyframes cyberFlicker {
-    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
-    20%, 22%, 24%, 55% { opacity: 0.5; }
-}
-
-@keyframes cyberGlitch {
-    0% { clip-path: inset(20% 0 30% 0); }
-    20% { clip-path: inset(60% 0 10% 0); }
-    40% { clip-path: inset(10% 0 80% 0); }
-    60% { clip-path: inset(40% 0 40% 0); }
-    80% { clip-path: inset(80% 0 5% 0); }
-    100% { clip-path: inset(30% 0 50% 0); }
-}
-
-@keyframes cyberGlitch2 {
-    0% { clip-path: inset(10% 0 60% 0); }
-    20% { clip-path: inset(30% 0 20% 0); }
-    40% { clip-path: inset(70% 0 10% 0); }
-    60% { clip-path: inset(20% 0 50% 0); }
-    80% { clip-path: inset(50% 0 30% 0); }
-    100% { clip-path: inset(5% 0 70% 0); }
+@keyframes blinkCursor {
+    0%, 100% { border-color: #00ff88; }
+    50%      { border-color: transparent; }
 }
 
 .hero-art { display:block; width:min(100%,640px); margin:2.5rem auto 0 auto; border-radius:20px; border:1px solid rgba(255,214,102,.25); box-shadow:0 0 90px rgba(255,200,80,.15); }
@@ -420,7 +393,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     filter: brightness(1.15);
 }
 
-/* Secondary buttons (CTA section) — keep original green style */
+/* Secondary buttons */
 .stButton > button[kind="secondary"] {
     background: linear-gradient(145deg, rgba(0,255,136,.12), rgba(0,255,136,.03)) !important;
     color: #00ff88 !important;
@@ -459,7 +432,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
   .hero { padding-top:4rem; }
   .hero-badge { letter-spacing:.12em; font-size:.62rem; padding:.7rem 1.2rem; line-height:1.7; }
   .hero-name { letter-spacing:.04em; }
-  .cyber-text { letter-spacing:.15em; font-size:.72rem; }
+  .cyber-text { letter-spacing:.15em; font-size:.7rem; }
   .stats-strip, .feat-grid { grid-template-columns:1fr; }
   .stat-item + .stat-item { border-left:none; border-top:1px solid rgba(255,255,255,.08); }
   .quote { padding:2rem 1.5rem; }
@@ -496,7 +469,7 @@ html(f"""
     <div class="hero-badge"><i></i>DM SAFELY AND SECURE YOUR PRIVACY WITH</div>
     <h1 class="hero-name">CRYPTORIAN</h1>
     <div class="cyber-text-container">
-        <p class="cyber-text" data-text="USING AN ENCRYPTED MODIFIED NEUTRON STAR SOUND">USING AN ENCRYPTED MODIFIED NEUTRON STAR SOUND</p>
+        <p class="cyber-text">USING AN ENCRYPTED MODIFIED NEUTRON STAR SOUND</p>
     </div>
     {STAR}
 </div>
@@ -504,7 +477,6 @@ html(f"""
 
 st.markdown('<div style="height:2rem;"></div>', unsafe_allow_html=True)
 
-# Main button — colorful gradient
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
     if st.button("LET'S START!", use_container_width=True, type="primary"):
