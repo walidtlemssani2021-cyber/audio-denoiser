@@ -1,4 +1,1 @@
-streamlit==1.64.0
-numpy==2.4.6
-soundfile==0.14.0
-cryptography==48.0.1
+streamlit==1.40.0
