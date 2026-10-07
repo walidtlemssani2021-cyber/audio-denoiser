@@ -23,36 +23,38 @@ def svg_img(svg, cls, alt):
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 1 — NEUTRON STAR (realistic sphere, no jets, no waves)
+# ART 1 — NEUTRON STAR (spinning fast, no waves)
 # ═══════════════════════════════════════════════════════════════
 def star_art():
     rnd = random.Random(7)
 
+    # Starfield
     stars = ""
-    for _ in range(90):
+    for _ in range(80):
         x, y = rnd.randint(0, 800), rnd.randint(0, 800)
-        r = rnd.uniform(0.4, 1.8)
-        o = rnd.uniform(0.15, 0.9)
+        r = rnd.uniform(0.4, 1.6)
+        o = rnd.uniform(0.15, 0.85)
         stars += f'<circle cx="{x}" cy="{y}" r="{r:.2f}" fill="#fff" opacity="{o:.2f}"/>'
 
+    # Corona (ثابت - توهج)
     corona = ""
-    for i in range(9):
-        r = 118 + i * 11
-        o = 0.28 - i * 0.028
+    for i in range(7):
+        r = 115 + i * 10
+        o = 0.28 - i * 0.033
         corona += f'<circle cx="400" cy="400" r="{r}" fill="none" stroke="#00ff88" stroke-opacity="{o:.3f}" stroke-width="2"/>'
 
-    sphere = ""
-    for i in range(24):
-        r = 102 - i * 3.5
-        o = 0.03 + (i / 24) * 0.14
-        sphere += f'<circle cx="400" cy="400" r="{r:.1f}" fill="#00ff88" opacity="{o:.3f}"/>'
+    # Surface spots that rotate with the star (to show spin)
+    spots = ""
+    for i in range(6):
+        angle = i * 60
+        spots += f'<circle cx="{400 + 80 * math.cos(math.radians(angle)):.1f}" cy="{400 + 20 * math.sin(math.radians(angle)):.1f}" r="6" fill="#baffd9" opacity="0.6"/>'
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
 <defs>
 <radialGradient id="coreGrad">
 <stop offset="0" stop-color="#ffffff"/>
-<stop offset="0.22" stop-color="#baffd9"/>
-<stop offset="0.55" stop-color="#00ff88" stop-opacity="0.92"/>
+<stop offset="0.25" stop-color="#baffd9"/>
+<stop offset="0.6" stop-color="#00ff88" stop-opacity="0.9"/>
 <stop offset="1" stop-color="#00ff88" stop-opacity="0"/>
 </radialGradient>
 <radialGradient id="haloGrad">
@@ -64,56 +66,59 @@ def star_art():
 <filter id="blurSmall"><feGaussianBlur stdDeviation="6"/></filter>
 </defs>
 <style>
-.corePulse {{ transform-origin: 400px 400px; animation: coreBeat 3s ease-in-out infinite; }}
-@keyframes coreBeat {{ 0%,100% {{ opacity: .85; transform: scale(1); }} 50% {{ opacity: 1; transform: scale(1.05); }} }}
-.haloPulse {{ transform-origin: 400px 400px; animation: haloBeat 4s ease-in-out infinite; }}
-@keyframes haloBeat {{ 0%,100% {{ opacity: .6; transform: scale(1); }} 50% {{ opacity: .9; transform: scale(1.08); }} }}
-.rotateSlow {{ transform-origin: 400px 400px; animation: spin 90s linear infinite; }}
-.rotateSlower {{ transform-origin: 400px 400px; animation: spin 140s linear infinite reverse; }}
+.spinFast {{ transform-origin: 400px 400px; animation: spin 1.2s linear infinite; }}
+.spinFastRev {{ transform-origin: 400px 400px; animation: spinRev 1.2s linear infinite; }}
+.corePulse {{ transform-origin: 400px 400px; animation: coreBeat 2s ease-in-out infinite; }}
+.haloPulse {{ transform-origin: 400px 400px; animation: haloBeat 3.5s ease-in-out infinite; }}
 @keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+@keyframes spinRev {{ to {{ transform: rotate(-360deg); }} }}
+@keyframes coreBeat {{ 0%,100% {{ opacity: .85; }} 50% {{ opacity: 1; }} }}
+@keyframes haloBeat {{ 0%,100% {{ opacity: .6; }} 50% {{ opacity: .9; }} }}
 </style>
 
 <g>{stars}</g>
 
-<circle class="haloPulse" cx="400" cy="400" r="360" fill="url(#haloGrad)" filter="url(#blurBig)"/>
+<circle class="haloPulse" cx="400" cy="400" r="350" fill="url(#haloGrad)" filter="url(#blurBig)"/>
 
-<g class="rotateSlow">
-<circle cx="400" cy="400" r="290" fill="none" stroke="#00d4ff" stroke-opacity="0.15" stroke-width="1" stroke-dasharray="2 16"/>
-<circle cx="400" cy="400" r="240" fill="none" stroke="#00ff88" stroke-opacity="0.10" stroke-width="1" stroke-dasharray="6 22"/>
-</g>
-<g class="rotateSlower">
-<circle cx="400" cy="400" r="205" fill="none" stroke="#7b2ff7" stroke-opacity="0.18" stroke-width="1" stroke-dasharray="1 12"/>
-</g>
-
-<g>{sphere}</g>
-
+<!-- Corona rings -->
 <g class="corePulse">{corona}</g>
 
-<circle class="corePulse" cx="400" cy="400" r="105" fill="url(#coreGrad)" filter="url(#blurSmall)"/>
+<!-- Rotating surface spots -->
+<g class="spinFast">
+<circle cx="400" cy="400" r="95" fill="none" stroke="#00ff88" stroke-opacity="0.15" stroke-width="1" stroke-dasharray="12 20"/>
+{spots}
+</g>
+
+<!-- Core -->
+<circle class="corePulse" cx="400" cy="400" r="100" fill="url(#coreGrad)" filter="url(#blurSmall)"/>
 <circle cx="400" cy="400" r="18" fill="#fff"/>
-<circle cx="400" cy="400" r="38" fill="none" stroke="#ffffff" stroke-opacity="0.45" stroke-width="1.5"/>
 
 <rect x="1" y="1" width="798" height="798" fill="none" stroke="#00ff88" stroke-opacity="0.12"/>
 </svg>"""
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 2 — ENCRYPTED CODE (matrix style)
+# ART 2 — ENCRYPTION (static, with symbols)
 # ═══════════════════════════════════════════════════════════════
 def crypto_art():
-    rnd = random.Random(5)
+    # رموز وأحرف وأرقام (static)
+    symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?/~`"
+    letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    digits = "0123456789"
+    pool = symbols + letters + digits
 
-    columns = ""
-    for c in range(22):
-        x = 12 + c * 23
-        chars = ""
-        for r in range(16):
-            y = 18 + r * 24
-            ch = rnd.choice("0123456789ABCDEF")
-            o = rnd.uniform(0.08, 0.9)
-            chars += f'<text x="{x}" y="{y}" opacity="{o:.2f}">{ch}</text>'
-        delay = rnd.uniform(0, 4)
-        columns += f'<g style="animation-delay:{delay:.2f}s">{chars}</g>'
+    rnd = random.Random(5)
+    chars = ""
+    # Grid ثابت
+    for r in range(14):
+        for c in range(22):
+            x = 15 + c * 23
+            y = 20 + r * 26
+            ch = rnd.choice(pool)
+            o = rnd.uniform(0.15, 0.85)
+            size = rnd.uniform(9, 14)
+            color = rnd.choice(["#00ff88", "#00d4ff", "#7b2ff7"])
+            chars += f'<text x="{x}" y="{y}" font-family="monospace" font-size="{size:.1f}" fill="{color}" opacity="{o:.2f}">{ch}</text>'
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400">
 <defs>
@@ -122,46 +127,34 @@ def crypto_art():
 <stop offset="0.6" stop-color="#00d4ff" stop-opacity="0.08"/>
 <stop offset="1" stop-color="#7b2ff7" stop-opacity="0"/>
 </radialGradient>
-<linearGradient id="scan" x1="0" y1="0" x2="0" y2="1">
-<stop offset="0" stop-color="#00ff88" stop-opacity="0"/>
-<stop offset="0.5" stop-color="#00ff88" stop-opacity="0.35"/>
-<stop offset="1" stop-color="#00ff88" stop-opacity="0"/>
-</linearGradient>
 </defs>
-<style>
-.columns g {{ animation: flick 2.8s ease-in-out infinite alternate; }}
-@keyframes flick {{ from {{ opacity: .35; }} to {{ opacity: 1; }} }}
-.scanline {{ animation: scanMove 4s linear infinite; }}
-@keyframes scanMove {{ 0% {{ transform: translateY(-120px); }} 100% {{ transform: translateY(460px); }} }}
-</style>
 <rect width="520" height="400" fill="#02060a"/>
-<circle cx="260" cy="200" r="230" fill="url(#glow)"/>
-<g class="columns" font-family="monospace" font-weight="bold" font-size="14" fill="#00ff88">{columns}</g>
-<rect class="scanline" x="0" y="0" width="520" height="80" fill="url(#scan)"/>
+<circle cx="260" cy="200" r="220" fill="url(#glow)"/>
+<g font-family="monospace" font-weight="bold">{chars}</g>
 <rect x="1" y="1" width="518" height="398" fill="none" stroke="#00ff88" stroke-opacity="0.25"/>
 </svg>"""
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 3 — TEXT ↔ SOUND (box + waveform + two arrows)
+# ART 3 — TEXT ↔ SOUND
 # ═══════════════════════════════════════════════════════════════
 def pipeline_art():
     rnd = random.Random(3)
 
-    # text lines inside the box
+    # Text lines (top box)
     text_lines = ""
-    for r in range(7):
-        for c in range(6):
-            w = rnd.randint(14, 30)
-            text_lines += f'<rect x="{50 + c * 32}" y="{70 + r * 20}" width="{w}" height="4" rx="2" fill="#00ff88" opacity="{0.35 + 0.1 * c:.2f}"/>'
+    for r in range(6):
+        for c in range(5):
+            w = rnd.randint(18, 32)
+            text_lines += f'<rect x="{55 + c * 32}" y="{75 + r * 22}" width="{w}" height="4" rx="2" fill="#00ff88" opacity="{0.35 + 0.1 * c:.2f}"/>'
 
-    # waveform bars
+    # Waveform bars (bottom box)
     bars = ""
     for i in range(22):
         h = 10 + int(34 * abs(math.sin(i * 0.55 + 0.3)))
         x = 48 + i * 20
         o = 0.35 + 0.55 * abs(math.sin(i * 0.4))
-        bars += f'<rect x="{x}" y="{350 - h / 2:.0f}" width="8" height="{h}" rx="4" fill="#00d4ff" opacity="{o:.2f}"/>'
+        bars += f'<rect x="{x}" y="{360 - h / 2:.0f}" width="8" height="{h}" rx="4" fill="#00d4ff" opacity="{o:.2f}"/>'
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 480">
 <defs>
@@ -175,40 +168,38 @@ def pipeline_art():
 </linearGradient>
 </defs>
 <style>
-.arrR {{ stroke-dasharray: 10 10; animation: moveR 1.6s linear infinite; }}
+.arrR {{ stroke-dasharray: 10 10; animation: moveR 1.4s linear infinite; }}
 @keyframes moveR {{ to {{ stroke-dashoffset: -40; }} }}
-.arrL {{ stroke-dasharray: 10 10; animation: moveL 1.6s linear infinite; }}
+.arrL {{ stroke-dasharray: 10 10; animation: moveL 1.4s linear infinite; }}
 @keyframes moveL {{ to {{ stroke-dashoffset: 40; }} }}
-.barPulse {{ animation: bp 1.8s ease-in-out infinite; }}
-@keyframes bp {{ 0%,100% {{ opacity: .55; }} 50% {{ opacity: 1; }} }}
 </style>
 
 <rect width="520" height="480" fill="#02060a"/>
 
 <!-- TEXT BOX -->
-<rect x="40" y="40" width="440" height="160" fill="none" stroke="#00ff88" stroke-opacity="0.35" rx="10"/>
+<rect x="40" y="50" width="440" height="150" fill="none" stroke="#00ff88" stroke-opacity="0.35" rx="10"/>
 <g>{text_lines}</g>
-<text x="260" y="28" font-family="monospace" font-size="9" fill="#00ff88" opacity="0.55" text-anchor="middle" letter-spacing="6">TEXT</text>
+<text x="260" y="38" font-family="monospace" font-size="10" fill="#00ff88" opacity="0.6" text-anchor="middle" letter-spacing="6">TEXT</text>
 
 <!-- ARROW RIGHT (text → sound) -->
-<line class="arrR" x1="150" y1="240" x2="370" y2="240" stroke="url(#arrowR)" stroke-width="2.5"/>
-<polygon points="370,232 392,240 370,248" fill="#00ff88"/>
+<line class="arrR" x1="150" y1="235" x2="370" y2="235" stroke="url(#arrowR)" stroke-width="2.5"/>
+<polygon points="370,227 392,235 370,243" fill="#00ff88"/>
 
 <!-- ARROW LEFT (sound → text) -->
 <line class="arrL" x1="370" y1="272" x2="150" y2="272" stroke="url(#arrowL)" stroke-width="2.5"/>
 <polygon points="150,264 128,272 150,280" fill="#00d4ff"/>
 
 <!-- WAVEFORM BOX -->
-<rect x="40" y="310" width="440" height="140" fill="none" stroke="#00d4ff" stroke-opacity="0.35" rx="10"/>
-<g class="barPulse">{bars}</g>
-<text x="260" y="472" font-family="monospace" font-size="9" fill="#00d4ff" opacity="0.55" text-anchor="middle" letter-spacing="6">SOUND</text>
+<rect x="40" y="310" width="440" height="130" fill="none" stroke="#00d4ff" stroke-opacity="0.35" rx="10"/>
+<g>{bars}</g>
+<text x="260" y="468" font-family="monospace" font-size="10" fill="#00d4ff" opacity="0.6" text-anchor="middle" letter-spacing="6">SOUND</text>
 
 <rect x="1" y="1" width="518" height="478" fill="none" stroke="#00ff88" stroke-opacity="0.25"/>
 </svg>"""
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 4 — RIDGE (pulse profiles field)
+# ART 4 — RIDGE (pulse profiles)
 # ═══════════════════════════════════════════════════════════════
 def ridge_art():
     rnd = random.Random(11)
@@ -236,8 +227,8 @@ def ridge_art():
     )
 
 
-STAR = svg_img(star_art(), "hero-art", "Neutron star")
-NET = svg_img(crypto_art(), "art", "Encrypted code")
+STAR = svg_img(star_art(), "hero-art", "Neutron star spinning")
+NET = svg_img(crypto_art(), "art", "Encrypted symbols")
 PIPE = svg_img(pipeline_art(), "art", "Text to sound")
 RIDGE = svg_img(ridge_art(), "banner", "Pulse profiles")
 
