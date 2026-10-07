@@ -147,10 +147,9 @@ def crypto_art():
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 3 — TEXT ⇄ SOUND (smooth audio waveform, YOUR TEXT, no binary)
+# ART 3 — TEXT ⇄ SOUND
 # ═══════════════════════════════════════════════════════════════
 def pipeline_art():
-    # Natural audio waveform: combination of sines with varying amplitude
     points = []
     n = 80
     for i in range(n + 1):
@@ -188,7 +187,7 @@ def pipeline_art():
 
 <!-- TEXT BOX -->
 <rect x="40" y="36" width="440" height="130" rx="12" fill="#00ff88" fill-opacity=".04" stroke="#00ff88" stroke-opacity=".45"/>
-<text x="60" y="62" font-family="monospace" font-size="11" letter-spacing="6" fill="#00ff88" opacity=".8">YOUR TEXT</text>
+<text x="60" y="62" font-family="monospace" font-size="11" letter-spacing="6" fill="#00ff88" opacity=".8">TEXT</text>
 <text x="60" y="116" font-family="monospace" font-size="22" font-weight="bold" fill="#00ff88">YOUR TEXT<tspan class="cur">_</tspan></text>
 
 <!-- ARROWS -->
@@ -202,7 +201,7 @@ def pipeline_art():
 {up}
 <text x="352" y="244" font-family="monospace" font-size="11" letter-spacing="3" fill="#00d4ff">DECRYPT</text>
 
-<!-- SOUND BOX with natural waveform -->
+<!-- SOUND BOX -->
 <rect x="40" y="314" width="440" height="130" rx="12" fill="#00d4ff" fill-opacity=".04" stroke="#00d4ff" stroke-opacity=".45"/>
 <text x="60" y="340" font-family="monospace" font-size="11" letter-spacing="6" fill="#00d4ff" opacity=".8">SOUND</text>
 <path transform="translate(60 0)" d="{wave_d}" fill="none" stroke="#00d4ff" stroke-opacity=".7" stroke-width="2.2" stroke-linejoin="round"/>
@@ -315,6 +314,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .cta-t { font-family:'JetBrains Mono', monospace; font-weight:500; font-size:clamp(1.15rem, 2.8vw, 2.1rem); text-transform:uppercase; letter-spacing:.16em; line-height:1.5; color:#00ff88; text-shadow:0 0 28px rgba(0,255,136,.45); margin-bottom:1rem; position:relative; }
 .cta-d { font-family:'Space Grotesk', sans-serif; font-size:1.05rem; color:rgba(255,255,255,.62); position:relative; font-weight:300; }
 
+/* ═══ BUTTON — Orbitron font (same as main title) ═══ */
 .stButton > button {
     background:linear-gradient(145deg,rgba(0,255,136,.12),rgba(0,255,136,.03)) !important;
     color:#00ff88 !important;
@@ -331,7 +331,14 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     width:100% !important;
     position:relative; z-index:3;
 }
-.stButton > button:hover { color:#000 !important; background:#00ff88 !important; border-color:#00ff88 !important; text-shadow:none !important; box-shadow:0 0 50px rgba(0,255,136,.7), 0 0 100px rgba(0,255,136,.35) !important; transform:translateY(-3px); }
+.stButton > button:hover {
+    color:#000 !important;
+    background:#00ff88 !important;
+    border-color:#00ff88 !important;
+    text-shadow:none !important;
+    box-shadow:0 0 50px rgba(0,255,136,.7), 0 0 100px rgba(0,255,136,.35) !important;
+    transform:translateY(-3px);
+}
 
 .foot { margin-top:7rem; padding-top:2.5rem; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; align-items:center; font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.35); flex-wrap:wrap; gap:1rem; }
 .foot-brand { color:rgba(0,255,136,.95); text-shadow:0 0 25px rgba(0,255,136,.6); font-weight:700; }
