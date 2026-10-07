@@ -147,23 +147,17 @@ def crypto_art():
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 3 — TEXT ⇄ SOUND (random waveform, no center star)
+# ART 3 — TEXT ⇄ SOUND (smooth waveform, no center star)
 # ═══════════════════════════════════════════════════════════════
 def pipeline_art():
-    rnd = random.Random(21)
-
-    # Dense, random waveform (not EKG heart beat shape)
-    d, x, mid = "M0 392", 0, 392
-    for _ in range(30):
-        h_up = rnd.uniform(6, 36)
-        h_dn = rnd.uniform(3, 22)
-        d += f" L{x + 6} {mid - h_up:.0f}"
-        x += 6
-        d += f" L{x + 8} {mid + h_dn:.0f}"
-        x += 8
-        d += f" L{x + 4} {mid}"
-        x += 4
-    d += " L400 392"
+    # Smooth natural waveform
+    points = []
+    n = 40
+    for i in range(n + 1):
+        x = (i / n) * 400
+        y = 392 - (18 * math.sin(i * 0.7) + 8 * math.sin(i * 1.3 + 1) + 5 * math.cos(i * 2.1))
+        points.append(f"{x:.1f},{y:.1f}")
+    wave_d = "M" + " L".join(points)
 
     down = "".join(f'<circle class="dn" style="animation-delay:{i * 0.5}s" cx="185" cy="182" r="3.5" fill="#00ff88"/>' for i in range(3))
     up = "".join(f'<circle class="up" style="animation-delay:{i * 0.5}s" cx="335" cy="298" r="3.5" fill="#00d4ff"/>' for i in range(3))
@@ -206,8 +200,8 @@ def pipeline_art():
 
 <rect x="40" y="314" width="440" height="130" rx="12" fill="#00d4ff" fill-opacity=".04" stroke="#00d4ff" stroke-opacity=".45"/>
 <text x="60" y="340" font-family="monospace" font-size="11" letter-spacing="6" fill="#00d4ff" opacity=".8">SOUND</text>
-<path transform="translate(60 0)" d="{d}" fill="none" stroke="#00d4ff" stroke-opacity=".7" stroke-width="2.2" stroke-linejoin="round"/>
-<path class="sc" pathLength="1000" transform="translate(60 0)" d="{d}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path transform="translate(60 0)" d="{wave_d}" fill="none" stroke="#00d4ff" stroke-opacity=".7" stroke-width="2.2" stroke-linejoin="round"/>
+<path class="sc" pathLength="1000" transform="translate(60 0)" d="{wave_d}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 <rect x="1" y="1" width="518" height="478" fill="none" stroke="#00ff88" stroke-opacity="0.25"/>
 </svg>"""
 
@@ -269,7 +263,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .nav-dot { width:7px; height:7px; border-radius:50%; background:#00ff88; box-shadow:0 0 14px #00ff88; animation:blink 1.8s infinite; }
 @keyframes blink { 50% { opacity:.3; } }
 
-.hero { padding:6.5rem 0 3rem 0; text-align:center; position:relative; }
+.hero { padding:6.5rem 0 2rem 0; text-align:center; position:relative; }
 .hero-badge { display:inline-flex; align-items:center; gap:.7rem; font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.3em; text-transform:uppercase; color:rgba(0,255,136,.9); padding:.7rem 1.8rem; border:1px solid rgba(0,255,136,.3); border-radius:100px; background:rgba(0,255,136,.05); margin-bottom:2.6rem; }
 .hero-badge i { width:7px; height:7px; border-radius:50%; background:#00ff88; box-shadow:0 0 14px #00ff88; animation:blink 1.8s infinite; }
 
@@ -283,7 +277,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .banner { display:block; width:100%; margin-top:5rem; border-radius:20px; border:1px solid rgba(0,255,136,.2); box-shadow:0 0 90px rgba(0,255,136,.08); }
 .banner-cap { font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.4); text-align:center; margin-top:1rem; }
 
-.stats-strip { display:grid; grid-template-columns:repeat(4,1fr); margin:4rem 0 2rem 0; border:1px solid rgba(0,255,136,.18); border-radius:20px; background:linear-gradient(145deg,rgba(0,255,136,.05),rgba(255,255,255,.01)); backdrop-filter:blur(20px); overflow:hidden; }
+.stats-strip { display:grid; grid-template-columns:repeat(4,1fr); margin:3rem 0 2rem 0; border:1px solid rgba(0,255,136,.18); border-radius:20px; background:linear-gradient(145deg,rgba(0,255,136,.05),rgba(255,255,255,.01)); backdrop-filter:blur(20px); overflow:hidden; }
 .stat-item { text-align:center; padding:2.2rem 1rem; }
 .stat-item + .stat-item { border-left:1px solid rgba(255,255,255,.08); }
 .stat-val { font-family:'JetBrains Mono', monospace; font-size:2rem; font-weight:800; color:#00ff88; text-shadow:0 0 25px rgba(0,255,136,.6); display:block; margin-bottom:.6rem; }
@@ -316,6 +310,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .cta-t { font-family:'JetBrains Mono', monospace; font-weight:500; font-size:clamp(1.15rem, 2.8vw, 2.1rem); text-transform:uppercase; letter-spacing:.16em; line-height:1.5; color:#00ff88; text-shadow:0 0 28px rgba(0,255,136,.45); margin-bottom:1rem; position:relative; }
 .cta-d { font-family:'Space Grotesk', sans-serif; font-size:1.05rem; color:rgba(255,255,255,.62); position:relative; font-weight:300; }
 
+/* ═══ BUTTON (Orbitron — same as main title font) ═══ */
 .stButton > button {
     background:linear-gradient(145deg,rgba(0,255,136,.12),rgba(0,255,136,.03)) !important;
     color:#00ff88 !important;
@@ -324,14 +319,15 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     padding:1.2rem 2rem !important;
     font-family:'Orbitron', sans-serif !important;
     font-weight:900 !important;
-    font-size:1rem !important;
-    letter-spacing:.2em !important;
+    font-size:1.1rem !important;
+    letter-spacing:.25em !important;
     text-transform:uppercase !important;
+    text-shadow:0 0 20px rgba(0,255,136,.6) !important;
     transition:all .4s cubic-bezier(.4,0,.2,1) !important;
     width:100% !important;
     position:relative; z-index:3;
 }
-.stButton > button:hover { color:#000 !important; background:#00ff88 !important; border-color:#00ff88 !important; box-shadow:0 0 50px rgba(0,255,136,.7), 0 0 100px rgba(0,255,136,.35) !important; transform:translateY(-3px); }
+.stButton > button:hover { color:#000 !important; background:#00ff88 !important; border-color:#00ff88 !important; text-shadow:none !important; box-shadow:0 0 50px rgba(0,255,136,.7), 0 0 100px rgba(0,255,136,.35) !important; transform:translateY(-3px); }
 
 .foot { margin-top:7rem; padding-top:2.5rem; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; align-items:center; font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.35); flex-wrap:wrap; gap:1rem; }
 .foot-brand { color:rgba(0,255,136,.95); text-shadow:0 0 25px rgba(0,255,136,.6); font-weight:700; }
@@ -386,6 +382,8 @@ html(f"""
     {STAR}
 </div>
 """)
+
+st.markdown('<div style="height:2rem;"></div>', unsafe_allow_html=True)
 
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
