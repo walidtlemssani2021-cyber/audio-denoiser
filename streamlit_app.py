@@ -24,7 +24,7 @@ def svg_img(svg, cls, alt):
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 1 — NEUTRON STAR (fast spin + sweeping beams)
+# ART 1 — NEUTRON STAR
 # ═══════════════════════════════════════════════════════════════
 def star_art():
     rnd = random.Random(7)
@@ -147,21 +147,19 @@ def crypto_art():
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 3 — TEXT ⇄ SOUND (smooth waveform, no center star)
+# ART 3 — TEXT ⇄ SOUND (smooth audio waveform, YOUR TEXT, no binary)
 # ═══════════════════════════════════════════════════════════════
 def pipeline_art():
-    # Smooth natural waveform — dense, varied
+    # Natural audio waveform: combination of sines with varying amplitude
     points = []
-    n = 60
+    n = 80
     for i in range(n + 1):
         x = (i / n) * 400
-        # layered sines = natural audio look
-        y = 392 - (
-            14 * math.sin(i * 0.55)
-            + 9 * math.sin(i * 1.15 + 1)
-            + 6 * math.cos(i * 1.9 + 0.5)
-            + 4 * math.sin(i * 2.7 + 2)
-        )
+        amp1 = 20 * math.sin(i * 0.35)
+        amp2 = 12 * math.sin(i * 0.78 + 1.2)
+        amp3 = 7 * math.cos(i * 1.45 + 0.6)
+        amp4 = 4 * math.sin(i * 2.3 + 2.1)
+        y = 392 - (amp1 + amp2 + amp3 + amp4)
         points.append(f"{x:.1f},{y:.1f}")
     wave_d = "M" + " L".join(points)
 
@@ -188,10 +186,12 @@ def pipeline_art():
 </style>
 <rect width="520" height="480" fill="#02060a"/>
 
+<!-- TEXT BOX -->
 <rect x="40" y="36" width="440" height="130" rx="12" fill="#00ff88" fill-opacity=".04" stroke="#00ff88" stroke-opacity=".45"/>
 <text x="60" y="62" font-family="monospace" font-size="11" letter-spacing="6" fill="#00ff88" opacity=".8">YOUR TEXT</text>
 <text x="60" y="116" font-family="monospace" font-size="22" font-weight="bold" fill="#00ff88">YOUR TEXT<tspan class="cur">_</tspan></text>
 
+<!-- ARROWS -->
 <line class="flowD" x1="185" y1="176" x2="185" y2="294" stroke="#00ff88" stroke-width="2.5"/>
 <polygon points="173,292 197,292 185,310" fill="#00ff88"/>
 {down}
@@ -202,6 +202,7 @@ def pipeline_art():
 {up}
 <text x="352" y="244" font-family="monospace" font-size="11" letter-spacing="3" fill="#00d4ff">DECRYPT</text>
 
+<!-- SOUND BOX with natural waveform -->
 <rect x="40" y="314" width="440" height="130" rx="12" fill="#00d4ff" fill-opacity=".04" stroke="#00d4ff" stroke-opacity=".45"/>
 <text x="60" y="340" font-family="monospace" font-size="11" letter-spacing="6" fill="#00d4ff" opacity=".8">SOUND</text>
 <path transform="translate(60 0)" d="{wave_d}" fill="none" stroke="#00d4ff" stroke-opacity=".7" stroke-width="2.2" stroke-linejoin="round"/>
