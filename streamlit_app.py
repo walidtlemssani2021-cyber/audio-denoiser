@@ -314,30 +314,62 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .cta-t { font-family:'JetBrains Mono', monospace; font-weight:500; font-size:clamp(1.15rem, 2.8vw, 2.1rem); text-transform:uppercase; letter-spacing:.16em; line-height:1.5; color:#00ff88; text-shadow:0 0 28px rgba(0,255,136,.45); margin-bottom:1rem; position:relative; }
 .cta-d { font-family:'Space Grotesk', sans-serif; font-size:1.05rem; color:rgba(255,255,255,.62); position:relative; font-weight:300; }
 
-/* ═══ BUTTON — Orbitron font (same as main title) ═══ */
-.stButton > button {
-    background:linear-gradient(145deg,rgba(0,255,136,.12),rgba(0,255,136,.03)) !important;
-    color:#00ff88 !important;
-    border:1px solid rgba(0,255,136,.55) !important;
-    border-radius:12px !important;
-    padding:1.2rem 2rem !important;
-    font-family:'Orbitron', sans-serif !important;
-    font-weight:900 !important;
-    font-size:1.1rem !important;
-    letter-spacing:.25em !important;
-    text-transform:uppercase !important;
-    text-shadow:0 0 20px rgba(0,255,136,.6) !important;
-    transition:all .4s cubic-bezier(.4,0,.2,1) !important;
-    width:100% !important;
-    position:relative; z-index:3;
+/* ═══ MAIN BUTTON — DISTINCTIVE & COLORFUL ═══ */
+.main-cta .stButton > button,
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #00ff88 0%, #00d4ff 50%, #7b2ff7 100%) !important;
+    color: #000000 !important;
+    border: none !important;
+    border-radius: 14px !important;
+    padding: 1.3rem 2.5rem !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 1.2rem !important;
+    letter-spacing: .3em !important;
+    text-transform: uppercase !important;
+    box-shadow:
+        0 0 30px rgba(0,255,136,.6),
+        0 0 60px rgba(0,212,255,.4),
+        0 0 100px rgba(123,47,247,.3),
+        inset 0 0 20px rgba(255,255,255,.2) !important;
+    transition: all .4s cubic-bezier(.4,0,.2,1) !important;
+    width: 100% !important;
+    position: relative; z-index: 3;
+    animation: btnPulse 2.5s ease-in-out infinite;
+}
+@keyframes btnPulse {
+    0%,100% { box-shadow: 0 0 30px rgba(0,255,136,.6), 0 0 60px rgba(0,212,255,.4), 0 0 100px rgba(123,47,247,.3), inset 0 0 20px rgba(255,255,255,.2); }
+    50% { box-shadow: 0 0 50px rgba(0,255,136,.9), 0 0 100px rgba(0,212,255,.6), 0 0 150px rgba(123,47,247,.5), inset 0 0 30px rgba(255,255,255,.3); }
 }
 .stButton > button:hover {
-    color:#000 !important;
-    background:#00ff88 !important;
-    border-color:#00ff88 !important;
-    text-shadow:none !important;
-    box-shadow:0 0 50px rgba(0,255,136,.7), 0 0 100px rgba(0,255,136,.35) !important;
-    transform:translateY(-3px);
+    transform: translateY(-4px) scale(1.02);
+    filter: brightness(1.15);
+}
+
+/* Secondary buttons (CTA section) — keep original green style */
+.stButton > button[kind="secondary"] {
+    background: linear-gradient(145deg, rgba(0,255,136,.12), rgba(0,255,136,.03)) !important;
+    color: #00ff88 !important;
+    border: 1px solid rgba(0,255,136,.55) !important;
+    border-radius: 12px !important;
+    padding: 1.2rem 2rem !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 1rem !important;
+    letter-spacing: .25em !important;
+    text-transform: uppercase !important;
+    text-shadow: 0 0 20px rgba(0,255,136,.6) !important;
+    transition: all .4s cubic-bezier(.4,0,.2,1) !important;
+    width: 100% !important;
+    position: relative; z-index: 3;
+}
+.stButton > button[kind="secondary"]:hover {
+    color: #000 !important;
+    background: #00ff88 !important;
+    border-color: #00ff88 !important;
+    text-shadow: none !important;
+    box-shadow: 0 0 50px rgba(0,255,136,.7), 0 0 100px rgba(0,255,136,.35) !important;
+    transform: translateY(-3px);
 }
 
 .foot { margin-top:7rem; padding-top:2.5rem; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; align-items:center; font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.35); flex-wrap:wrap; gap:1rem; }
@@ -396,9 +428,10 @@ html(f"""
 
 st.markdown('<div style="height:2rem;"></div>', unsafe_allow_html=True)
 
+# Main button — colorful gradient
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
-    if st.button("LET'S START!", use_container_width=True):
+    if st.button("LET'S START!", use_container_width=True, type="primary"):
         st.info("The encryption page will be added soon.")
 
 html("""
@@ -476,7 +509,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
-    if st.button("⚡ ENCRYPT A MESSAGE", use_container_width=True, key="cta_btn"):
+    if st.button("⚡ ENCRYPT A MESSAGE", use_container_width=True, key="cta_btn", type="secondary"):
         st.info("The encryption page will be added soon.")
 
 html("""
