@@ -273,7 +273,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .hero-name { font-family:'Orbitron', sans-serif !important; font-weight:900; font-size:clamp(2rem, 9vw, 7rem); line-height:1; letter-spacing:.08em; margin:0 auto 2rem auto; padding:0; white-space:nowrap; background:linear-gradient(180deg,#fff 0%,#00ff88 60%,#00d4ff 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 70px rgba(0,255,136,.65)); animation:glow 4s ease-in-out infinite; }
 @keyframes glow { 50% { filter:drop-shadow(0 0 110px rgba(0,255,136,.95)); } }
 
-/* ═══ CYBERSECURITY TEXT — FIRA CODE + SCANLINE ═══ */
+/* ═══ CYBERSECURITY TEXT — WHITE + TERMINAL CURSOR ═══ */
 .cyber-text-container {
     margin: 0 auto 0.9rem auto;
     max-width: 950px;
@@ -282,46 +282,29 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 
 .cyber-text {
     font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace !important;
-    font-weight: 500;
+    font-weight: 400;
     font-size: clamp(0.8rem, 1.5vw, 1.05rem);
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: #00ff88;
-    text-shadow:
-        0 0 4px rgba(0, 255, 136, 0.9),
-        0 0 12px rgba(0, 255, 136, 0.7),
-        0 0 30px rgba(0, 255, 136, 0.4);
+    color: #ffffff;
     position: relative;
     display: inline-block;
-    padding: 0.3rem 1rem;
-    border-right: 2px solid #00ff88;
-    animation: blinkCursor 0.9s step-end infinite;
+    padding: 0.3rem 0;
+    text-shadow: 0 0 1px rgba(255,255,255,0.3);
 }
 
-/* خط المسح الأفقي (Scanline) */
+/* مؤشر وميض بسيط (Terminal Cursor) */
 .cyber-text::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -10%;
-    width: 120%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #00ff88, transparent);
-    box-shadow: 0 0 12px #00ff88, 0 0 25px rgba(0, 255, 136, 0.6);
-    animation: scanline 3s linear infinite;
-    pointer-events: none;
-}
-
-@keyframes scanline {
-    0%   { top: 0%;   opacity: 0; }
-    10%  { opacity: 1; }
-    90%  { opacity: 1; }
-    100% { top: 100%; opacity: 0; }
+    content: '▊';
+    color: #ffffff;
+    margin-left: 6px;
+    font-weight: 400;
+    animation: blinkCursor 1s step-end infinite;
 }
 
 @keyframes blinkCursor {
-    0%, 100% { border-color: #00ff88; }
-    50%      { border-color: transparent; }
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0; }
 }
 
 .hero-art { display:block; width:min(100%,640px); margin:2.5rem auto 0 auto; border-radius:20px; border:1px solid rgba(255,214,102,.25); box-shadow:0 0 90px rgba(255,200,80,.15); }
