@@ -18,7 +18,7 @@ def html(code):
     st.markdown(clean, unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════════════════════════
-# GLOBAL CSS
+# CSS
 # ═══════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
@@ -48,7 +48,6 @@ html, body, .stApp {
     z-index: 3;
 }
 
-/* BACKGROUND */
 .bg-layer { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .bg-orb { position: absolute; border-radius: 50%; filter: blur(140px); opacity: 0.5; will-change: transform; }
 .orb-1 { width: 700px; height: 700px; background: radial-gradient(circle, #00ff88 0%, transparent 70%); top: -250px; left: -150px; animation: float1 22s ease-in-out infinite; }
@@ -67,7 +66,6 @@ html, body, .stApp {
 }
 @keyframes gridShift { 0% { background-position: 0 0; } 100% { background-position: 70px 70px; } }
 
-/* NAV */
 .nav {
     position: sticky; top: 0;
     display: flex; justify-content: space-between; align-items: center;
@@ -95,18 +93,19 @@ html, body, .stApp {
 .nav-dot { width: 7px; height: 7px; border-radius: 50%; background: #00ff88; box-shadow: 0 0 14px #00ff88; animation: blink 1.8s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-/* HERO */
-.hero { padding: 7rem 0 5rem 0; text-align: center; position: relative; }
+.hero { padding: 8rem 0 4rem 0; text-align: center; position: relative; }
 
 .hero-name {
     font-family: 'Orbitron', sans-serif !important;
-    font-size: clamp(2.5rem, 8vw, 7rem);
+    font-size: clamp(2.5rem, 7vw, 6.5rem);
     font-weight: 900;
-    line-height: 1.1;
-    letter-spacing: 0.1em;
+    line-height: 1;
+    letter-spacing: 0.05em;
     margin: 0 auto 2rem auto;
-    padding: 0;
-    white-space: nowrap;
+    padding: 0 1rem;
+    display: block;
+    text-align: center;
+    word-break: keep-all;
     background: linear-gradient(180deg, #ffffff 0%, #00ff88 55%, #00d4ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -121,19 +120,19 @@ html, body, .stApp {
 
 .hero-tagline {
     font-family: 'Space Grotesk', sans-serif !important;
-    font-size: clamp(1rem, 2vw, 1.35rem);
+    font-size: clamp(1rem, 2vw, 1.3rem);
     font-weight: 300;
-    letter-spacing: 0.1em;
-    color: rgba(255, 255, 255, 0.75);
-    margin: 2rem auto 0 auto;
+    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 1.5rem auto 0 auto;
     max-width: 700px;
-    line-height: 1.7;
+    line-height: 1.8;
     animation: fadeInUp 1.2s ease 0.4s both;
 }
 
 .hero-divider {
     width: 250px; height: 1px;
-    margin: 3rem auto;
+    margin: 3rem auto 2rem auto;
     background: linear-gradient(90deg, transparent, #00ff88, transparent);
     box-shadow: 0 0 25px #00ff88;
     animation: fadeInUp 1.2s ease 0.6s both;
@@ -141,8 +140,7 @@ html, body, .stApp {
 
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-/* SECTION */
-.sec { padding: 6rem 0; position: relative; }
+.sec { padding: 5rem 0; position: relative; }
 .sec-label {
     display: inline-flex; align-items: center; gap: 0.75rem;
     font-family: 'JetBrains Mono', monospace !important;
@@ -152,7 +150,7 @@ html, body, .stApp {
 .sec-label::before { content: ''; width: 30px; height: 1px; background: #00ff88; box-shadow: 0 0 12px #00ff88; }
 .sec-title {
     font-family: 'Space Grotesk', sans-serif !important;
-    font-size: clamp(2rem, 4.5vw, 3.5rem); font-weight: 700;
+    font-size: clamp(2rem, 4.5vw, 3.2rem); font-weight: 700;
     letter-spacing: -0.02em; line-height: 1.15; color: #fff;
     margin: 0 0 2rem 0; max-width: 900px;
 }
@@ -163,12 +161,11 @@ html, body, .stApp {
     background-clip: text;
 }
 
-/* TEXT BLOCKS */
 .text-block {
-    max-width: 800px;
+    max-width: 850px;
     font-size: 1.1rem;
-    color: rgba(255,255,255,0.65);
-    line-height: 2;
+    color: rgba(255,255,255,0.7);
+    line-height: 2.1;
     font-weight: 300;
     margin-bottom: 2rem;
 }
@@ -177,7 +174,6 @@ html, body, .stApp {
     font-weight: 600;
 }
 
-/* FEATURES */
 .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
 .feat {
     position: relative; padding: 2.5rem 2rem;
@@ -212,7 +208,6 @@ html, body, .stApp {
 }
 .feat-d { font-size: 0.98rem; color: rgba(255,255,255,0.6); line-height: 1.85; font-weight: 300; }
 
-/* CTA */
 .cta {
     padding: 6rem 3rem; text-align: center;
     border: 1px solid rgba(0,255,136,0.3); border-radius: 28px;
@@ -239,16 +234,15 @@ html, body, .stApp {
 }
 .cta-d { font-size: 1.05rem; color: rgba(255,255,255,0.6); position: relative; font-weight: 300; }
 
-/* BUTTONS */
 .stButton > button {
     background: linear-gradient(145deg, rgba(0,255,136,0.1), rgba(0,255,136,0.02)) !important;
     color: #00ff88 !important;
     border: 1px solid rgba(0,255,136,0.5) !important;
     border-radius: 12px !important;
-    padding: 1.1rem 2rem !important;
+    padding: 1.2rem 2rem !important;
     font-family: 'Space Grotesk', sans-serif !important;
     font-weight: 700 !important;
-    font-size: 0.9rem !important;
+    font-size: 0.95rem !important;
     letter-spacing: 3px !important;
     text-transform: uppercase !important;
     transition: all 0.4s cubic-bezier(0.4,0,0.2,1) !important;
@@ -262,7 +256,6 @@ html, body, .stApp {
     transform: translateY(-3px);
 }
 
-/* FOOTER */
 .foot {
     margin-top: 8rem; padding-top: 3rem;
     border-top: 1px solid rgba(255,255,255,0.07);
@@ -281,9 +274,7 @@ html, body, .stApp {
 </style>
 """, unsafe_allow_html=True)
 
-# ═══════════════════════════════════════════════════════════════
-# BACKGROUND
-# ═══════════════════════════════════════════════════════════════
+# ═══ BACKGROUND ═══
 html("""
 <div class="bg-layer">
     <div class="bg-grid"></div>
@@ -293,9 +284,7 @@ html("""
 </div>
 """)
 
-# ═══════════════════════════════════════════════════════════════
-# NAV
-# ═══════════════════════════════════════════════════════════════
+# ═══ NAV ═══
 html("""
 <div class="nav">
     <div class="nav-brand">CRYPTORIAN</div>
@@ -303,9 +292,7 @@ html("""
 </div>
 """)
 
-# ═══════════════════════════════════════════════════════════════
-# HERO
-# ═══════════════════════════════════════════════════════════════
+# ═══ HERO ═══
 html("""
 <div class="hero">
     <h1 class="hero-name">CRYPTORIAN</h1>
@@ -314,15 +301,12 @@ html("""
 </div>
 """)
 
-# Start button
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
     if st.button("GET STARTED", use_container_width=True):
         st.info("The encryption page will be added soon.")
 
-# ═══════════════════════════════════════════════════════════════
-# WHY ENCRYPTION MATTERS
-# ═══════════════════════════════════════════════════════════════
+# ═══ WHY ENCRYPTION MATTERS ═══
 html("""
 <div class="sec">
     <div class="sec-label">// WHY IT MATTERS</div>
@@ -345,9 +329,7 @@ html("""
 </div>
 """)
 
-# ═══════════════════════════════════════════════════════════════
-# WHAT IS CRYPTORIAN
-# ═══════════════════════════════════════════════════════════════
+# ═══ WHAT IS CRYPTORIAN ═══
 html("""
 <div class="sec">
     <div class="sec-label">// THE SYSTEM</div>
@@ -369,9 +351,7 @@ html("""
 </div>
 """)
 
-# ═══════════════════════════════════════════════════════════════
-# FEATURES
-# ═══════════════════════════════════════════════════════════════
+# ═══ FEATURES ═══
 html("""
 <div class="sec">
     <div class="sec-label">// CAPABILITIES</div>
@@ -411,9 +391,7 @@ html("""
 </div>
 """)
 
-# ═══════════════════════════════════════════════════════════════
-# FINAL CTA
-# ═══════════════════════════════════════════════════════════════
+# ═══ FINAL CTA ═══
 html("""
 <div class="cta">
     <div class="cta-t">READY TO BECOME A <em>STAR?</em></div>
@@ -428,9 +406,7 @@ with c2:
     if st.button("ENCRYPT A MESSAGE", use_container_width=True, key="cta_btn"):
         st.info("The encryption page will be added soon.")
 
-# ═══════════════════════════════════════════════════════════════
-# FOOTER
-# ═══════════════════════════════════════════════════════════════
+# ═══ FOOTER ═══
 html("""
 <div class="foot">
     <div><span class="foot-brand">CRYPTORIAN</span> · V2.0 · 2026</div>
