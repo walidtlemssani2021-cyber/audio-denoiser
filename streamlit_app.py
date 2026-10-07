@@ -237,7 +237,7 @@ RIDGE = svg_img(ridge_art(), "banner", "Pulse profiles")
 # ═══════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&family=Fira+Code:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
@@ -273,38 +273,18 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .hero-name { font-family:'Orbitron', sans-serif !important; font-weight:900; font-size:clamp(2rem, 9vw, 7rem); line-height:1; letter-spacing:.08em; margin:0 auto 2rem auto; padding:0; white-space:nowrap; background:linear-gradient(180deg,#fff 0%,#00ff88 60%,#00d4ff 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 70px rgba(0,255,136,.65)); animation:glow 4s ease-in-out infinite; }
 @keyframes glow { 50% { filter:drop-shadow(0 0 110px rgba(0,255,136,.95)); } }
 
-/* ═══ CYBERSECURITY TEXT — WHITE + TERMINAL CURSOR ═══ */
-.cyber-text-container {
-    margin: 0 auto 0.9rem auto;
-    max-width: 950px;
-    text-align: center;
-}
-
-.cyber-text {
-    font-family: 'Fira Code', 'JetBrains Mono', 'Courier New', monospace !important;
-    font-weight: 400;
-    font-size: clamp(0.8rem, 1.5vw, 1.05rem);
+/* ═══ TEXT BELOW STAR — SAME FONT AS BODY ═══ */
+.hero-tagline {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: clamp(0.75rem, 1.3vw, 0.95rem);
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: #ffffff;
-    position: relative;
-    display: inline-block;
-    padding: 0.3rem 0;
-    text-shadow: 0 0 1px rgba(255,255,255,0.3);
-}
-
-/* مؤشر وميض بسيط (Terminal Cursor) */
-.cyber-text::after {
-    content: '▊';
-    color: #ffffff;
-    margin-left: 6px;
+    color: rgba(0, 255, 136, 0.95);
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+    margin: 1.5rem auto 0 auto;
+    max-width: 950px;
+    line-height: 1.9;
     font-weight: 400;
-    animation: blinkCursor 1s step-end infinite;
-}
-
-@keyframes blinkCursor {
-    0%, 100% { opacity: 1; }
-    50%      { opacity: 0; }
 }
 
 .hero-art { display:block; width:min(100%,640px); margin:2.5rem auto 0 auto; border-radius:20px; border:1px solid rgba(255,214,102,.25); box-shadow:0 0 90px rgba(255,200,80,.15); }
@@ -345,35 +325,35 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .cta-t { font-family:'JetBrains Mono', monospace; font-weight:500; font-size:clamp(1.15rem, 2.8vw, 2.1rem); text-transform:uppercase; letter-spacing:.16em; line-height:1.5; color:#00ff88; text-shadow:0 0 28px rgba(0,255,136,.45); margin-bottom:1rem; position:relative; }
 .cta-d { font-family:'Space Grotesk', sans-serif; font-size:1.05rem; color:rgba(255,255,255,.62); position:relative; font-weight:300; }
 
-/* ═══ MAIN BUTTON — THEME MATCHED (GREEN/CYAN) ═══ */
+/* ═══ MAIN BUTTON — SOLID GREEN GRADIENT ═══ */
 .main-cta .stButton > button,
 .stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%) !important;
+    background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%) !important;
     color: #000000 !important;
-    border: none !important;
-    border-radius: 14px !important;
-    padding: 1.3rem 2.5rem !important;
+    border: 1px solid rgba(0, 255, 136, 0.8) !important;
+    border-radius: 12px !important;
+    padding: 1.2rem 2.5rem !important;
     font-family: 'Orbitron', sans-serif !important;
     font-weight: 900 !important;
-    font-size: 1.2rem !important;
-    letter-spacing: .3em !important;
+    font-size: 1.15rem !important;
+    letter-spacing: .28em !important;
     text-transform: uppercase !important;
     box-shadow:
-        0 0 30px rgba(0,255,136,.6),
-        0 0 60px rgba(0,212,255,.4),
-        inset 0 0 20px rgba(255,255,255,.2) !important;
+        0 0 25px rgba(0,255,136,.5),
+        0 0 50px rgba(0,255,136,.25),
+        inset 0 0 15px rgba(255,255,255,.2) !important;
     transition: all .4s cubic-bezier(.4,0,.2,1) !important;
     width: 100% !important;
     position: relative; z-index: 3;
     animation: btnPulse 2.5s ease-in-out infinite;
 }
 @keyframes btnPulse {
-    0%,100% { box-shadow: 0 0 30px rgba(0,255,136,.6), 0 0 60px rgba(0,212,255,.4), inset 0 0 20px rgba(255,255,255,.2); }
-    50% { box-shadow: 0 0 50px rgba(0,255,136,.9), 0 0 100px rgba(0,212,255,.6), inset 0 0 30px rgba(255,255,255,.3); }
+    0%,100% { box-shadow: 0 0 25px rgba(0,255,136,.5), 0 0 50px rgba(0,255,136,.25), inset 0 0 15px rgba(255,255,255,.2); }
+    50%     { box-shadow: 0 0 40px rgba(0,255,136,.8), 0 0 80px rgba(0,255,136,.4), inset 0 0 25px rgba(255,255,255,.3); }
 }
 .stButton > button:hover {
-    transform: translateY(-4px) scale(1.02);
-    filter: brightness(1.15);
+    transform: translateY(-3px) scale(1.01);
+    filter: brightness(1.1);
 }
 
 /* Secondary buttons */
@@ -415,7 +395,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
   .hero { padding-top:4rem; }
   .hero-badge { letter-spacing:.12em; font-size:.62rem; padding:.7rem 1.2rem; line-height:1.7; }
   .hero-name { letter-spacing:.04em; }
-  .cyber-text { letter-spacing:.15em; font-size:.7rem; }
+  .hero-tagline { letter-spacing:.15em; font-size:.72rem; }
   .stats-strip, .feat-grid { grid-template-columns:1fr; }
   .stat-item + .stat-item { border-left:none; border-top:1px solid rgba(255,255,255,.08); }
   .quote { padding:2rem 1.5rem; }
@@ -447,14 +427,13 @@ html("""
 </div>
 """)
 
+# ═══ HERO: STAR FIRST, THEN TEXT BELOW ═══
 html(f"""
 <div class="hero">
     <div class="hero-badge"><i></i>DM SAFELY AND SECURE YOUR PRIVACY WITH</div>
     <h1 class="hero-name">CRYPTORIAN</h1>
-    <div class="cyber-text-container">
-        <p class="cyber-text">USING AN ENCRYPTED MODIFIED NEUTRON STAR SOUND</p>
-    </div>
     {STAR}
+    <p class="hero-tagline">USING AN ENCRYPTED MODIFIED NEUTRON STAR SOUND</p>
 </div>
 """)
 
