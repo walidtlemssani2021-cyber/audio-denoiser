@@ -237,7 +237,7 @@ RIDGE = svg_img(ridge_art(), "banner", "Pulse profiles")
 # ═══════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
@@ -273,7 +273,6 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .hero-name { font-family:'Orbitron', sans-serif !important; font-weight:900; font-size:clamp(2rem, 9vw, 7rem); line-height:1; letter-spacing:.08em; margin:0 auto 2rem auto; padding:0; white-space:nowrap; background:linear-gradient(180deg,#fff 0%,#00ff88 60%,#00d4ff 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 70px rgba(0,255,136,.65)); animation:glow 4s ease-in-out infinite; }
 @keyframes glow { 50% { filter:drop-shadow(0 0 110px rgba(0,255,136,.95)); } }
 
-/* ═══ TEXT BELOW STAR — SAME FONT AS BODY ═══ */
 .hero-tagline {
     font-family: 'Space Grotesk', sans-serif !important;
     font-size: clamp(0.75rem, 1.3vw, 0.95rem);
@@ -315,31 +314,78 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .feat-t { font-family:'JetBrains Mono', monospace; font-size:.9rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#fff; margin-bottom:.9rem; }
 .feat-d { font-family:'Space Grotesk', sans-serif; font-size:.97rem; color:rgba(255,255,255,.6); line-height:1.8; font-weight:300; }
 
-/* ═══ SIMPLE ELEGANT QUOTE ═══ */
-.quote {
-    max-width: 850px;
-    margin: 5rem auto 0 auto;
-    padding: 2.5rem 3rem;
-    border-left: 3px solid #00ff88;
-    background: linear-gradient(90deg, rgba(0,255,136,.06), transparent);
-    border-radius: 0 16px 16px 0;
+/* ═══ BIG QUOTE STYLE (Like the reference image) ═══ */
+.big-quote {
     position: relative;
+    max-width: 900px;
+    margin: 6rem auto 0 auto;
+    padding: 3rem 3rem 3rem 4rem;
+    border: 1px solid rgba(0, 255, 136, 0.25);
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(0, 255, 136, 0.04), rgba(0, 0, 0, 0.2));
+    overflow: hidden;
 }
-.quote-text {
-    font-family: 'Space Grotesk', sans-serif !important;
-    font-size: clamp(1.05rem, 2vw, 1.35rem);
-    font-weight: 300;
-    font-style: italic;
-    color: rgba(255,255,255,.9);
-    line-height: 1.8;
-    margin-bottom: 1.2rem;
+
+/* علامة الاقتباس الكبيرة العلوية */
+.big-quote::before {
+    content: '"';
+    position: absolute;
+    top: -30px;
+    left: 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 10rem;
+    color: rgba(0, 255, 136, 0.15);
+    line-height: 1;
+    pointer-events: none;
 }
-.quote-author {
+
+/* علامة الاقتباس الكبيرة السفلية */
+.big-quote::after {
+    content: '"';
+    position: absolute;
+    bottom: -70px;
+    right: 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 10rem;
+    color: rgba(0, 255, 136, 0.15);
+    line-height: 1;
+    pointer-events: none;
+}
+
+.big-quote-text {
+    font-family: 'Playfair Display', serif !important;
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.4;
+    margin: 0 0 2.5rem 0;
+    position: relative;
+    z-index: 1;
+}
+
+.big-quote-text .highlight {
+    color: #00d4ff;
+}
+
+.big-quote-author {
     font-family: 'JetBrains Mono', monospace !important;
-    font-size: .75rem;
-    letter-spacing: .3em;
+    font-size: 0.75rem;
+    letter-spacing: 0.35em;
     text-transform: uppercase;
-    color: rgba(0,255,136,.8);
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.big-quote-author::before,
+.big-quote-author::after {
+    content: '';
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
+    width: 40px;
 }
 
 .cta { padding:6rem 3rem; text-align:center; border:1px solid rgba(0,255,136,.3); border-radius:28px; background:radial-gradient(ellipse at top,rgba(0,255,136,.18),transparent 60%),linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.01)); position:relative; overflow:hidden; margin-top:7rem; }
@@ -347,7 +393,6 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .cta-t { font-family:'JetBrains Mono', monospace; font-weight:500; font-size:clamp(1.15rem, 2.8vw, 2.1rem); text-transform:uppercase; letter-spacing:.16em; line-height:1.5; color:#00ff88; text-shadow:0 0 28px rgba(0,255,136,.45); margin-bottom:1rem; position:relative; }
 .cta-d { font-family:'Space Grotesk', sans-serif; font-size:1.05rem; color:rgba(255,255,255,.62); position:relative; font-weight:300; }
 
-/* ═══ MAIN BUTTON — SOLID GREEN GRADIENT ═══ */
 .main-cta .stButton > button,
 .stButton > button[kind="primary"] {
     background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%) !important;
@@ -378,7 +423,6 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     filter: brightness(1.1);
 }
 
-/* Secondary buttons */
 .stButton > button[kind="secondary"] {
     background: linear-gradient(145deg, rgba(0,255,136,.12), rgba(0,255,136,.03)) !important;
     color: #00ff88 !important;
@@ -420,7 +464,10 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
   .hero-tagline { letter-spacing:.15em; font-size:.72rem; }
   .stats-strip, .feat-grid { grid-template-columns:1fr; }
   .stat-item + .stat-item { border-left:none; border-top:1px solid rgba(255,255,255,.08); }
-  .quote { padding:2rem 1.5rem; }
+  .big-quote { padding: 2rem 1.5rem 2rem 2rem; }
+  .big-quote::before { font-size: 7rem; top: -20px; left: 10px; }
+  .big-quote::after { font-size: 7rem; bottom: -50px; right: 10px; }
+  .big-quote-text { font-size: 1.2rem; }
   .cta { padding:4rem 1.5rem; }
 }
 </style>
@@ -449,7 +496,6 @@ html("""
 </div>
 """)
 
-# ═══ HERO: STAR FIRST, THEN TEXT BELOW ═══
 html(f"""
 <div class="hero">
     <div class="hero-badge"><i></i>DM SAFELY AND SECURE YOUR PRIVACY WITH</div>
@@ -491,7 +537,6 @@ html(f"""
 </div>
 """)
 
-# ═══ QUOTE MOVED HERE — AFTER "WHAT IS CRYPTORIAN" ═══
 html(f"""
 <div class="sec">
   <div class="sec-grid">
@@ -507,9 +552,9 @@ html(f"""
   </div>
 </div>
 
-<div class="quote">
-    <p class="quote-text">"The only way to keep a secret is to make sure no one knows you have one."</p>
-    <p class="quote-author">— CRYPTORIAN FOUNDER</p>
+<div class="big-quote">
+    <p class="big-quote-text">The only way to keep a secret is to make sure no one knows you <span class="highlight">have one.</span></p>
+    <p class="big-quote-author">— CRYPTORIAN FOUNDER</p>
 </div>
 """)
 
