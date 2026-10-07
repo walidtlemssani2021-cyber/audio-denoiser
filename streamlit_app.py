@@ -67,6 +67,22 @@ html, body, .stApp {
 }
 @keyframes gridShift { 0% { background-position: 0 0; } 100% { background-position: 70px 70px; } }
 
+/* Particles */
+.particle {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: #00ff88;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #00ff88;
+    animation: rise linear infinite;
+}
+@keyframes rise {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100px) scale(1); opacity: 0; }
+}
+
 /* ═══ NAV ═══ */
 .nav {
     position: sticky; top: 0;
@@ -96,7 +112,19 @@ html, body, .stApp {
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
 /* ═══ HERO ═══ */
-.hero { padding: 8rem 0 4rem 0; text-align: center; position: relative; }
+.hero { padding: 6rem 0 5rem 0; text-align: center; position: relative; }
+
+.hero-badge {
+    display: inline-flex; align-items: center; gap: 0.7rem;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.7rem; letter-spacing: 5px; text-transform: uppercase;
+    color: rgba(0,255,136,0.9); padding: 0.7rem 1.8rem;
+    border: 1px solid rgba(0,255,136,0.3); border-radius: 100px;
+    background: rgba(0,255,136,0.04); backdrop-filter: blur(10px);
+    margin-bottom: 3rem;
+    animation: fadeInDown 1s ease both;
+}
+.hero-badge-dot { width: 7px; height: 7px; border-radius: 50%; background: #00ff88; box-shadow: 0 0 14px #00ff88; animation: blink 1.8s infinite; }
 
 .hero-name {
     font-family: 'Orbitron', sans-serif !important;
@@ -104,7 +132,7 @@ html, body, .stApp {
     font-weight: 900;
     line-height: 1;
     letter-spacing: 0.08em;
-    margin: 0 auto 2.5rem auto;
+    margin: 0 auto 2rem auto;
     padding: 0 1rem;
     display: block;
     text-align: center;
@@ -121,7 +149,6 @@ html, body, .stApp {
     50% { filter: drop-shadow(0 0 140px rgba(0,255,136,1)) drop-shadow(0 0 280px rgba(0,255,136,0.6)); }
 }
 
-/* ═══ TAGLINE (نفس خط الجملة المحذوفة) ═══ */
 .hero-tagline {
     font-family: 'JetBrains Mono', monospace !important;
     font-size: clamp(0.8rem, 1.5vw, 1rem);
@@ -136,15 +163,85 @@ html, body, .stApp {
     animation: fadeInUp 1.2s ease 0.4s both;
 }
 
+.hero-desc {
+    font-size: 1.15rem;
+    color: rgba(255,255,255,0.6);
+    max-width: 680px;
+    margin: 2.5rem auto 0 auto;
+    line-height: 1.9;
+    font-weight: 300;
+    animation: fadeInUp 1.2s ease 0.6s both;
+}
+
 .hero-divider {
     width: 250px; height: 1px;
     margin: 3rem auto 2rem auto;
     background: linear-gradient(90deg, transparent, #00ff88, transparent);
     box-shadow: 0 0 25px #00ff88;
-    animation: fadeInUp 1.2s ease 0.6s both;
+    animation: fadeInUp 1.2s ease 0.8s both;
+}
+
+/* Floating symbols in hero */
+.hero-symbols {
+    display: flex; justify-content: center; gap: 2.5rem;
+    margin: 2rem 0 3rem 0;
+    flex-wrap: wrap;
+    animation: fadeInUp 1.2s ease 0.9s both;
+}
+.hero-symbol {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 1.5rem;
+    color: rgba(0,255,136,0.4);
+    text-shadow: 0 0 20px rgba(0,255,136,0.3);
+    animation: floatSymbol 3s ease-in-out infinite;
+}
+.hero-symbol:nth-child(1) { animation-delay: 0s; }
+.hero-symbol:nth-child(2) { animation-delay: 0.3s; }
+.hero-symbol:nth-child(3) { animation-delay: 0.6s; }
+.hero-symbol:nth-child(4) { animation-delay: 0.9s; }
+.hero-symbol:nth-child(5) { animation-delay: 1.2s; }
+@keyframes floatSymbol {
+    0%, 100% { transform: translateY(0); opacity: 0.4; }
+    50% { transform: translateY(-10px); opacity: 0.9; }
 }
 
 @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ═══ STATS STRIP ═══ */
+.stats-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    padding: 2.5rem 2rem;
+    margin: 4rem 0;
+    border: 1px solid rgba(0,255,136,0.15);
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(0,255,136,0.04), rgba(255,255,255,0.01));
+    backdrop-filter: blur(20px);
+}
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    border-right: 1px solid rgba(255,255,255,0.06);
+}
+.stat-item:last-child { border-right: none; }
+.stat-val {
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #00ff88;
+    text-shadow: 0 0 25px rgba(0,255,136,0.6);
+    display: block;
+    margin-bottom: 0.4rem;
+}
+.stat-lbl {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+}
 
 /* ═══ SECTION ═══ */
 .sec { padding: 6rem 0; position: relative; }
@@ -168,7 +265,7 @@ html, body, .stApp {
     background-clip: text;
 }
 
-/* ═══ TEXT BLOCKS (طريقة عرض احترافية) ═══ */
+/* ═══ TEXT BLOCKS ═══ */
 .text-block {
     max-width: 850px;
     font-size: 1.15rem;
@@ -179,12 +276,21 @@ html, body, .stApp {
     padding-left: 2rem;
     border-left: 2px solid rgba(0,255,136,0.3);
     transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
 }
+.text-block::before {
+    content: '';
+    position: absolute;
+    left: -2px; top: 0;
+    width: 2px; height: 0;
+    background: #00ff88;
+    box-shadow: 0 0 20px #00ff88;
+    transition: height 0.6s ease;
+}
+.text-block:hover::before { height: 100%; }
 .text-block:hover {
-    border-left-color: #00ff88;
     padding-left: 2.75rem;
-    box-shadow: -15px 0 60px rgba(0,255,136,0.12);
-    color: rgba(255,255,255,0.9);
+    color: rgba(255,255,255,0.95);
 }
 .text-block strong {
     color: #00ff88;
@@ -211,21 +317,67 @@ html, body, .stApp {
     box-shadow: 0 25px 70px rgba(0,0,0,0.6), 0 0 100px rgba(0,255,136,0.15);
 }
 .feat:hover::before { opacity: 1; }
-.feat-num {
-    font-family: 'Orbitron', sans-serif !important;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: rgba(0,255,136,0.5);
-    letter-spacing: 3px;
+
+.feat-icon {
+    width: 56px; height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(145deg, rgba(0,255,136,0.15), rgba(0,255,136,0.03));
+    border: 1px solid rgba(0,255,136,0.3);
+    border-radius: 14px;
+    font-size: 1.6rem;
+    color: #00ff88;
     margin-bottom: 1.5rem;
-    display: block;
+    text-shadow: 0 0 20px rgba(0,255,136,0.6);
+    transition: all 0.5s ease;
 }
+.feat:hover .feat-icon {
+    background: linear-gradient(145deg, rgba(0,255,136,0.3), rgba(0,255,136,0.1));
+    box-shadow: 0 0 30px rgba(0,255,136,0.4);
+    transform: scale(1.08) rotate(-5deg);
+}
+
 .feat-t {
     font-family: 'Space Grotesk', sans-serif !important;
     font-size: 1.25rem; font-weight: 700; color: #fff;
     margin-bottom: 1rem; letter-spacing: 0.02em;
 }
 .feat-d { font-size: 0.98rem; color: rgba(255,255,255,0.6); line-height: 1.85; font-weight: 300; }
+
+/* ═══ QUOTE ═══ */
+.quote {
+    max-width: 900px;
+    margin: 5rem auto;
+    padding: 3rem 3rem 3rem 4rem;
+    border-left: 4px solid #00ff88;
+    background: linear-gradient(90deg, rgba(0,255,136,0.06), transparent);
+    border-radius: 0 20px 20px 0;
+    position: relative;
+}
+.quote::before {
+    content: '"';
+    position: absolute;
+    top: -20px; left: 20px;
+    font-family: 'Orbitron', sans-serif !important;
+    font-size: 5rem;
+    color: rgba(0,255,136,0.3);
+    line-height: 1;
+}
+.quote-text {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 1.4rem;
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+.quote-author {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: rgba(0,255,136,0.7);
+}
 
 /* ═══ CTA ═══ */
 .cta {
@@ -293,11 +445,21 @@ html, body, .stApp {
 ::-webkit-scrollbar-track { background: #000; }
 ::-webkit-scrollbar-thumb { background: rgba(0,255,136,0.4); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(0,255,136,0.7); }
+
+@media (max-width: 768px) {
+    .block-container { padding: 0 1.5rem 4rem 1.5rem !important; }
+    .nav { padding-left: 1.5rem; padding-right: 1.5rem; margin: 0 -1.5rem; }
+    .hero-name { letter-spacing: 0.05em; }
+    .stats-strip { padding: 1.5rem 1rem; }
+    .stat-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); padding: 1.2rem; }
+    .stat-item:last-child { border-bottom: none; }
+    .quote { padding: 2rem 1.5rem; }
+}
 </style>
 """, unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════════════════════════
-# BACKGROUND
+# BACKGROUND + PARTICLES
 # ═══════════════════════════════════════════════════════════════
 html("""
 <div class="bg-layer">
@@ -305,6 +467,13 @@ html("""
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
     <div class="bg-orb orb-3"></div>
+    <div class="particle" style="left: 10%; animation-duration: 12s; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 25%; animation-duration: 15s; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 45%; animation-duration: 10s; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 65%; animation-duration: 14s; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 85%; animation-duration: 11s; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 55%; animation-duration: 13s; animation-delay: 5s;"></div>
+    <div class="particle" style="left: 35%; animation-duration: 16s; animation-delay: 6s;"></div>
 </div>
 """)
 
@@ -323,16 +492,40 @@ html("""
 # ═══════════════════════════════════════════════════════════════
 html("""
 <div class="hero">
+    <div class="hero-badge"><span class="hero-badge-dot"></span>SOUND-BASED ENCRYPTION · V2.0</div>
     <h1 class="hero-name">CRYPTORIAN</h1>
     <p class="hero-tagline">SECURE YOUR PRIVACY WITH CRYPTORIAN</p>
+    <p class="hero-desc">
+        Turn your words into the sound of a dying star. Only those who hold the key
+        can hear the message hidden within the pulse.
+    </p>
+    <div class="hero-symbols">
+        <span class="hero-symbol">⚡</span>
+        <span class="hero-symbol">✦</span>
+        <span class="hero-symbol">◈</span>
+        <span class="hero-symbol">✧</span>
+        <span class="hero-symbol">◆</span>
+    </div>
     <div class="hero-divider"></div>
 </div>
 """)
 
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
-    if st.button("GET STARTED", use_container_width=True):
+    if st.button("⚡ GET STARTED", use_container_width=True):
         st.info("The encryption page will be added soon.")
+
+# ═══════════════════════════════════════════════════════════════
+# STATS STRIP
+# ═══════════════════════════════════════════════════════════════
+html("""
+<div class="stats-strip">
+    <div class="stat-item"><span class="stat-val">91</span><span class="stat-lbl">SIGNATURES</span></div>
+    <div class="stat-item"><span class="stat-val">2000</span><span class="stat-lbl">MAX CHARS</span></div>
+    <div class="stat-item"><span class="stat-val">80%</span><span class="stat-lbl">FLAC SAVING</span></div>
+    <div class="stat-item"><span class="stat-val">3</span><span class="stat-lbl">SHAPES</span></div>
+</div>
+""")
 
 # ═══════════════════════════════════════════════════════════════
 # WHY ENCRYPTION MATTERS
@@ -356,6 +549,16 @@ html("""
         It doesn't hide the fact that you are communicating — it simply ensures that
         only the intended recipient can understand what is being said.
     </p>
+</div>
+""")
+
+# ═══════════════════════════════════════════════════════════════
+# QUOTE
+# ═══════════════════════════════════════════════════════════════
+html("""
+<div class="quote">
+    <p class="quote-text">The only way to keep a secret is to make sure no one knows you have one.</p>
+    <p class="quote-author">— CRYPTORIAN PRINCIPLE</p>
 </div>
 """)
 
@@ -392,32 +595,32 @@ html("""
     <h2 class="sec-title">BUILT FOR THE <em>PARANOID</em> MIND.</h2>
     <div class="feat-grid">
         <div class="feat">
-            <span class="feat-num">/ 01</span>
+            <div class="feat-icon">◉</div>
             <div class="feat-t">Neutron Sound</div>
             <div class="feat-d">Your message becomes a waveform modeled after a neutron star's pulse. It sounds like the cosmos — not like data.</div>
         </div>
         <div class="feat">
-            <span class="feat-num">/ 02</span>
+            <div class="feat-icon">▣</div>
             <div class="feat-t">Unique Signatures</div>
             <div class="feat-d">Every character — letter, digit, or symbol — has its own sonic signature. No two are ever alike.</div>
         </div>
         <div class="feat">
-            <span class="feat-num">/ 03</span>
+            <div class="feat-icon">⬢</div>
             <div class="feat-t">Key Shuffling</div>
             <div class="feat-d">The secret key reorders every signature. The same character produces a different pulse with every key.</div>
         </div>
         <div class="feat">
-            <span class="feat-num">/ 04</span>
+            <div class="feat-icon">◆</div>
             <div class="feat-t">Length Header</div>
             <div class="feat-d">The message length is embedded in the audio itself. Decryption knows exactly where the message ends.</div>
         </div>
         <div class="feat">
-            <span class="feat-num">/ 05</span>
+            <div class="feat-icon">▲</div>
             <div class="feat-t">Dual Formats</div>
             <div class="feat-d">Export as uncompressed WAV for universal playback, or as compressed FLAC for a much smaller file.</div>
         </div>
         <div class="feat">
-            <span class="feat-num">/ 06</span>
+            <div class="feat-icon">○</div>
             <div class="feat-t">Zero Knowledge</div>
             <div class="feat-d">Nothing is stored. Nothing is sent. The entire process happens in memory — invisible to anyone else.</div>
         </div>
@@ -439,7 +642,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
-    if st.button("ENCRYPT A MESSAGE", use_container_width=True, key="cta_btn"):
+    if st.button("⚡ ENCRYPT A MESSAGE", use_container_width=True, key="cta_btn"):
         st.info("The encryption page will be added soon.")
 
 # ═══════════════════════════════════════════════════════════════
