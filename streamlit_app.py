@@ -147,34 +147,31 @@ def crypto_art():
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 3 — TEXT ⇄ SOUND (audio waveform, not EKG)
+# ART 3 — TEXT ⇄ SOUND (random waveform, no center star)
 # ═══════════════════════════════════════════════════════════════
 def pipeline_art():
     rnd = random.Random(21)
 
-    # Audio waveform: dense, varied, asymmetric — not EKG spike
-    wave = "M0 392"
-    x = 0
-    for i in range(38):
-        h1 = rnd.uniform(6, 34)
-        h2 = rnd.uniform(4, 26)
-        d1 = rnd.choice([6, 8, 10])
-        d2 = rnd.choice([6, 8, 10])
-        wave += f" L{x + d1} {392 - h1:.0f}"
-        x += d1
-        wave += f" L{x + d2} {392 + h2 * 0.45:.0f}"
-        x += d2
-        wave += f" L{x + 4} 392"
+    # Dense, random waveform (not EKG heart beat shape)
+    d, x, mid = "M0 392", 0, 392
+    for _ in range(30):
+        h_up = rnd.uniform(6, 36)
+        h_dn = rnd.uniform(3, 22)
+        d += f" L{x + 6} {mid - h_up:.0f}"
+        x += 6
+        d += f" L{x + 8} {mid + h_dn:.0f}"
+        x += 8
+        d += f" L{x + 4} {mid}"
         x += 4
-    wave += " L400 392"
+    d += " L400 392"
 
     down = "".join(f'<circle class="dn" style="animation-delay:{i * 0.5}s" cx="185" cy="182" r="3.5" fill="#00ff88"/>' for i in range(3))
     up = "".join(f'<circle class="up" style="animation-delay:{i * 0.5}s" cx="335" cy="298" r="3.5" fill="#00d4ff"/>' for i in range(3))
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 480">
 <defs>
-<radialGradient id="core2"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#00ff88" stop-opacity=".8"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0"/></radialGradient>
-<linearGradient id="ring2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00ff88"/><stop offset="1" stop-color="#00d4ff"/></linearGradient>
+<radialGradient id="core"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#00ff88" stop-opacity=".8"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0"/></radialGradient>
+<linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00ff88"/><stop offset="1" stop-color="#00d4ff"/></linearGradient>
 </defs>
 <style>
 .flowD {{ stroke-dasharray: 8 8; animation: fd 1s linear infinite; }}
@@ -185,18 +182,16 @@ def pipeline_art():
 .up {{ animation: up 1.5s linear infinite; opacity: 0; }}
 @keyframes dn {{ 0% {{ transform: translateY(0); opacity: 0; }} 15%,85% {{ opacity: 1; }} 100% {{ transform: translateY(116px); opacity: 0; }} }}
 @keyframes up {{ 0% {{ transform: translateY(0); opacity: 0; }} 15%,85% {{ opacity: 1; }} 100% {{ transform: translateY(-116px); opacity: 0; }} }}
-.spin2 {{ transform-origin: 260px 240px; animation: sp 6s linear infinite; }}
-@keyframes sp {{ to {{ transform: rotate(360deg); }} }}
-.cur2 {{ animation: cur 1s steps(2) infinite; }}
+.cur {{ animation: cur 1s steps(2) infinite; }}
 @keyframes cur {{ 50% {{ opacity: 0; }} }}
-.sc2 {{ stroke-dasharray: 70 930; animation: sc 2s linear infinite; }}
+.sc {{ stroke-dasharray: 70 930; animation: sc 2s linear infinite; }}
 @keyframes sc {{ from {{ stroke-dashoffset: 70; }} to {{ stroke-dashoffset: -930; }} }}
 </style>
 <rect width="520" height="480" fill="#02060a"/>
 
 <rect x="40" y="36" width="440" height="130" rx="12" fill="#00ff88" fill-opacity=".04" stroke="#00ff88" stroke-opacity=".45"/>
 <text x="60" y="62" font-family="monospace" font-size="11" letter-spacing="6" fill="#00ff88" opacity=".8">TEXT</text>
-<text x="60" y="116" font-family="monospace" font-size="26" font-weight="bold" fill="#00ff88">MEET ME AT DAWN<tspan class="cur2">_</tspan></text>
+<text x="60" y="116" font-family="monospace" font-size="22" font-weight="bold" fill="#00ff88">TEXT<tspan class="cur">_</tspan></text>
 <text x="60" y="148" font-family="monospace" font-size="11" fill="#00ff88" opacity=".35">01001101 01000101 01000101 01010100</text>
 
 <line class="flowD" x1="185" y1="176" x2="185" y2="294" stroke="#00ff88" stroke-width="2.5"/>
@@ -209,16 +204,10 @@ def pipeline_art():
 {up}
 <text x="352" y="244" font-family="monospace" font-size="11" letter-spacing="3" fill="#00d4ff">DECRYPT</text>
 
-<circle cx="260" cy="240" r="58" fill="url(#core2)" opacity=".5"/>
-<circle class="spin2" cx="260" cy="240" r="40" fill="none" stroke="url(#ring2)" stroke-width="2.5" stroke-dasharray="14 8"/>
-<circle cx="260" cy="240" r="28" fill="#02060a" stroke="#00ff88" stroke-opacity=".6"/>
-<polygon points="260,222 250,235 270,235" fill="#00ff88"/>
-<polygon points="260,258 250,245 270,245" fill="#00d4ff"/>
-
 <rect x="40" y="314" width="440" height="130" rx="12" fill="#00d4ff" fill-opacity=".04" stroke="#00d4ff" stroke-opacity=".45"/>
 <text x="60" y="340" font-family="monospace" font-size="11" letter-spacing="6" fill="#00d4ff" opacity=".8">SOUND</text>
-<path transform="translate(60 0)" d="{wave}" fill="none" stroke="#00d4ff" stroke-opacity=".7" stroke-width="2.2" stroke-linejoin="round"/>
-<path class="sc2" pathLength="1000" transform="translate(60 0)" d="{wave}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path transform="translate(60 0)" d="{d}" fill="none" stroke="#00d4ff" stroke-opacity=".7" stroke-width="2.2" stroke-linejoin="round"/>
+<path class="sc" pathLength="1000" transform="translate(60 0)" d="{d}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 <rect x="1" y="1" width="518" height="478" fill="none" stroke="#00ff88" stroke-opacity="0.25"/>
 </svg>"""
 
@@ -243,7 +232,7 @@ def ridge_art():
 
 STAR = svg_img(star_art(), "hero-art", "Neutron star spinning")
 NET = svg_img(crypto_art(), "art", "Encryption symbols")
-PIPE = svg_img(pipeline_art(), "art", "Text to sound")
+PIPE = svg_img(pipeline_art(), "art", "Text converted to sound and back")
 RIDGE = svg_img(ridge_art(), "banner", "Pulse profiles")
 
 # ═══════════════════════════════════════════════════════════════
@@ -389,7 +378,6 @@ html("""
 </div>
 """)
 
-# ═══ HERO ═══
 html(f"""
 <div class="hero">
     <div class="hero-badge"><i></i>DM SAFELY AND SECURE YOUR PRIVACY WITH</div>
@@ -399,7 +387,6 @@ html(f"""
 </div>
 """)
 
-# ═══ START BUTTON ═══
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
     if st.button("LET'S START!", use_container_width=True):
