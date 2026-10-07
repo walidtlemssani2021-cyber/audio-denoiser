@@ -187,7 +187,8 @@ def pipeline_art():
 
 <!-- TEXT BOX -->
 <rect x="40" y="36" width="440" height="130" rx="12" fill="#00ff88" fill-opacity=".04" stroke="#00ff88" stroke-opacity=".45"/>
-<text x="60" y="62" font-family="monospace" font-size="11" letter-spacing="6" fill="#00ff88" opacity=".8">YOUR TEXT</text>
+<!-- تم التعديل هنا: النص العلوي أصبح TEXT -->
+<text x="60" y="62" font-family="monospace" font-size="11" letter-spacing="6" fill="#00ff88" opacity=".8">TEXT</text>
 <text x="60" y="116" font-family="monospace" font-size="22" font-weight="bold" fill="#00ff88">YOUR TEXT<tspan class="cur">_</tspan></text>
 
 <!-- ARROWS -->
@@ -314,10 +315,10 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .cta-t { font-family:'JetBrains Mono', monospace; font-weight:500; font-size:clamp(1.15rem, 2.8vw, 2.1rem); text-transform:uppercase; letter-spacing:.16em; line-height:1.5; color:#00ff88; text-shadow:0 0 28px rgba(0,255,136,.45); margin-bottom:1rem; position:relative; }
 .cta-d { font-family:'Space Grotesk', sans-serif; font-size:1.05rem; color:rgba(255,255,255,.62); position:relative; font-weight:300; }
 
-/* ═══ MAIN BUTTON — DISTINCTIVE & COLORFUL ═══ */
+/* ═══ MAIN BUTTON — THEME MATCHED (GREEN/CYAN) ═══ */
 .main-cta .stButton > button,
 .stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #00ff88 0%, #00d4ff 50%, #7b2ff7 100%) !important;
+    background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%) !important;
     color: #000000 !important;
     border: none !important;
     border-radius: 14px !important;
@@ -330,7 +331,6 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     box-shadow:
         0 0 30px rgba(0,255,136,.6),
         0 0 60px rgba(0,212,255,.4),
-        0 0 100px rgba(123,47,247,.3),
         inset 0 0 20px rgba(255,255,255,.2) !important;
     transition: all .4s cubic-bezier(.4,0,.2,1) !important;
     width: 100% !important;
@@ -338,8 +338,8 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     animation: btnPulse 2.5s ease-in-out infinite;
 }
 @keyframes btnPulse {
-    0%,100% { box-shadow: 0 0 30px rgba(0,255,136,.6), 0 0 60px rgba(0,212,255,.4), 0 0 100px rgba(123,47,247,.3), inset 0 0 20px rgba(255,255,255,.2); }
-    50% { box-shadow: 0 0 50px rgba(0,255,136,.9), 0 0 100px rgba(0,212,255,.6), 0 0 150px rgba(123,47,247,.5), inset 0 0 30px rgba(255,255,255,.3); }
+    0%,100% { box-shadow: 0 0 30px rgba(0,255,136,.6), 0 0 60px rgba(0,212,255,.4), inset 0 0 20px rgba(255,255,255,.2); }
+    50% { box-shadow: 0 0 50px rgba(0,255,136,.9), 0 0 100px rgba(0,212,255,.6), inset 0 0 30px rgba(255,255,255,.3); }
 }
 .stButton > button:hover {
     transform: translateY(-4px) scale(1.02);
