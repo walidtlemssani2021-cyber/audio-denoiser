@@ -1,6 +1,7 @@
 import base64
 import math
 import random
+from html import escape
 
 import streamlit as st
 
@@ -23,89 +24,100 @@ def svg_img(svg, cls, alt):
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 1 — NEUTRON STAR (fast spinning sphere, no waves)
+# ART 1 — NEUTRON STAR (fast spin + sweeping beams)
 # ═══════════════════════════════════════════════════════════════
 def star_art():
     rnd = random.Random(7)
+    cx, cy, R, W, T, L = 400, 280, 150, 600, 0.9, 540
 
-    stars = ""
-    for _ in range(90):
-        x, y = rnd.randint(0, 800), rnd.randint(0, 800)
-        r = rnd.uniform(0.4, 1.6)
-        o = rnd.uniform(0.15, 0.85)
-        stars += f'<circle cx="{x}" cy="{y}" r="{r:.2f}" fill="#fff" opacity="{o:.2f}"/>'
+    stars = "".join(
+        f'<circle cx="{rnd.randint(0, 800)}" cy="{rnd.randint(0, 560)}" r="{rnd.uniform(0.4, 1.5):.2f}" fill="#fff" opacity="{rnd.uniform(0.15, 0.85):.2f}"/>'
+        for _ in range(110)
+    )
 
-    corona = ""
-    for i in range(8):
-        r = 118 + i * 11
-        o = 0.30 - i * 0.032
-        corona += f'<circle cx="400" cy="400" r="{r}" fill="none" stroke="#00ff88" stroke-opacity="{o:.3f}" stroke-width="2"/>'
+    blob_list = [
+        (rnd.uniform(0, W), rnd.uniform(cy - R, cy + R), rnd.uniform(16, 52), rnd.uniform(7, 24),
+         rnd.choice(["b1", "b2", "b3"]), rnd.uniform(0.45, 0.95))
+        for _ in range(80)
+    ]
 
-    surface_spots = ""
-    for i in range(7):
-        angle = i * 51.4
-        cx = 400 + 78 * math.cos(math.radians(angle))
-        cy = 400 + 18 * math.sin(math.radians(angle))
-        surface_spots += f'<ellipse cx="{cx:.1f}" cy="{cy:.1f}" rx="8" ry="3" fill="#baffd9" opacity="0.55"/>'
+    def blobs(dx):
+        out = ""
+        for x, y, rx, ry, g, o in blob_list:
+            for ox in (0, *((W,) if x < 60 else ()), *((-W,) if x > W - 60 else ())):
+                out += f'<ellipse cx="{250 + x + ox + dx:.0f}" cy="{y:.0f}" rx="{rx:.0f}" ry="{ry:.0f}" fill="url(#{g})" opacity="{o:.2f}"/>'
+        return out
 
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+    texture = blobs(0) + blobs(W)
+
+    def half(sign, grad):
+        e = cy + sign * L
+        return (f'<polygon points="{cx - 9},{cy} {cx + 9},{cy} {cx + 48},{e} {cx - 48},{e}" fill="url(#{grad})" opacity=".3"/>'
+                f'<polygon points="{cx - 4},{cy} {cx + 4},{cy} {cx + 21},{e} {cx - 21},{e}" fill="url(#{grad})" opacity=".75"/>'
+                f'<polygon points="{cx - 1.5},{cy} {cx + 1.5},{cy} {cx + 7},{e} {cx - 7},{e}" fill="url(#{grad})"/>')
+
+    top, bot = half(-1, "jt"), half(1, "jb")
+    back = f'<g class="sw"><g class="fs"><g class="o1">{top}</g><g class="o0">{bot}</g></g></g>'
+    front = f'<g class="sw"><g class="fs"><g class="o0">{top}</g><g class="o1">{bot}</g></g></g>'
+
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560">
 <defs>
-<radialGradient id="coreGrad">
-<stop offset="0" stop-color="#ffffff"/>
-<stop offset="0.22" stop-color="#baffd9"/>
-<stop offset="0.6" stop-color="#00ff88" stop-opacity="0.9"/>
-<stop offset="1" stop-color="#00ff88" stop-opacity="0"/>
-</radialGradient>
-<radialGradient id="haloGrad">
-<stop offset="0" stop-color="#00d4ff" stop-opacity="0.35"/>
-<stop offset="0.5" stop-color="#00ff88" stop-opacity="0.12"/>
-<stop offset="1" stop-color="#7b2ff7" stop-opacity="0"/>
-</radialGradient>
-<filter id="blurBig"><feGaussianBlur stdDeviation="28"/></filter>
-<filter id="blurSmall"><feGaussianBlur stdDeviation="6"/></filter>
+<clipPath id="ball"><circle cx="{cx}" cy="{cy}" r="{R}"/></clipPath>
+<clipPath id="out"><path clip-rule="evenodd" d="M0 0H800V560H0Z M{cx - R} {cy} a{R} {R} 0 1 0 {2 * R} 0 a{R} {R} 0 1 0 {-2 * R} 0Z"/></clipPath>
+<radialGradient id="halo"><stop offset="0" stop-color="#fff1a8" stop-opacity=".6"/><stop offset=".35" stop-color="#ffb52e" stop-opacity=".25"/><stop offset="1" stop-color="#ffb52e" stop-opacity="0"/></radialGradient>
+<radialGradient id="rim"><stop offset="0" stop-color="#fff6cf" stop-opacity="0"/><stop offset=".78" stop-color="#fff6cf" stop-opacity="0"/><stop offset=".8" stop-color="#fff6cf" stop-opacity=".9"/><stop offset="1" stop-color="#ffb52e" stop-opacity="0"/></radialGradient>
+<radialGradient id="b1"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
+<radialGradient id="b2"><stop offset="0" stop-color="#ffc933" stop-opacity=".9"/><stop offset="1" stop-color="#ffc933" stop-opacity="0"/></radialGradient>
+<radialGradient id="b3"><stop offset="0" stop-color="#a84f08" stop-opacity=".85"/><stop offset="1" stop-color="#a84f08" stop-opacity="0"/></radialGradient>
+<radialGradient id="shade" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".6" stop-color="#2a1200" stop-opacity=".2"/><stop offset="1" stop-color="#1a0a00" stop-opacity=".85"/></radialGradient>
+<radialGradient id="flare"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".4" stop-color="#fff0a0" stop-opacity=".6"/><stop offset="1" stop-color="#ffb52e" stop-opacity="0"/></radialGradient>
+<linearGradient id="jt" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fffdf0"/><stop offset=".35" stop-color="#ffe27a" stop-opacity=".65"/><stop offset="1" stop-color="#ffb52e" stop-opacity="0"/></linearGradient>
+<linearGradient id="jb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf0"/><stop offset=".35" stop-color="#ffe27a" stop-opacity=".65"/><stop offset="1" stop-color="#ffb52e" stop-opacity="0"/></linearGradient>
 </defs>
 <style>
-.fast-spin {{ transform-origin: 400px 400px; animation: spin 0.9s linear infinite; }}
-.corePulse {{ transform-origin: 400px 400px; animation: coreBeat 1.4s ease-in-out infinite; }}
-.haloPulse {{ transform-origin: 400px 400px; animation: haloBeat 2.4s ease-in-out infinite; }}
-@keyframes spin {{ to {{ transform: rotate(360deg); }} }}
-@keyframes coreBeat {{ 0%,100% {{ opacity: .85; }} 50% {{ opacity: 1; }} }}
-@keyframes haloBeat {{ 0%,100% {{ opacity: .65; }} 50% {{ opacity: 1; }} }}
+.tex {{ animation: scroll {T * 0.8:.2f}s linear infinite; }}
+@keyframes scroll {{ to {{ transform: translateX(-{W}px); }} }}
+.sw {{ transform-origin: {cx}px {cy}px; animation: sw {T / 2}s ease-in-out infinite alternate; }}
+@keyframes sw {{ from {{ transform: rotate(50deg); }} to {{ transform: rotate(-50deg); }} }}
+.fs {{ transform-origin: {cx}px {cy}px; animation: fs {T / 2}s ease-in-out infinite; }}
+@keyframes fs {{ 0%,100% {{ transform: scaleY(1); }} 50% {{ transform: scaleY(.6); }} }}
+.o0 {{ animation: o0 {T}s step-end infinite; }}
+.o1 {{ animation: o1 {T}s step-end infinite; }}
+@keyframes o0 {{ 0% {{ opacity: 1; }} 50% {{ opacity: 0; }} }}
+@keyframes o1 {{ 0% {{ opacity: 0; }} 50% {{ opacity: 1; }} }}
+.fl {{ transform-origin: {cx}px {cy}px; animation: fl {T / 2}s ease-in-out infinite; }}
+@keyframes fl {{ 0%,100% {{ opacity: 0; transform: scale(.8); }} 50% {{ opacity: .65; transform: scale(1.15); }} }}
+.pulse {{ transform-origin: {cx}px {cy}px; animation: pulse {T / 2}s ease-in-out infinite alternate; }}
+@keyframes pulse {{ from {{ opacity: .65; transform: scale(.97); }} to {{ opacity: 1; transform: scale(1.04); }} }}
 </style>
-
+<rect width="800" height="560" fill="#000"/>
 <g>{stars}</g>
+<circle class="pulse" cx="{cx}" cy="{cy}" r="300" fill="url(#halo)"/>
+<circle cx="{cx}" cy="{cy}" r="{R + 40}" fill="url(#rim)"/>
 
-<circle class="haloPulse" cx="400" cy="400" r="360" fill="url(#haloGrad)" filter="url(#blurBig)"/>
+<g transform="rotate(20 {cx} {cy})">{back}</g>
 
-<g class="corePulse">{corona}</g>
-
-<circle cx="400" cy="400" r="100" fill="url(#coreGrad)" filter="url(#blurSmall)"/>
-
-<g class="fast-spin">
-<circle cx="400" cy="400" r="105" fill="none" stroke="#00ff88" stroke-opacity="0.12" stroke-width="1"/>
-<circle cx="400" cy="400" r="90" fill="none" stroke="#baffd9" stroke-opacity="0.18" stroke-width="1" stroke-dasharray="6 10"/>
-{surface_spots}
-<circle cx="400" cy="338" r="3" fill="#ffffff" opacity="0.9"/>
-<circle cx="400" cy="462" r="3" fill="#ffffff" opacity="0.9"/>
+<circle cx="{cx}" cy="{cy}" r="{R}" fill="#ffd966"/>
+<g clip-path="url(#ball)">
+<g transform="rotate(20 {cx} {cy})"><g class="tex">{texture}</g></g>
+<circle cx="{cx}" cy="{cy}" r="{R}" fill="url(#shade)"/>
 </g>
+<circle cx="{cx}" cy="{cy}" r="{R}" fill="none" stroke="#fff6cf" stroke-opacity=".7" stroke-width="2"/>
+<circle class="fl" cx="{cx}" cy="{cy}" r="{R + 30}" fill="url(#flare)"/>
 
-<circle cx="400" cy="400" r="18" fill="#ffffff"/>
-
-<rect x="1" y="1" width="798" height="798" fill="none" stroke="#00ff88" stroke-opacity="0.12"/>
+<g clip-path="url(#out)"><g transform="rotate(20 {cx} {cy})">{front}</g></g>
 </svg>"""
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 2 — ENCRYPTION (static grid, symbols)
+# ART 2 — ENCRYPTION (static, symbols)
 # ═══════════════════════════════════════════════════════════════
 def crypto_art():
     rnd = random.Random(5)
-
     symbol_pool = "!@#$%^&*()_+-=[]{}|;:,.<>?/~`"
     letter_pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     digit_pool = "0123456789"
     pool = symbol_pool + symbol_pool + letter_pool + digit_pool
-
     colors = ["#00ff88", "#00d4ff", "#7b2ff7"]
 
     chars = ""
@@ -117,7 +129,7 @@ def crypto_art():
             o = rnd.uniform(0.25, 0.95)
             size = rnd.uniform(10, 15)
             color = rnd.choice(colors)
-            chars += f'<text x="{x}" y="{y}" font-family="monospace" font-size="{size:.1f}" font-weight="bold" fill="{color}" opacity="{o:.2f}">{ch}</text>'
+            chars += f'<text x="{x}" y="{y}" font-family="monospace" font-size="{size:.1f}" font-weight="bold" fill="{color}" opacity="{o:.2f}">{escape(ch)}</text>'
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400">
 <defs>
@@ -135,61 +147,78 @@ def crypto_art():
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 3 — TEXT ↔ SOUND
+# ART 3 — TEXT ⇄ SOUND (audio waveform, not EKG)
 # ═══════════════════════════════════════════════════════════════
 def pipeline_art():
-    rnd = random.Random(3)
+    rnd = random.Random(21)
 
-    text_lines = ""
-    for r in range(7):
-        for c in range(5):
-            w = rnd.randint(20, 34)
-            x = 55 + c * 32
-            y = 70 + r * 22
-            text_lines += f'<rect x="{x}" y="{y}" width="{w}" height="5" rx="2.5" fill="#00ff88" opacity="{0.35 + 0.1 * c:.2f}"/>'
+    # Audio waveform: dense, varied, asymmetric — not EKG spike
+    wave = "M0 392"
+    x = 0
+    for i in range(38):
+        h1 = rnd.uniform(6, 34)
+        h2 = rnd.uniform(4, 26)
+        d1 = rnd.choice([6, 8, 10])
+        d2 = rnd.choice([6, 8, 10])
+        wave += f" L{x + d1} {392 - h1:.0f}"
+        x += d1
+        wave += f" L{x + d2} {392 + h2 * 0.45:.0f}"
+        x += d2
+        wave += f" L{x + 4} 392"
+        x += 4
+    wave += " L400 392"
 
-    bars = ""
-    for i in range(22):
-        h = 12 + int(36 * abs(math.sin(i * 0.6 + 0.3)))
-        x = 48 + i * 20
-        y = 360 - h / 2
-        o = 0.4 + 0.55 * abs(math.sin(i * 0.5))
-        bars += f'<rect x="{x}" y="{y:.0f}" width="8" height="{h}" rx="4" fill="#00d4ff" opacity="{o:.2f}"/>'
+    down = "".join(f'<circle class="dn" style="animation-delay:{i * 0.5}s" cx="185" cy="182" r="3.5" fill="#00ff88"/>' for i in range(3))
+    up = "".join(f'<circle class="up" style="animation-delay:{i * 0.5}s" cx="335" cy="298" r="3.5" fill="#00d4ff"/>' for i in range(3))
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 480">
 <defs>
-<linearGradient id="arrowR" x1="0" y1="0" x2="1" y2="0">
-<stop offset="0" stop-color="#00ff88" stop-opacity="0.2"/>
-<stop offset="1" stop-color="#00ff88" stop-opacity="1"/>
-</linearGradient>
-<linearGradient id="arrowL" x1="1" y1="0" x2="0" y2="0">
-<stop offset="0" stop-color="#00d4ff" stop-opacity="0.2"/>
-<stop offset="1" stop-color="#00d4ff" stop-opacity="1"/>
-</linearGradient>
+<radialGradient id="core2"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#00ff88" stop-opacity=".8"/><stop offset="1" stop-color="#00d4ff" stop-opacity="0"/></radialGradient>
+<linearGradient id="ring2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00ff88"/><stop offset="1" stop-color="#00d4ff"/></linearGradient>
 </defs>
 <style>
-.arrR {{ stroke-dasharray: 10 10; animation: moveR 1.4s linear infinite; }}
-.arrL {{ stroke-dasharray: 10 10; animation: moveL 1.4s linear infinite; }}
-@keyframes moveR {{ to {{ stroke-dashoffset: -40; }} }}
-@keyframes moveL {{ to {{ stroke-dashoffset: 40; }} }}
+.flowD {{ stroke-dasharray: 8 8; animation: fd 1s linear infinite; }}
+.flowU {{ stroke-dasharray: 8 8; animation: fu 1s linear infinite; }}
+@keyframes fd {{ to {{ stroke-dashoffset: -32; }} }}
+@keyframes fu {{ to {{ stroke-dashoffset: 32; }} }}
+.dn {{ animation: dn 1.5s linear infinite; opacity: 0; }}
+.up {{ animation: up 1.5s linear infinite; opacity: 0; }}
+@keyframes dn {{ 0% {{ transform: translateY(0); opacity: 0; }} 15%,85% {{ opacity: 1; }} 100% {{ transform: translateY(116px); opacity: 0; }} }}
+@keyframes up {{ 0% {{ transform: translateY(0); opacity: 0; }} 15%,85% {{ opacity: 1; }} 100% {{ transform: translateY(-116px); opacity: 0; }} }}
+.spin2 {{ transform-origin: 260px 240px; animation: sp 6s linear infinite; }}
+@keyframes sp {{ to {{ transform: rotate(360deg); }} }}
+.cur2 {{ animation: cur 1s steps(2) infinite; }}
+@keyframes cur {{ 50% {{ opacity: 0; }} }}
+.sc2 {{ stroke-dasharray: 70 930; animation: sc 2s linear infinite; }}
+@keyframes sc {{ from {{ stroke-dashoffset: 70; }} to {{ stroke-dashoffset: -930; }} }}
 </style>
-
 <rect width="520" height="480" fill="#02060a"/>
 
-<rect x="40" y="45" width="440" height="160" fill="none" stroke="#00ff88" stroke-opacity="0.4" rx="10"/>
-<g>{text_lines}</g>
-<text x="260" y="32" font-family="monospace" font-size="10" fill="#00ff88" opacity="0.7" text-anchor="middle" letter-spacing="6">TEXT</text>
+<rect x="40" y="36" width="440" height="130" rx="12" fill="#00ff88" fill-opacity=".04" stroke="#00ff88" stroke-opacity=".45"/>
+<text x="60" y="62" font-family="monospace" font-size="11" letter-spacing="6" fill="#00ff88" opacity=".8">TEXT</text>
+<text x="60" y="116" font-family="monospace" font-size="26" font-weight="bold" fill="#00ff88">MEET ME AT DAWN<tspan class="cur2">_</tspan></text>
+<text x="60" y="148" font-family="monospace" font-size="11" fill="#00ff88" opacity=".35">01001101 01000101 01000101 01010100</text>
 
-<line class="arrR" x1="140" y1="235" x2="360" y2="235" stroke="url(#arrowR)" stroke-width="2.5"/>
-<polygon points="360,227 384,235 360,243" fill="#00ff88"/>
+<line class="flowD" x1="185" y1="176" x2="185" y2="294" stroke="#00ff88" stroke-width="2.5"/>
+<polygon points="173,292 197,292 185,310" fill="#00ff88"/>
+{down}
+<text x="168" y="244" text-anchor="end" font-family="monospace" font-size="11" letter-spacing="3" fill="#00ff88">ENCRYPT</text>
 
-<line class="arrL" x1="380" y1="272" x2="160" y2="272" stroke="url(#arrowL)" stroke-width="2.5"/>
-<polygon points="160,264 136,272 160,280" fill="#00d4ff"/>
+<line class="flowU" x1="335" y1="304" x2="335" y2="186" stroke="#00d4ff" stroke-width="2.5"/>
+<polygon points="323,188 347,188 335,170" fill="#00d4ff"/>
+{up}
+<text x="352" y="244" font-family="monospace" font-size="11" letter-spacing="3" fill="#00d4ff">DECRYPT</text>
 
-<rect x="40" y="310" width="440" height="130" fill="none" stroke="#00d4ff" stroke-opacity="0.4" rx="10"/>
-<g>{bars}</g>
-<text x="260" y="468" font-family="monospace" font-size="10" fill="#00d4ff" opacity="0.7" text-anchor="middle" letter-spacing="6">SOUND</text>
+<circle cx="260" cy="240" r="58" fill="url(#core2)" opacity=".5"/>
+<circle class="spin2" cx="260" cy="240" r="40" fill="none" stroke="url(#ring2)" stroke-width="2.5" stroke-dasharray="14 8"/>
+<circle cx="260" cy="240" r="28" fill="#02060a" stroke="#00ff88" stroke-opacity=".6"/>
+<polygon points="260,222 250,235 270,235" fill="#00ff88"/>
+<polygon points="260,258 250,245 270,245" fill="#00d4ff"/>
 
+<rect x="40" y="314" width="440" height="130" rx="12" fill="#00d4ff" fill-opacity=".04" stroke="#00d4ff" stroke-opacity=".45"/>
+<text x="60" y="340" font-family="monospace" font-size="11" letter-spacing="6" fill="#00d4ff" opacity=".8">SOUND</text>
+<path transform="translate(60 0)" d="{wave}" fill="none" stroke="#00d4ff" stroke-opacity=".7" stroke-width="2.2" stroke-linejoin="round"/>
+<path class="sc2" pathLength="1000" transform="translate(60 0)" d="{wave}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 <rect x="1" y="1" width="518" height="478" fill="none" stroke="#00ff88" stroke-opacity="0.25"/>
 </svg>"""
 
@@ -206,21 +235,10 @@ def ridge_art():
             f"{x},{y0 - 62 * math.exp(-((x - 600) / 230) ** 2) * (0.3 + 0.7 * rnd.random()) - 2.5 * rnd.random():.1f}"
             for x in range(0, 1201, 12)
         )
-        rows.append(
-            f'<polygon points="0,{y0} {pts} 1200,{y0}" fill="#02060a" '
-            f'stroke="#00ff88" stroke-opacity="{0.3 + 0.7 * i / 19:.2f}" '
-            f'stroke-width="1.4" stroke-linejoin="round"/>'
-        )
-    return (
-        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460">'
-        '<rect width="1200" height="460" fill="#02060a"/>'
-        '<defs><radialGradient id="rg" cx="0.5" cy="0.55" r="0.5">'
-        '<stop offset="0" stop-color="#00ff88" stop-opacity="0.16"/>'
-        '<stop offset="1" stop-color="#00ff88" stop-opacity="0"/></radialGradient></defs>'
-        '<rect width="1200" height="460" fill="url(#rg)"/>'
-        + "".join(rows) +
-        '</svg>'
-    )
+        rows.append(f'<polygon points="0,{y0} {pts} 1200,{y0}" fill="#02060a" stroke="#00ff88" stroke-opacity="{0.3 + 0.7 * i / 19:.2f}" stroke-width="1.4" stroke-linejoin="round"/>')
+    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460"><rect width="1200" height="460" fill="#02060a"/>'
+            '<defs><radialGradient id="rg" cx="0.5" cy="0.55" r="0.5"><stop offset="0" stop-color="#00ff88" stop-opacity="0.16"/><stop offset="1" stop-color="#00ff88" stop-opacity="0"/></radialGradient></defs>'
+            '<rect width="1200" height="460" fill="url(#rg)"/>' + "".join(rows) + '</svg>')
 
 
 STAR = svg_img(star_art(), "hero-art", "Neutron star spinning")
@@ -236,7 +254,6 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
 .stApp, .stMarkdown, .stMarkdown p, .stMarkdown div { font-family: 'Space Grotesk', sans-serif !important; }
 #MainMenu, footer, header, [data-testid="stToolbar"], [data-testid="stDecoration"] { display:none !important; }
@@ -272,7 +289,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 
 .hero-tagline { font-family:'JetBrains Mono', monospace; font-size:clamp(.7rem, 1.3vw, .9rem); letter-spacing:.22em; text-transform:uppercase; color:rgba(0,255,136,.9); text-shadow:0 0 20px rgba(0,255,136,.6); margin:0 auto 0.9rem auto; max-width:950px; line-height:1.9; }
 
-.hero-art { display:block; width:min(100%,640px); margin:2.5rem auto 0 auto; }
+.hero-art { display:block; width:min(100%,640px); margin:2.5rem auto 0 auto; border-radius:20px; border:1px solid rgba(255,214,102,.25); box-shadow:0 0 90px rgba(255,200,80,.15); }
 .art { display:block; width:100%; max-width:520px; margin-top:1rem; border-radius:18px; border:1px solid rgba(0,255,136,.2); box-shadow:0 0 70px rgba(0,255,136,.08); }
 .banner { display:block; width:100%; margin-top:5rem; border-radius:20px; border:1px solid rgba(0,255,136,.2); box-shadow:0 0 90px rgba(0,255,136,.08); }
 .banner-cap { font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.4); text-align:center; margin-top:1rem; }
@@ -285,9 +302,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 
 .sec { padding:7rem 0 0 0; position:relative; }
 .sec-grid { display:grid; grid-template-columns:1fr 1.2fr; gap:5rem; align-items:start; }
-
 .sec-title { font-family:'Orbitron', sans-serif !important; font-weight:900; font-size:clamp(1.3rem, 3vw, 2.4rem); line-height:1.2; letter-spacing:.12em; color:#00ff88; text-shadow:0 0 40px rgba(0,255,136,.6), 0 0 80px rgba(0,255,136,.3); margin:0 0 2rem 0; text-transform:uppercase; }
-
 .text-block { font-family:'Space Grotesk', sans-serif; font-size:1.08rem; color:rgba(255,255,255,.72); line-height:2; font-weight:300; margin:0 0 2rem 0; padding-left:1.8rem; border-left:2px solid rgba(0,255,136,.3); transition:all .4s ease; }
 .text-block:hover { border-left-color:#00ff88; color:rgba(255,255,255,.95); padding-left:2.4rem; }
 .text-block strong { color:#00ff88; font-weight:600; text-shadow:0 0 25px rgba(0,255,136,.6); }
@@ -312,7 +327,21 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .cta-t { font-family:'JetBrains Mono', monospace; font-weight:500; font-size:clamp(1.15rem, 2.8vw, 2.1rem); text-transform:uppercase; letter-spacing:.16em; line-height:1.5; color:#00ff88; text-shadow:0 0 28px rgba(0,255,136,.45); margin-bottom:1rem; position:relative; }
 .cta-d { font-family:'Space Grotesk', sans-serif; font-size:1.05rem; color:rgba(255,255,255,.62); position:relative; font-weight:300; }
 
-.stButton > button { background:linear-gradient(145deg,rgba(0,255,136,.12),rgba(0,255,136,.03)) !important; color:#00ff88 !important; border:1px solid rgba(0,255,136,.55) !important; border-radius:12px !important; padding:1.1rem 2rem !important; font-family:'JetBrains Mono', monospace !important; font-weight:700 !important; font-size:.8rem !important; letter-spacing:.2em !important; text-transform:uppercase !important; transition:all .4s cubic-bezier(.4,0,.2,1) !important; width:100% !important; position:relative; z-index:3; }
+.stButton > button {
+    background:linear-gradient(145deg,rgba(0,255,136,.12),rgba(0,255,136,.03)) !important;
+    color:#00ff88 !important;
+    border:1px solid rgba(0,255,136,.55) !important;
+    border-radius:12px !important;
+    padding:1.2rem 2rem !important;
+    font-family:'Orbitron', sans-serif !important;
+    font-weight:900 !important;
+    font-size:1rem !important;
+    letter-spacing:.2em !important;
+    text-transform:uppercase !important;
+    transition:all .4s cubic-bezier(.4,0,.2,1) !important;
+    width:100% !important;
+    position:relative; z-index:3;
+}
 .stButton > button:hover { color:#000 !important; background:#00ff88 !important; border-color:#00ff88 !important; box-shadow:0 0 50px rgba(0,255,136,.7), 0 0 100px rgba(0,255,136,.35) !important; transform:translateY(-3px); }
 
 .foot { margin-top:7rem; padding-top:2.5rem; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; align-items:center; font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.35); flex-wrap:wrap; gap:1rem; }
@@ -321,10 +350,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 ::-webkit-scrollbar { width:8px; } ::-webkit-scrollbar-track { background:#000; }
 ::-webkit-scrollbar-thumb { background:rgba(0,255,136,.4); border-radius:4px; }
 
-@media (max-width:980px) {
-  .sec-grid { grid-template-columns:1fr; gap:1rem; }
-  .feat-grid { grid-template-columns:1fr 1fr; }
-}
+@media (max-width:980px) { .sec-grid { grid-template-columns:1fr; gap:1rem; } .feat-grid { grid-template-columns:1fr 1fr; } }
 @media (max-width:700px) {
   .block-container { padding:0 1.25rem 4rem 1.25rem !important; }
   .nav { padding:1.1rem 1.25rem; margin:0 -1.25rem; }
@@ -340,7 +366,6 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 </style>
 """, unsafe_allow_html=True)
 
-# ═══ BACKGROUND ═══
 html("""
 <div class="bg-layer">
     <div class="bg-grid"></div>
@@ -357,7 +382,6 @@ html("""
 </div>
 """)
 
-# ═══ NAV ═══
 html("""
 <div class="nav">
     <div class="nav-brand">CRYPTORIAN</div>
@@ -375,12 +399,12 @@ html(f"""
 </div>
 """)
 
+# ═══ START BUTTON ═══
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
-    if st.button("⚡ GET STARTED", use_container_width=True):
+    if st.button("LET'S START!", use_container_width=True):
         st.info("The encryption page will be added soon.")
 
-# ═══ STATS ═══
 html("""
 <div class="stats-strip">
     <div class="stat-item"><span class="stat-val">91</span><span class="stat-lbl">SIGNATURES</span></div>
@@ -390,7 +414,6 @@ html("""
 </div>
 """)
 
-# ═══ WHY ENCRYPTION ═══
 html(f"""
 <div class="sec">
   <div class="sec-grid">
@@ -407,7 +430,6 @@ html(f"""
 </div>
 """)
 
-# ═══ QUOTE ═══
 html("""
 <div class="quote">
     <p class="quote-text">The only way to keep a secret is to make sure no one knows you have one.</p>
@@ -415,7 +437,6 @@ html("""
 </div>
 """)
 
-# ═══ WHAT IS CRYPTORIAN ═══
 html(f"""
 <div class="sec">
   <div class="sec-grid">
@@ -432,7 +453,6 @@ html(f"""
 </div>
 """)
 
-# ═══ FEATURES ═══
 html(f"""
 <div class="sec">
     <h2 class="sec-title">BUILT FOR THE PARANOID MIND</h2>
@@ -449,7 +469,6 @@ html(f"""
 </div>
 """)
 
-# ═══ CTA ═══
 html("""
 <div class="cta">
     <div class="cta-t">READY TO BECOME A STAR</div>
@@ -464,7 +483,6 @@ with c2:
     if st.button("⚡ ENCRYPT A MESSAGE", use_container_width=True, key="cta_btn"):
         st.info("The encryption page will be added soon.")
 
-# ═══ FOOTER ═══
 html("""
 <div class="foot">
     <div><span class="foot-brand">CRYPTORIAN</span> · V2.0 · 2026</div>
