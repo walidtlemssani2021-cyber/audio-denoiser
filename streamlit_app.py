@@ -315,10 +315,32 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .feat-t { font-family:'JetBrains Mono', monospace; font-size:.9rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#fff; margin-bottom:.9rem; }
 .feat-d { font-family:'Space Grotesk', sans-serif; font-size:.97rem; color:rgba(255,255,255,.6); line-height:1.8; font-weight:300; }
 
-.quote { max-width:900px; margin:7rem auto 0 auto; padding:3rem 3rem 3rem 4rem; border-left:4px solid #00ff88; background:linear-gradient(90deg,rgba(0,255,136,.07),transparent); border-radius:0 20px 20px 0; position:relative; }
-.quote::before { content:'"'; position:absolute; top:-18px; left:20px; font-family:'Orbitron', sans-serif; font-size:5rem; color:rgba(0,255,136,.3); line-height:1; }
-.quote-text { font-family:'Space Grotesk', sans-serif; font-size:1.4rem; font-weight:300; font-style:italic; color:rgba(255,255,255,.88); line-height:1.8; margin-bottom:1.4rem; }
-.quote-author { font-family:'JetBrains Mono', monospace; font-size:.75rem; letter-spacing:.3em; text-transform:uppercase; color:rgba(0,255,136,.75); }
+/* ═══ SIMPLE ELEGANT QUOTE ═══ */
+.quote {
+    max-width: 850px;
+    margin: 5rem auto 0 auto;
+    padding: 2.5rem 3rem;
+    border-left: 3px solid #00ff88;
+    background: linear-gradient(90deg, rgba(0,255,136,.06), transparent);
+    border-radius: 0 16px 16px 0;
+    position: relative;
+}
+.quote-text {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: clamp(1.05rem, 2vw, 1.35rem);
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(255,255,255,.9);
+    line-height: 1.8;
+    margin-bottom: 1.2rem;
+}
+.quote-author {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: .75rem;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: rgba(0,255,136,.8);
+}
 
 .cta { padding:6rem 3rem; text-align:center; border:1px solid rgba(0,255,136,.3); border-radius:28px; background:radial-gradient(ellipse at top,rgba(0,255,136,.18),transparent 60%),linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.01)); position:relative; overflow:hidden; margin-top:7rem; }
 .cta::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(0,255,136,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.07) 1px,transparent 1px); background-size:40px 40px; mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%); }
@@ -469,13 +491,7 @@ html(f"""
 </div>
 """)
 
-html("""
-<div class="quote">
-    <p class="quote-text">The only way to keep a secret is to make sure no one knows you have one.</p>
-    <p class="quote-author">— CRYPTORIAN PRINCIPLE</p>
-</div>
-""")
-
+# ═══ QUOTE MOVED HERE — AFTER "WHAT IS CRYPTORIAN" ═══
 html(f"""
 <div class="sec">
   <div class="sec-grid">
@@ -489,6 +505,11 @@ html(f"""
         <p class="text-block"><strong>Cryptorian does not hide the message inside the audio.</strong> It turns the message into the audio itself. The text is no longer text. It is a star's heartbeat.</p>
     </div>
   </div>
+</div>
+
+<div class="quote">
+    <p class="quote-text">"The only way to keep a secret is to make sure no one knows you have one."</p>
+    <p class="quote-author">— CRYPTORIAN FOUNDER</p>
 </div>
 """)
 
