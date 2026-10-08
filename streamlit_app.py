@@ -304,45 +304,67 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .text-block:hover { border-left-color:#00ff88; color:rgba(255,255,255,.95); padding-left:2.4rem; }
 .text-block strong { color:#00ff88; font-weight:600; text-shadow:0 0 25px rgba(0,255,136,.6); }
 
-/* ═══ FAQ SECTION ═══ */
+/* ═══ FAQ — ACCORDION STYLE ═══ */
 .faq-list { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+
 .faq-item {
     border: 1px solid rgba(0, 255, 136, 0.2);
     border-radius: 12px;
     background: linear-gradient(145deg, rgba(0, 255, 136, 0.03), rgba(0, 0, 0, 0.2));
-    padding: 1.4rem 1.8rem;
     transition: all .3s ease;
-    cursor: pointer;
+    overflow: hidden;
+}
+.faq-item[open] {
+    border-color: rgba(0, 255, 136, 0.6);
+    box-shadow: 0 0 35px rgba(0, 255, 136, 0.2);
 }
 .faq-item:hover {
     border-color: rgba(0, 255, 136, 0.5);
-    box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
-    transform: translateX(5px);
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.12);
 }
-.faq-q {
+
+.faq-item summary {
     font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 700;
     color: #00ff88;
     text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1.4rem 1.8rem;
+    cursor: pointer;
+    list-style: none;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.8rem;
+    transition: all .3s ease;
 }
-.faq-q::after {
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
     content: '+';
-    font-size: 1.2rem;
-    color: rgba(0, 255, 136, 0.6);
+    font-size: 1.4rem;
+    color: rgba(0, 255, 136, 0.7);
+    transition: transform .3s ease;
+    line-height: 1;
 }
+.faq-item[open] summary::after {
+    content: '−';
+    transform: rotate(180deg);
+}
+.faq-item summary:hover {
+    background: rgba(0, 255, 136, 0.04);
+}
+
 .faq-a {
     font-family: 'Space Grotesk', sans-serif !important;
     font-size: 0.98rem;
-    color: rgba(255, 255, 255, 0.65);
+    color: rgba(255, 255, 255, 0.7);
     line-height: 1.8;
     font-weight: 300;
-    padding-top: 0.5rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 0 1.8rem 1.4rem 1.8rem;
+    border-top: 1px solid rgba(0, 255, 136, 0.12);
+    margin-top: 0;
+    padding-top: 1.2rem;
 }
 
 /* ═══ BIG QUOTE STYLE — GLOWING MARKS ═══ */
@@ -493,8 +515,10 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     transform: translateY(-3px);
 }
 
-.foot { margin-top:7rem; padding-top:2.5rem; border-top:1px solid rgba(255,255,255,.08); display:flex; justify-content:space-between; align-items:center; font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.35); flex-wrap:wrap; gap:1rem; }
+.foot { margin-top:7rem; padding-top:2.5rem; border-top:1px solid rgba(255,255,255,.08); display:flex; flex-direction:column; align-items:center; gap:1.2rem; font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.35); }
+.foot-row { display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:1rem; }
 .foot-brand { color:rgba(0,255,136,.95); text-shadow:0 0 25px rgba(0,255,136,.6); font-weight:700; }
+.foot-copyright { font-size:.65rem; color:rgba(255,255,255,.3); letter-spacing:.2em; text-align:center; padding-top:.8rem; border-top:1px solid rgba(255,255,255,.05); width:100%; }
 
 ::-webkit-scrollbar { width:8px; } ::-webkit-scrollbar-track { background:#000; }
 ::-webkit-scrollbar-thumb { background:rgba(0,255,136,.4); border-radius:4px; }
@@ -607,30 +631,30 @@ html(f"""
 <div class="sec">
     <h2 class="sec-title">FREQUENTLY ASKED QUESTIONS</h2>
     <div class="faq-list">
-        <div class="faq-item">
-            <div class="faq-q">What is Cryptorian?</div>
+        <details class="faq-item">
+            <summary>What is Cryptorian?</summary>
             <div class="faq-a">Cryptorian is a sound-based encryption system that transforms your text messages into a waveform modeled after a neutron star's pulse. It sounds like cosmic noise to anyone who listens — but to the person who holds the key, it is a clear message.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q">How does the encryption work?</div>
+        </details>
+        <details class="faq-item">
+            <summary>How does the encryption work?</summary>
             <div class="faq-a">Every character you write becomes a unique sonic signature. The secret key reorders these signatures, so the same character produces a different pulse with every key. The message length is embedded in the audio itself for decryption.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q">Is my data stored or sent anywhere?</div>
+        </details>
+        <details class="faq-item">
+            <summary>Is my data stored or sent anywhere?</summary>
             <div class="faq-a">No. Nothing is stored. Nothing is sent. The entire process happens in memory — invisible to anyone else. Your message and your key never leave your device.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q">What audio formats are supported?</div>
+        </details>
+        <details class="faq-item">
+            <summary>What audio formats are supported?</summary>
             <div class="faq-a">You can export as uncompressed WAV for universal playback, or as compressed FLAC for a much smaller file size without losing quality.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q">Can anyone decrypt my message without the key?</div>
+        </details>
+        <details class="faq-item">
+            <summary>Can anyone decrypt my message without the key?</summary>
             <div class="faq-a">No. Without the exact key, the audio sounds like random cosmic noise. The encryption is mathematically tied to the key, making it virtually impossible to decrypt without it.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-q">How many characters can I encrypt?</div>
+        </details>
+        <details class="faq-item">
+            <summary>How many characters can I encrypt?</summary>
             <div class="faq-a">Cryptorian supports up to 2000 characters per message, with 91 unique sonic signatures available for encoding.</div>
-        </div>
+        </details>
     </div>
     {RIDGE}
     <p class="banner-cap">Illustration · stacked pulse profiles</p>
@@ -653,7 +677,10 @@ with c2:
 
 html("""
 <div class="foot">
-    <div><span class="foot-brand">CRYPTORIAN</span> · V2.0 · 2026</div>
-    <div>SOUND-BASED ENCRYPTION</div>
+    <div class="foot-row">
+        <div><span class="foot-brand">CRYPTORIAN</span> · V2.0 · 2026</div>
+        <div>SOUND-BASED ENCRYPTION</div>
+    </div>
+    <div class="foot-copyright">© 2026 CRYPTORIAN · ALL RIGHTS RESERVED · BUILT FOR PRIVACY</div>
 </div>
 """)
