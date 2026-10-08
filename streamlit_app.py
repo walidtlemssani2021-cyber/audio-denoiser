@@ -304,54 +304,94 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .text-block:hover { border-left-color:#00ff88; color:rgba(255,255,255,.95); padding-left:2.4rem; }
 .text-block strong { color:#00ff88; font-weight:600; text-shadow:0 0 25px rgba(0,255,136,.6); }
 
-.feat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.4rem; margin-top:3rem; }
-.feat { position:relative; padding:2.4rem 2rem; background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.01)); border:1px solid rgba(255,255,255,.08); border-radius:16px; overflow:hidden; transition:all .45s cubic-bezier(.4,0,.2,1); }
-.feat::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(0,255,136,.9),transparent); opacity:0; transition:opacity .45s; }
-.feat:hover { transform:translateY(-8px); border-color:rgba(0,255,136,.4); box-shadow:0 25px 70px rgba(0,0,0,.6), 0 0 90px rgba(0,255,136,.14); }
-.feat:hover::before { opacity:1; }
-.feat-icon { width:54px; height:54px; display:flex; align-items:center; justify-content:center; background:linear-gradient(145deg,rgba(0,255,136,.16),rgba(0,255,136,.03)); border:1px solid rgba(0,255,136,.3); border-radius:14px; font-size:1.5rem; color:#00ff88; margin-bottom:1.5rem; text-shadow:0 0 20px rgba(0,255,136,.6); transition:all .45s; }
-.feat:hover .feat-icon { box-shadow:0 0 30px rgba(0,255,136,.4); transform:scale(1.08) rotate(-5deg); }
-.feat-t { font-family:'JetBrains Mono', monospace; font-size:.9rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#fff; margin-bottom:.9rem; }
-.feat-d { font-family:'Space Grotesk', sans-serif; font-size:.97rem; color:rgba(255,255,255,.6); line-height:1.8; font-weight:300; }
+/* ═══ FAQ SECTION ═══ */
+.faq-list { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
+.faq-item {
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(0, 255, 136, 0.03), rgba(0, 0, 0, 0.2));
+    padding: 1.4rem 1.8rem;
+    transition: all .3s ease;
+    cursor: pointer;
+}
+.faq-item:hover {
+    border-color: rgba(0, 255, 136, 0.5);
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+    transform: translateX(5px);
+}
+.faq-q {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #00ff88;
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+.faq-q::after {
+    content: '+';
+    font-size: 1.2rem;
+    color: rgba(0, 255, 136, 0.6);
+}
+.faq-a {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 0.98rem;
+    color: rgba(255, 255, 255, 0.65);
+    line-height: 1.8;
+    font-weight: 300;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
 
-/* ═══ BIG QUOTE STYLE (with Space Grotesk font) ═══ */
+/* ═══ BIG QUOTE STYLE — GLOWING MARKS ═══ */
 .big-quote {
     position: relative;
     max-width: 900px;
     margin: 6rem auto 0 auto;
-    padding: 3rem 3rem 3rem 4rem;
+    padding: 4.5rem 3rem 3rem 4rem; /* تم زيادة المسافة العلوية */
     border: 1px solid rgba(0, 255, 136, 0.25);
     border-radius: 20px;
     background: linear-gradient(145deg, rgba(0, 255, 136, 0.04), rgba(0, 0, 0, 0.2));
     overflow: hidden;
 }
 
-/* علامة الاقتباس الكبيرة العلوية */
+/* علامة الاقتباس العلوية — مضيئة */
 .big-quote::before {
     content: '"';
     position: absolute;
-    top: -30px;
+    top: -20px;
     left: 20px;
     font-family: 'Space Grotesk', sans-serif;
     font-size: 10rem;
     font-weight: 700;
-    color: rgba(0, 255, 136, 0.12);
+    color: rgba(0, 255, 136, 0.25);
+    text-shadow: 0 0 30px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 255, 136, 0.4);
     line-height: 1;
     pointer-events: none;
+    animation: quoteGlow 3s ease-in-out infinite;
 }
 
-/* علامة الاقتباس الكبيرة السفلية */
+/* علامة الاقتباس السفلية — مضيئة */
 .big-quote::after {
     content: '"';
     position: absolute;
-    bottom: -70px;
+    bottom: -60px;
     right: 20px;
     font-family: 'Space Grotesk', sans-serif;
     font-size: 10rem;
     font-weight: 700;
-    color: rgba(0, 255, 136, 0.12);
+    color: rgba(0, 255, 136, 0.25);
+    text-shadow: 0 0 30px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 255, 136, 0.4);
     line-height: 1;
     pointer-events: none;
+    animation: quoteGlow 3s ease-in-out infinite;
+}
+
+@keyframes quoteGlow {
+    0%, 100% { text-shadow: 0 0 30px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 255, 136, 0.4); }
+    50%      { text-shadow: 0 0 50px rgba(0, 255, 136, 1), 0 0 100px rgba(0, 255, 136, 0.6); }
 }
 
 .big-quote-text {
@@ -363,11 +403,13 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     margin: 0 0 2.5rem 0;
     position: relative;
     z-index: 1;
+    padding-top: 0.5rem;
 }
 
 .big-quote-text .highlight {
-    color: #00d4ff;
+    color: #00ff88;
     font-weight: 600;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
 }
 
 .big-quote-author {
@@ -388,7 +430,8 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .big-quote-author::after {
     content: '';
     height: 1px;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(0, 255, 136, 0.4);
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
     width: 40px;
 }
 
@@ -458,7 +501,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 ::-webkit-scrollbar { width:8px; } ::-webkit-scrollbar-track { background:#000; }
 ::-webkit-scrollbar-thumb { background:rgba(0,255,136,.4); border-radius:4px; }
 
-@media (max-width:980px) { .sec-grid { grid-template-columns:1fr; gap:1rem; } .feat-grid { grid-template-columns:1fr 1fr; } }
+@media (max-width:980px) { .sec-grid { grid-template-columns:1fr; gap:1rem; } }
 @media (max-width:700px) {
   .block-container { padding:0 1.25rem 4rem 1.25rem !important; }
   .nav { padding:1.1rem 1.25rem; margin:0 -1.25rem; }
@@ -466,11 +509,11 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
   .hero-badge { letter-spacing:.12em; font-size:.62rem; padding:.7rem 1.2rem; line-height:1.7; }
   .hero-name { letter-spacing:.04em; }
   .hero-tagline { letter-spacing:.15em; font-size:.72rem; }
-  .stats-strip, .feat-grid { grid-template-columns:1fr; }
+  .stats-strip { grid-template-columns:1fr; }
   .stat-item + .stat-item { border-left:none; border-top:1px solid rgba(255,255,255,.08); }
-  .big-quote { padding: 2rem 1.5rem 2rem 2rem; }
-  .big-quote::before { font-size: 7rem; top: -20px; left: 10px; }
-  .big-quote::after { font-size: 7rem; bottom: -50px; right: 10px; }
+  .big-quote { padding: 3.5rem 1.5rem 2rem 2rem; }
+  .big-quote::before { font-size: 7rem; top: -10px; left: 10px; }
+  .big-quote::after { font-size: 7rem; bottom: -40px; right: 10px; }
   .big-quote-text { font-size: 1rem; }
   .cta { padding:4rem 1.5rem; }
 }
@@ -562,16 +605,35 @@ html(f"""
 </div>
 """)
 
+<!-- ═══ FAQ SECTION — REPLACES "BUILT FOR THE PARANOID MIND" ═══ -->
 html(f"""
 <div class="sec">
-    <h2 class="sec-title">BUILT FOR THE PARANOID MIND</h2>
-    <div class="feat-grid">
-        <div class="feat"><div class="feat-icon">◉</div><div class="feat-t">Neutron Sound</div><div class="feat-d">Your message becomes a waveform modeled after a neutron star's pulse. It sounds like the cosmos — not like data.</div></div>
-        <div class="feat"><div class="feat-icon">▣</div><div class="feat-t">Unique Signatures</div><div class="feat-d">Every character — letter, digit, or symbol — has its own sonic signature. No two are ever alike.</div></div>
-        <div class="feat"><div class="feat-icon">⬢</div><div class="feat-t">Key Shuffling</div><div class="feat-d">The secret key reorders every signature. The same character produces a different pulse with every key.</div></div>
-        <div class="feat"><div class="feat-icon">◆</div><div class="feat-t">Length Header</div><div class="feat-d">The message length is embedded in the audio itself. Decryption knows exactly where the message ends.</div></div>
-        <div class="feat"><div class="feat-icon">▲</div><div class="feat-t">Dual Formats</div><div class="feat-d">Export as uncompressed WAV for universal playback, or as compressed FLAC for a much smaller file.</div></div>
-        <div class="feat"><div class="feat-icon">○</div><div class="feat-t">Zero Knowledge</div><div class="feat-d">Nothing is stored. Nothing is sent. The entire process happens in memory — invisible to anyone else.</div></div>
+    <h2 class="sec-title">FREQUENTLY ASKED QUESTIONS</h2>
+    <div class="faq-list">
+        <div class="faq-item">
+            <div class="faq-q">What is Cryptorian?</div>
+            <div class="faq-a">Cryptorian is a sound-based encryption system that transforms your text messages into a waveform modeled after a neutron star's pulse. It sounds like cosmic noise to anyone who listens — but to the person who holds the key, it is a clear message.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">How does the encryption work?</div>
+            <div class="faq-a">Every character you write becomes a unique sonic signature. The secret key reorders these signatures, so the same character produces a different pulse with every key. The message length is embedded in the audio itself for decryption.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">Is my data stored or sent anywhere?</div>
+            <div class="faq-a">No. Nothing is stored. Nothing is sent. The entire process happens in memory — invisible to anyone else. Your message and your key never leave your device.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">What audio formats are supported?</div>
+            <div class="faq-a">You can export as uncompressed WAV for universal playback, or as compressed FLAC for a much smaller file size without losing quality.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">Can anyone decrypt my message without the key?</div>
+            <div class="faq-a">No. Without the exact key, the audio sounds like random cosmic noise. The encryption is mathematically tied to the key, making it virtually impossible to decrypt without it.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q">How many characters can I encrypt?</div>
+            <div class="faq-a">Cryptorian supports up to 2000 characters per message, with 91 unique sonic signatures available for encoding.</div>
+        </div>
     </div>
     {RIDGE}
     <p class="banner-cap">Illustration · stacked pulse profiles</p>
