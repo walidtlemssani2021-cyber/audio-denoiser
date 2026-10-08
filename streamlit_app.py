@@ -6,12 +6,22 @@ from html import escape
 
 import streamlit as st
 
+# ═══════════════════════════════════════════════════════════════
+# منع التخزين المؤقت (No-Cache) — يجبر المتصفح على تحديث العرض فوراً
+# ═══════════════════════════════════════════════════════════════
 st.set_page_config(
     page_title="CRYPTORIAN",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
+
+# إضافة headers لمنع التخزين المؤقت
+st.markdown("""
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+""", unsafe_allow_html=True)
 
 
 def html(code):
@@ -20,6 +30,7 @@ def html(code):
 
 
 def svg_img(svg, cls, alt):
+    # إضافة بصمة زمنية لكل صورة لمنع تخزينها مؤقتاً
     unique_svg = svg.replace("<svg ", f'<svg data-t="{time.time()}" ', 1)
     b64 = base64.b64encode(unique_svg.encode()).decode()
     return f'<img class="{cls}" alt="{alt}" src="data:image/svg+xml;base64,{b64}"/>'
