@@ -237,7 +237,7 @@ RIDGE = svg_img(ridge_art(), "banner", "Pulse profiles")
 # ═══════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
@@ -314,7 +314,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .feat-t { font-family:'JetBrains Mono', monospace; font-size:.9rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#fff; margin-bottom:.9rem; }
 .feat-d { font-family:'Space Grotesk', sans-serif; font-size:.97rem; color:rgba(255,255,255,.6); line-height:1.8; font-weight:300; }
 
-/* ═══ BIG QUOTE STYLE (Like the reference image) ═══ */
+/* ═══ BIG QUOTE STYLE (with Space Grotesk font) ═══ */
 .big-quote {
     position: relative;
     max-width: 900px;
@@ -332,9 +332,10 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     position: absolute;
     top: -30px;
     left: 20px;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 10rem;
-    color: rgba(0, 255, 136, 0.15);
+    font-weight: 700;
+    color: rgba(0, 255, 136, 0.12);
     line-height: 1;
     pointer-events: none;
 }
@@ -345,19 +346,20 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     position: absolute;
     bottom: -70px;
     right: 20px;
-    font-family: 'Playfair Display', serif;
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 10rem;
-    color: rgba(0, 255, 136, 0.15);
+    font-weight: 700;
+    color: rgba(0, 255, 136, 0.12);
     line-height: 1;
     pointer-events: none;
 }
 
 .big-quote-text {
-    font-family: 'Playfair Display', serif !important;
-    font-size: clamp(1.4rem, 3vw, 2.2rem);
-    font-weight: 700;
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+    font-weight: 500;
     color: #ffffff;
-    line-height: 1.4;
+    line-height: 1.6;
     margin: 0 0 2.5rem 0;
     position: relative;
     z-index: 1;
@@ -365,6 +367,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 
 .big-quote-text .highlight {
     color: #00d4ff;
+    font-weight: 600;
 }
 
 .big-quote-author {
@@ -375,6 +378,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     color: rgba(255, 255, 255, 0.7);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
     position: relative;
     z-index: 1;
@@ -467,7 +471,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
   .big-quote { padding: 2rem 1.5rem 2rem 2rem; }
   .big-quote::before { font-size: 7rem; top: -20px; left: 10px; }
   .big-quote::after { font-size: 7rem; bottom: -50px; right: 10px; }
-  .big-quote-text { font-size: 1.2rem; }
+  .big-quote-text { font-size: 1rem; }
   .cta { padding:4rem 1.5rem; }
 }
 </style>
@@ -554,7 +558,7 @@ html(f"""
 
 <div class="big-quote">
     <p class="big-quote-text">The only way to keep a secret is to make sure no one knows you <span class="highlight">have one.</span></p>
-    <p class="big-quote-author">— CRYPTORIAN FOUNDER</p>
+    <p class="big-quote-author">- Criptorian founder -</p>
 </div>
 """)
 
