@@ -350,14 +350,13 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     position: relative;
     max-width: 900px;
     margin: 6rem auto 0 auto;
-    padding: 4.5rem 3rem 3rem 4rem; /* تم زيادة المسافة العلوية */
+    padding: 4.5rem 3rem 3rem 4rem;
     border: 1px solid rgba(0, 255, 136, 0.25);
     border-radius: 20px;
     background: linear-gradient(145deg, rgba(0, 255, 136, 0.04), rgba(0, 0, 0, 0.2));
     overflow: hidden;
 }
 
-/* علامة الاقتباس العلوية — مضيئة */
 .big-quote::before {
     content: '"';
     position: absolute;
@@ -373,7 +372,6 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
     animation: quoteGlow 3s ease-in-out infinite;
 }
 
-/* علامة الاقتباس السفلية — مضيئة */
 .big-quote::after {
     content: '"';
     position: absolute;
@@ -605,7 +603,6 @@ html(f"""
 </div>
 """)
 
-<!-- ═══ FAQ SECTION — REPLACES "BUILT FOR THE PARANOID MIND" ═══ -->
 html(f"""
 <div class="sec">
     <h2 class="sec-title">FREQUENTLY ASKED QUESTIONS</h2>
