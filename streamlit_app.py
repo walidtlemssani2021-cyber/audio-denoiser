@@ -399,30 +399,31 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
 .stButton > button { min-height:3.6rem !important; position:relative; overflow:hidden !important; transition:transform .3s, box-shadow .3s, background .3s !important; }
 .stButton > button p { font-family:inherit !important; font-size:inherit !important; font-weight:inherit !important; letter-spacing:inherit !important; text-transform:inherit !important; color:inherit !important; margin:0 !important; line-height:1.2 !important; position:relative; z-index:1; }
 
-/* PRIMARY BUTTON — Blue gradient, DM Mono font, BLACK text */
+/* PRIMARY BUTTON — Blue gradient, DM Mono font, BLACK text, SMALLER */
 .stButton > button[kind="primary"] {
     background: linear-gradient(135deg, #5fb8ff 0%, #2b6bff 100%) !important;
     color: #000000 !important;
     border: 1px solid rgba(160,215,255,.9) !important;
-    border-radius: 12px !important;
-    padding: 1.15rem 2.5rem !important;
+    border-radius: 10px !important;
+    padding: 0.85rem 1.8rem !important;
     font-family: 'DM Mono', monospace !important;
     font-weight: 500 !important;
-    font-size: 1.2rem !important;
-    letter-spacing: .3em !important;
+    font-size: 0.95rem !important;
+    letter-spacing: .25em !important;
     text-transform: uppercase !important;
-    box-shadow: 0 0 30px rgba(61,165,255,.8), 0 0 70px rgba(61,165,255,.4), inset 0 0 20px rgba(255,255,255,.3) !important;
+    box-shadow: 0 0 25px rgba(61,165,255,.7), 0 0 55px rgba(61,165,255,.35), inset 0 0 15px rgba(255,255,255,.3) !important;
     animation: btnPulse 2.5s ease-in-out infinite !important;
+    max-width: 280px !important;
+    margin: 0 auto !important;
 }
 
-/* Force Streamlit to use DM Mono + BLACK inside the button */
 .stButton > button[kind="primary"] p,
 .stButton > button[kind="primary"] div,
 .stButton > button[kind="primary"] span {
     font-family: 'DM Mono', monospace !important;
     font-weight: 500 !important;
-    font-size: 1.2rem !important;
-    letter-spacing: .3em !important;
+    font-size: 0.95rem !important;
+    letter-spacing: .25em !important;
     text-transform: uppercase !important;
     color: #000000 !important;
     margin: 0 !important;
@@ -430,8 +431,8 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
 }
 
 @keyframes btnPulse {
-    0%,100% { box-shadow: 0 0 30px rgba(61,165,255,.8), 0 0 70px rgba(61,165,255,.4), inset 0 0 20px rgba(255,255,255,.3); }
-    50%     { box-shadow: 0 0 50px rgba(61,165,255,1), 0 0 110px rgba(61,165,255,.6), inset 0 0 30px rgba(255,255,255,.5); }
+    0%,100% { box-shadow: 0 0 25px rgba(61,165,255,.7), 0 0 55px rgba(61,165,255,.35), inset 0 0 15px rgba(255,255,255,.3); }
+    50%     { box-shadow: 0 0 40px rgba(61,165,255,.95), 0 0 90px rgba(61,165,255,.5), inset 0 0 25px rgba(255,255,255,.45); }
 }
 .stButton > button[kind="primary"]::before {
     content:''; position:absolute; top:0; left:-60%; width:40%; height:100%;
@@ -439,7 +440,7 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
     transform:skewX(-20deg); animation:shine 3.4s ease-in-out infinite; pointer-events:none;
 }
 @keyframes shine { 0% { left:-60%; } 55%,100% { left:130%; } }
-.stButton > button[kind="primary"]:hover { transform:translateY(-3px) scale(1.01); filter:brightness(1.1); }
+.stButton > button[kind="primary"]:hover { transform:translateY(-2px) scale(1.01); filter:brightness(1.1); }
 
 .stButton > button[kind="secondary"] { background:rgba(2,5,12,.9) !important; color:#fff !important; border:1px solid rgba(var(--ar),.7) !important; border-radius:12px !important; padding:1.1rem 2.4rem !important; font-family:'Big Shoulders Display',sans-serif !important; font-weight:900 !important; font-size:1.4rem !important; letter-spacing:.2em !important; text-transform:uppercase !important; box-shadow:0 10px 40px rgba(0,0,0,.6), 0 0 30px rgba(var(--ar),.25) !important; }
 .stButton > button[kind="secondary"]:hover { background:var(--a) !important; color:#00081a !important; border-color:#fff !important; transform:translateY(-3px); box-shadow:0 18px 60px rgba(var(--ar),.6) !important; }
