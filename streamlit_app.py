@@ -306,7 +306,22 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 @keyframes nameShine { from { background-position:150% 0, 0 0; } to { background-position:-50% 0, 0 0; } }
 
 div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margin-top:1.5rem; }
-.stMarkdown p.hero-tag { font-family:'Instrument Serif',serif !important; font-style:italic; font-size:clamp(1.9rem,3.7vw,3.3rem) !important; line-height:1.04 !important; margin:0 0 1.8rem 0 !important; color:#fff; animation:fadeUp 1s ease .4s both; text-align:center; }
+
+/* ═══ TAGLINE — DM Mono (same as badge) ═══ */
+.stMarkdown p.hero-tag {
+    font-family: 'DM Mono', monospace !important;
+    font-style: normal;
+    font-size: clamp(0.75rem, 1.3vw, 0.95rem) !important;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(var(--ar),0.6);
+    margin: 2rem 0 1.8rem 0 !important;
+    text-align: center;
+    line-height: 1.9;
+    animation:fadeUp 1s ease .4s both;
+}
+
 .hero-meta { font-size:.62rem; letter-spacing:.26em; color:rgba(255,255,255,.45); margin-top:1.8rem; text-align:center; }
 
 .star-wrap { position:relative; width:100%; max-width:780px; margin:0 auto; animation:fadeUp 1s ease .25s both; }
@@ -380,11 +395,34 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
 /* ═══ BUTTONS ═══ */
 .stButton > button { min-height:3.6rem !important; position:relative; overflow:hidden !important; transition:transform .3s, box-shadow .3s, background .3s !important; }
 .stButton > button p { font-family:inherit !important; font-size:inherit !important; font-weight:inherit !important; letter-spacing:inherit !important; text-transform:inherit !important; color:inherit !important; margin:0 !important; line-height:1.2 !important; position:relative; z-index:1; }
-.stButton > button[kind="primary"] { background:linear-gradient(135deg,#5fb8ff 0%,var(--h) 100%) !important; color:#00081a !important; border:1px solid rgba(160,215,255,.9) !important; border-radius:12px !important; padding:1.15rem 2.5rem !important; font-family:'Big Shoulders Display',sans-serif !important; font-weight:900 !important; font-size:1.55rem !important; letter-spacing:.2em !important; text-transform:uppercase !important; box-shadow:0 0 25px rgba(var(--ar),.55),0 0 55px rgba(var(--ar),.28),inset 0 0 15px rgba(255,255,255,.28) !important; animation:btnPulse 2.5s ease-in-out infinite; }
-@keyframes btnPulse { 0%,100% { box-shadow:0 0 25px rgba(var(--ar),.55),0 0 55px rgba(var(--ar),.28),inset 0 0 15px rgba(255,255,255,.28); } 50% { box-shadow:0 0 42px rgba(var(--ar),.9),0 0 90px rgba(var(--ar),.45),inset 0 0 25px rgba(255,255,255,.4); } }
-.stButton > button[kind="primary"]::before { content:''; position:absolute; top:0; left:-60%; width:40%; height:100%; background:linear-gradient(100deg,transparent,rgba(255,255,255,.65),transparent); transform:skewX(-20deg); animation:shine 3.4s ease-in-out infinite; pointer-events:none; }
+
+/* PRIMARY BUTTON — Big Shoulders Display + BLUE GLOW */
+.stButton > button[kind="primary"] {
+    background: linear-gradient(135deg, #5fb8ff 0%, var(--h) 100%) !important;
+    color: #00081a !important;
+    border: 1px solid rgba(160,215,255,.9) !important;
+    border-radius: 12px !important;
+    padding: 1.15rem 2.5rem !important;
+    font-family: 'Big Shoulders Display', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 1.55rem !important;
+    letter-spacing: .2em !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 0 30px rgba(var(--ar),.7), 0 0 70px rgba(var(--ar),.4), inset 0 0 20px rgba(255,255,255,.3) !important;
+    animation: btnPulse 2.5s ease-in-out infinite !important;
+}
+@keyframes btnPulse {
+    0%,100% { box-shadow: 0 0 30px rgba(var(--ar),.7), 0 0 70px rgba(var(--ar),.4), inset 0 0 20px rgba(255,255,255,.3); }
+    50%     { box-shadow: 0 0 50px rgba(var(--ar),1), 0 0 110px rgba(var(--ar),.6), inset 0 0 30px rgba(255,255,255,.5); }
+}
+.stButton > button[kind="primary"]::before {
+    content:''; position:absolute; top:0; left:-60%; width:40%; height:100%;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.7),transparent);
+    transform:skewX(-20deg); animation:shine 3.4s ease-in-out infinite; pointer-events:none;
+}
 @keyframes shine { 0% { left:-60%; } 55%,100% { left:130%; } }
 .stButton > button[kind="primary"]:hover { transform:translateY(-3px) scale(1.01); filter:brightness(1.1); }
+
 .stButton > button[kind="secondary"] { background:rgba(2,5,12,.9) !important; color:#fff !important; border:1px solid rgba(var(--ar),.7) !important; border-radius:12px !important; padding:1.1rem 2.4rem !important; font-family:'Big Shoulders Display',sans-serif !important; font-weight:900 !important; font-size:1.4rem !important; letter-spacing:.2em !important; text-transform:uppercase !important; box-shadow:0 10px 40px rgba(0,0,0,.6), 0 0 30px rgba(var(--ar),.25) !important; }
 .stButton > button[kind="secondary"]:hover { background:var(--a) !important; color:#00081a !important; border-color:#fff !important; transform:translateY(-3px); box-shadow:0 18px 60px rgba(var(--ar),.6) !important; }
 .stButton > button:focus-visible { outline:2px solid #fff !important; outline-offset:3px; }
@@ -442,7 +480,7 @@ html(f"""
 <div class="star-wrap" style="max-width:780px;margin:2.5rem auto 0 auto;">{STAR}</div>
 """)
 
-html("""<p class="hero-tag" style="text-align:center;font-family:'Instrument Serif',serif !important;font-style:italic;font-size:clamp(1.9rem,3.7vw,3.3rem) !important;line-height:1.04;margin:2rem 0 1.8rem 0;color:#fff;">Using an encrypted modified neutron star sound</p>""")
+html("""<p class="hero-tag">Using an encrypted modified neutron star sound</p>""")
 
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
