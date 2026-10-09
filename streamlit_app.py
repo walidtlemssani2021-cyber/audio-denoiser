@@ -7,7 +7,7 @@ from html import escape
 import streamlit as st
 
 # ═══════════════════════════════════════════════════════════════
-# منع التخزين المؤقت (No-Cache) — يجبر المتصفح على تحديث العرض فوراً
+# No-Cache — forces browser to refresh the view instantly
 # ═══════════════════════════════════════════════════════════════
 st.set_page_config(
     page_title="CRYPTORIAN",
@@ -16,7 +16,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# إضافة headers لمنع التخزين المؤقت
 st.markdown("""
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
@@ -30,7 +29,6 @@ def html(code):
 
 
 def svg_img(svg, cls, alt):
-    # إضافة بصمة زمنية لكل صورة لمنع تخزينها مؤقتاً
     unique_svg = svg.replace("<svg ", f'<svg data-t="{time.time()}" ', 1)
     b64 = base64.b64encode(unique_svg.encode()).decode()
     return f'<img class="{cls}" alt="{alt}" src="data:image/svg+xml;base64,{b64}"/>'
@@ -609,9 +607,8 @@ html(f"""
         {NET}
     </div>
     <div>
-        <p class="text-block">Every message you send carries a piece of you. Your words, your thoughts, your secrets — they travel through networks you don't control, through servers you don't own, through channels that can be intercepted.</p>
-        <p class="text-block"><strong>Encryption is not paranoia.</strong> It is the basic right to keep your private life private. It is the difference between a conversation and a broadcast. It is the line between your message and everyone else's business.</p>
-        <p class="text-block">In a world where data is currency, encryption is the only true shield. It doesn't hide the fact that you are communicating — it simply ensures that only the intended recipient can understand what is being said.</p>
+        <p class="text-block">Before anything else, let it be known that a person who encrypts their messages is not always a criminal, nor is he suffering from paranoia. Every message you send — carrying your words, your thoughts, your secrets — travels through networks you don't know are safe or not, through servers you don't own, and through channels that are easy to intercept. This increases the risk of your data being obtained and exposes you to surveillance or blackmail.</p>
+        <p class="text-block"><strong>And here comes the role of encryption</strong> — and not just any type of encryption. A private encryption. Encrypting your message using a complex, uncommon method. Using a special encryption method will guarantee you a great deal of security and legitimate privacy. And here comes the role of Criptorian.</p>
     </div>
   </div>
 </div>
@@ -625,9 +622,8 @@ html(f"""
         {PIPE}
     </div>
     <div>
-        <p class="text-block">Cryptorian is a sound-based encryption system. It takes your message and transforms it into a waveform modeled after the sound of a neutron star — a dead star that pulses in the void, sending signals no one can read.</p>
-        <p class="text-block">Every character you write becomes a unique pulse. Every word becomes a rhythm. The final audio file sounds like cosmic noise to anyone who listens — but to the person who holds the key, it is a clear message.</p>
-        <p class="text-block"><strong>Cryptorian does not hide the message inside the audio.</strong> It turns the message into the audio itself. The text is no longer text. It is a star's heartbeat.</p>
+        <p class="text-block">Criptorian is a modern encryption program built to enhance the preservation of legitimate privacy and to combat the phenomenon of data leakage or unauthorized access by unwanted or disliked individuals or entities. Criptorian takes your written message and converts it into a modified sound wave derived from real sound waves emitted by a neutron star. It can also decrypt the resulting sound wave and convert it back into text.</p>
+        <p class="text-block"><strong>The reason for using this type of sound for encryption</strong> is the founder's taste and his fascination with the incomprehensible sound waves emitted by neutron stars.</p>
     </div>
   </div>
 </div>
