@@ -399,21 +399,36 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
 .stButton > button { min-height:3.6rem !important; position:relative; overflow:hidden !important; transition:transform .3s, box-shadow .3s, background .3s !important; }
 .stButton > button p { font-family:inherit !important; font-size:inherit !important; font-weight:inherit !important; letter-spacing:inherit !important; text-transform:inherit !important; color:inherit !important; margin:0 !important; line-height:1.2 !important; position:relative; z-index:1; }
 
-/* PRIMARY BUTTON — Blue gradient with blue glow */
+/* PRIMARY BUTTON — Blue gradient, DM Mono font, BLACK text */
 .stButton > button[kind="primary"] {
     background: linear-gradient(135deg, #5fb8ff 0%, #2b6bff 100%) !important;
-    color: #ffffff !important;
+    color: #000000 !important;
     border: 1px solid rgba(160,215,255,.9) !important;
     border-radius: 12px !important;
     padding: 1.15rem 2.5rem !important;
-    font-family: 'Big Shoulders Display', sans-serif !important;
-    font-weight: 900 !important;
-    font-size: 1.55rem !important;
-    letter-spacing: .2em !important;
+    font-family: 'DM Mono', monospace !important;
+    font-weight: 500 !important;
+    font-size: 1.2rem !important;
+    letter-spacing: .3em !important;
     text-transform: uppercase !important;
     box-shadow: 0 0 30px rgba(61,165,255,.8), 0 0 70px rgba(61,165,255,.4), inset 0 0 20px rgba(255,255,255,.3) !important;
     animation: btnPulse 2.5s ease-in-out infinite !important;
 }
+
+/* Force Streamlit to use DM Mono + BLACK inside the button */
+.stButton > button[kind="primary"] p,
+.stButton > button[kind="primary"] div,
+.stButton > button[kind="primary"] span {
+    font-family: 'DM Mono', monospace !important;
+    font-weight: 500 !important;
+    font-size: 1.2rem !important;
+    letter-spacing: .3em !important;
+    text-transform: uppercase !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+}
+
 @keyframes btnPulse {
     0%,100% { box-shadow: 0 0 30px rgba(61,165,255,.8), 0 0 70px rgba(61,165,255,.4), inset 0 0 20px rgba(255,255,255,.3); }
     50%     { box-shadow: 0 0 50px rgba(61,165,255,1), 0 0 110px rgba(61,165,255,.6), inset 0 0 30px rgba(255,255,255,.5); }
