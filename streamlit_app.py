@@ -399,7 +399,14 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
 .stButton > button { min-height:3.6rem !important; position:relative; overflow:hidden !important; transition:transform .3s, box-shadow .3s, background .3s !important; }
 .stButton > button p { font-family:inherit !important; font-size:inherit !important; font-weight:inherit !important; letter-spacing:inherit !important; text-transform:inherit !important; color:inherit !important; margin:0 !important; line-height:1.2 !important; position:relative; z-index:1; }
 
-/* PRIMARY BUTTON — Blue gradient, DM Mono font, BLACK text, SMALLER */
+/* Force centering of the primary button */
+.stButton:has(button[kind="primary"]) {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+
+/* PRIMARY BUTTON — Blue gradient, DM Mono font, BLACK text, SMALLER, CENTERED */
 .stButton > button[kind="primary"] {
     background: linear-gradient(135deg, #5fb8ff 0%, #2b6bff 100%) !important;
     color: #000000 !important;
