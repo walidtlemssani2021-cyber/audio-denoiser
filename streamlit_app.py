@@ -257,7 +257,7 @@ st.markdown(ROOT, unsafe_allow_html=True)
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
 @property --n { syntax:'<integer>'; initial-value:0; inherits:false; }
 
@@ -307,20 +307,22 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 
 div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margin-top:1.5rem; }
 
-/* ═══ TAGLINE — Thin DM Mono ═══ */
+/* ═══ TAGLINE — Thin JetBrains Mono ═══ */
 .stMarkdown p.hero-tag {
-    font-family: 'DM Mono', monospace !important;
+    font-family: 'JetBrains Mono', monospace !important;
     font-style: normal;
     font-weight: 300 !important;
-    font-size: clamp(0.75rem, 1.3vw, 0.95rem) !important;
-    letter-spacing: 0.22em;
+    font-size: clamp(0.7rem, 1.2vw, 0.88rem) !important;
+    letter-spacing: 0.24em;
     text-transform: uppercase;
     color: #ffffff;
-    text-shadow: 0 0 20px rgba(var(--ar),0.6);
+    text-shadow: 0 0 15px rgba(var(--ar),0.5);
     margin: 2rem 0 1.8rem 0 !important;
     text-align: center;
     line-height: 1.9;
-    animation:fadeUp 1s ease .4s both;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    animation: fadeUp 1s ease .4s both;
 }
 
 .hero-meta { font-size:.62rem; letter-spacing:.26em; color:rgba(255,255,255,.45); margin-top:1.8rem; text-align:center; }
