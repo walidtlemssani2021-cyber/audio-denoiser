@@ -42,11 +42,16 @@ def svg_img(svg, cls, alt):
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 1 — NEUTRON STAR (BLUE/WHITE — TRANSPARENT BACKGROUND)
+# ART 1 — NEUTRON STAR (BLUE/WHITE THEME)
 # ═══════════════════════════════════════════════════════════════
 def star_art():
     rnd = random.Random(7)
     cx, cy, R, W, T, L = 400, 280, 150, 600, 0.9, 540
+
+    stars = "".join(
+        f'<circle cx="{rnd.randint(0, 800)}" cy="{rnd.randint(0, 560)}" r="{rnd.uniform(0.4, 1.5):.2f}" fill="#fff" opacity="{rnd.uniform(0.15, 0.85):.2f}"/>'
+        for _ in range(110)
+    )
 
     blob_list = [
         (rnd.uniform(0, W), rnd.uniform(cy - R, cy + R), rnd.uniform(16, 52), rnd.uniform(7, 24),
@@ -76,7 +81,9 @@ def star_art():
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560">
 <defs>
 <clipPath id="ball"><circle cx="{cx}" cy="{cy}" r="{R}"/></clipPath>
+<clipPath id="out"><path clip-rule="evenodd" d="M0 0H800V560H0Z M{cx - R} {cy} a{R} {R} 0 1 0 {2 * R} 0 a{R} {R} 0 1 0 {-2 * R} 0Z"/></clipPath>
 <radialGradient id="halo"><stop offset="0" stop-color="#cfe6ff" stop-opacity=".6"/><stop offset=".35" stop-color="#2f8cff" stop-opacity=".25"/><stop offset="1" stop-color="#2f8cff" stop-opacity="0"/></radialGradient>
+<radialGradient id="rim"><stop offset="0" stop-color="#e6f2ff" stop-opacity="0"/><stop offset=".78" stop-color="#e6f2ff" stop-opacity="0"/><stop offset=".8" stop-color="#e6f2ff" stop-opacity=".9"/><stop offset="1" stop-color="#2f8cff" stop-opacity="0"/></radialGradient>
 <radialGradient id="b1"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
 <radialGradient id="b2"><stop offset="0" stop-color="#5aa9ff" stop-opacity=".9"/><stop offset="1" stop-color="#5aa9ff" stop-opacity="0"/></radialGradient>
 <radialGradient id="b3"><stop offset="0" stop-color="#0b3d91" stop-opacity=".85"/><stop offset="1" stop-color="#0b3d91" stop-opacity="0"/></radialGradient>
@@ -101,8 +108,10 @@ def star_art():
 .pulse {{ transform-origin: {cx}px {cy}px; animation: pulse {T / 2}s ease-in-out infinite alternate; }}
 @keyframes pulse {{ from {{ opacity: .65; transform: scale(.97); }} to {{ opacity: 1; transform: scale(1.04); }} }}
 </style>
-
+<rect width="800" height="560" fill="#000"/>
+<g>{stars}</g>
 <circle class="pulse" cx="{cx}" cy="{cy}" r="300" fill="url(#halo)"/>
+<circle cx="{cx}" cy="{cy}" r="{R + 40}" fill="url(#rim)"/>
 
 <g transform="rotate(20 {cx} {cy})">{back}</g>
 
@@ -114,7 +123,7 @@ def star_art():
 <circle cx="{cx}" cy="{cy}" r="{R}" fill="none" stroke="#e6f2ff" stroke-opacity=".7" stroke-width="2"/>
 <circle class="fl" cx="{cx}" cy="{cy}" r="{R + 30}" fill="url(#flare)"/>
 
-<g>{front}</g>
+<g clip-path="url(#out)"><g transform="rotate(20 {cx} {cy})">{front}</g></g>
 </svg>"""
 
 
