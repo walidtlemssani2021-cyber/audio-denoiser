@@ -7,13 +7,6 @@ from html import escape
 import streamlit as st
 
 # ═══════════════════════════════════════════════════════════════
-# THEME
-# ═══════════════════════════════════════════════════════════════
-ACC, ACC_RGB = "#3da5ff", "61,165,255"
-HOT, HOT_RGB = "#2b6bff", "43,107,255"
-INK = "#ffffff"
-
-# ═══════════════════════════════════════════════════════════════
 # No-Cache
 # ═══════════════════════════════════════════════════════════════
 st.set_page_config(
@@ -82,15 +75,15 @@ def star_art():
 <defs>
 <clipPath id="ball"><circle cx="{cx}" cy="{cy}" r="{R}"/></clipPath>
 <clipPath id="out"><path clip-rule="evenodd" d="M0 0H800V560H0Z M{cx - R} {cy} a{R} {R} 0 1 0 {2 * R} 0 a{R} {R} 0 1 0 {-2 * R} 0Z"/></clipPath>
-<radialGradient id="halo"><stop offset="0" stop-color="#cfe6ff" stop-opacity=".6"/><stop offset=".35" stop-color="#2f8cff" stop-opacity=".25"/><stop offset="1" stop-color="#2f8cff" stop-opacity="0"/></radialGradient>
-<radialGradient id="rim"><stop offset="0" stop-color="#e6f2ff" stop-opacity="0"/><stop offset=".78" stop-color="#e6f2ff" stop-opacity="0"/><stop offset=".8" stop-color="#e6f2ff" stop-opacity=".9"/><stop offset="1" stop-color="#2f8cff" stop-opacity="0"/></radialGradient>
+<radialGradient id="halo"><stop offset="0" stop-color="#fff1a8" stop-opacity=".6"/><stop offset=".35" stop-color="#ffb52e" stop-opacity=".25"/><stop offset="1" stop-color="#ffb52e" stop-opacity="0"/></radialGradient>
+<radialGradient id="rim"><stop offset="0" stop-color="#fff6cf" stop-opacity="0"/><stop offset=".78" stop-color="#fff6cf" stop-opacity="0"/><stop offset=".8" stop-color="#fff6cf" stop-opacity=".9"/><stop offset="1" stop-color="#ffb52e" stop-opacity="0"/></radialGradient>
 <radialGradient id="b1"><stop offset="0" stop-color="#ffffff" stop-opacity=".95"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>
-<radialGradient id="b2"><stop offset="0" stop-color="#5aa9ff" stop-opacity=".9"/><stop offset="1" stop-color="#5aa9ff" stop-opacity="0"/></radialGradient>
-<radialGradient id="b3"><stop offset="0" stop-color="#0b3d91" stop-opacity=".85"/><stop offset="1" stop-color="#0b3d91" stop-opacity="0"/></radialGradient>
-<radialGradient id="shade" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".6" stop-color="#02112e" stop-opacity=".2"/><stop offset="1" stop-color="#000a1f" stop-opacity=".85"/></radialGradient>
-<radialGradient id="flare"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".4" stop-color="#bfe0ff" stop-opacity=".6"/><stop offset="1" stop-color="#2f8cff" stop-opacity="0"/></radialGradient>
-<linearGradient id="jt" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#f4faff"/><stop offset=".35" stop-color="#8cc8ff" stop-opacity=".65"/><stop offset="1" stop-color="#2f8cff" stop-opacity="0"/></linearGradient>
-<linearGradient id="jb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4faff"/><stop offset=".35" stop-color="#8cc8ff" stop-opacity=".65"/><stop offset="1" stop-color="#2f8cff" stop-opacity="0"/></linearGradient>
+<radialGradient id="b2"><stop offset="0" stop-color="#ffc933" stop-opacity=".9"/><stop offset="1" stop-color="#ffc933" stop-opacity="0"/></radialGradient>
+<radialGradient id="b3"><stop offset="0" stop-color="#a84f08" stop-opacity=".85"/><stop offset="1" stop-color="#a84f08" stop-opacity="0"/></radialGradient>
+<radialGradient id="shade" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".6" stop-color="#2a1200" stop-opacity=".2"/><stop offset="1" stop-color="#1a0a00" stop-opacity=".85"/></radialGradient>
+<radialGradient id="flare"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".4" stop-color="#fff0a0" stop-opacity=".6"/><stop offset="1" stop-color="#ffb52e" stop-opacity="0"/></radialGradient>
+<linearGradient id="jt" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fffdf0"/><stop offset=".35" stop-color="#ffe27a" stop-opacity=".65"/><stop offset="1" stop-color="#ffb52e" stop-opacity="0"/></linearGradient>
+<linearGradient id="jb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffdf0"/><stop offset=".35" stop-color="#ffe27a" stop-opacity=".65"/><stop offset="1" stop-color="#ffb52e" stop-opacity="0"/></linearGradient>
 </defs>
 <style>
 .tex {{ animation: scroll {T * 0.8:.2f}s linear infinite; }}
@@ -115,12 +108,12 @@ def star_art():
 
 <g transform="rotate(20 {cx} {cy})">{back}</g>
 
-<circle cx="{cx}" cy="{cy}" r="{R}" fill="#dcecff"/>
+<circle cx="{cx}" cy="{cy}" r="{R}" fill="#ffd966"/>
 <g clip-path="url(#ball)">
 <g transform="rotate(20 {cx} {cy})"><g class="tex">{texture}</g></g>
 <circle cx="{cx}" cy="{cy}" r="{R}" fill="url(#shade)"/>
 </g>
-<circle cx="{cx}" cy="{cy}" r="{R}" fill="none" stroke="#e6f2ff" stroke-opacity=".7" stroke-width="2"/>
+<circle cx="{cx}" cy="{cy}" r="{R}" fill="none" stroke="#fff6cf" stroke-opacity=".7" stroke-width="2"/>
 <circle class="fl" cx="{cx}" cy="{cy}" r="{R + 30}" fill="url(#flare)"/>
 
 <g clip-path="url(#out)"><g transform="rotate(20 {cx} {cy})">{front}</g></g>
@@ -136,7 +129,7 @@ def crypto_art():
     letter_pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     digit_pool = "0123456789"
     pool = symbol_pool + symbol_pool + letter_pool + digit_pool
-    colors = [ACC, INK, HOT]
+    colors = ["#00ff88", "#00d4ff", "#7b2ff7"]
 
     chars = ""
     for r in range(14):
@@ -152,15 +145,15 @@ def crypto_art():
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400">
 <defs>
 <radialGradient id="glow">
-<stop offset="0" stop-color="{ACC}" stop-opacity="0.35"/>
-<stop offset="0.6" stop-color="{INK}" stop-opacity="0.06"/>
-<stop offset="1" stop-color="{HOT}" stop-opacity="0"/>
+<stop offset="0" stop-color="#00ff88" stop-opacity="0.35"/>
+<stop offset="0.6" stop-color="#00d4ff" stop-opacity="0.08"/>
+<stop offset="1" stop-color="#7b2ff7" stop-opacity="0"/>
 </radialGradient>
 </defs>
-<rect width="520" height="400" fill="#000"/>
+<rect width="520" height="400" fill="#02060a"/>
 <circle cx="260" cy="200" r="230" fill="url(#glow)"/>
 <g>{chars}</g>
-<rect x="1" y="1" width="518" height="398" fill="none" stroke="{ACC}" stroke-opacity="0.3"/>
+<rect x="1" y="1" width="518" height="398" fill="none" stroke="#00ff88" stroke-opacity="0.3"/>
 </svg>"""
 
 
@@ -180,10 +173,13 @@ def pipeline_art():
         points.append(f"{x:.1f},{y:.1f}")
     wave_d = "M" + " L".join(points)
 
-    down = "".join(f'<circle class="dn" style="animation-delay:{i * 0.5}s" cx="185" cy="182" r="3.5" fill="{ACC}"/>' for i in range(3))
-    up = "".join(f'<circle class="up" style="animation-delay:{i * 0.5}s" cx="335" cy="298" r="3.5" fill="{INK}"/>' for i in range(3))
+    down = "".join(f'<circle class="dn" style="animation-delay:{i * 0.5}s" cx="185" cy="182" r="3.5" fill="#00ff88"/>' for i in range(3))
+    up = "".join(f'<circle class="up" style="animation-delay:{i * 0.5}s" cx="335" cy="298" r="3.5" fill="#00d4ff"/>' for i in range(3))
 
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 480">
+<defs>
+<linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00ff88"/><stop offset="1" stop-color="#00d4ff"/></linearGradient>
+</defs>
 <style>
 .flowD {{ stroke-dasharray: 8 8; animation: fd 1s linear infinite; }}
 .flowU {{ stroke-dasharray: 8 8; animation: fu 1s linear infinite; }}
@@ -198,27 +194,27 @@ def pipeline_art():
 .sc {{ stroke-dasharray: 70 930; animation: sc 2s linear infinite; }}
 @keyframes sc {{ from {{ stroke-dashoffset: 70; }} to {{ stroke-dashoffset: -930; }} }}
 </style>
-<rect width="520" height="480" fill="#000"/>
+<rect width="520" height="480" fill="#02060a"/>
 
-<rect x="40" y="36" width="440" height="130" rx="12" fill="{ACC}" fill-opacity=".04" stroke="{ACC}" stroke-opacity=".45"/>
-<text x="60" y="62" font-family="monospace" font-size="11" letter-spacing="6" fill="{ACC}" opacity=".8">TEXT</text>
-<text x="60" y="116" font-family="monospace" font-size="22" font-weight="bold" fill="{ACC}">YOUR TEXT<tspan class="cur">_</tspan></text>
+<rect x="40" y="36" width="440" height="130" rx="12" fill="#00ff88" fill-opacity=".04" stroke="#00ff88" stroke-opacity=".45"/>
+<text x="60" y="62" font-family="monospace" font-size="11" letter-spacing="6" fill="#00ff88" opacity=".8">TEXT</text>
+<text x="60" y="116" font-family="monospace" font-size="22" font-weight="bold" fill="#00ff88">YOUR TEXT<tspan class="cur">_</tspan></text>
 
-<line class="flowD" x1="185" y1="176" x2="185" y2="294" stroke="{ACC}" stroke-width="2.5"/>
-<polygon points="173,292 197,292 185,310" fill="{ACC}"/>
+<line class="flowD" x1="185" y1="176" x2="185" y2="294" stroke="#00ff88" stroke-width="2.5"/>
+<polygon points="173,292 197,292 185,310" fill="#00ff88"/>
 {down}
-<text x="168" y="244" text-anchor="end" font-family="monospace" font-size="11" letter-spacing="3" fill="{ACC}">ENCRYPT</text>
+<text x="168" y="244" text-anchor="end" font-family="monospace" font-size="11" letter-spacing="3" fill="#00ff88">ENCRYPT</text>
 
-<line class="flowU" x1="335" y1="304" x2="335" y2="186" stroke="{INK}" stroke-width="2.5"/>
-<polygon points="323,188 347,188 335,170" fill="{INK}"/>
+<line class="flowU" x1="335" y1="304" x2="335" y2="186" stroke="#00d4ff" stroke-width="2.5"/>
+<polygon points="323,188 347,188 335,170" fill="#00d4ff"/>
 {up}
-<text x="352" y="244" font-family="monospace" font-size="11" letter-spacing="3" fill="{INK}">DECRYPT</text>
+<text x="352" y="244" font-family="monospace" font-size="11" letter-spacing="3" fill="#00d4ff">DECRYPT</text>
 
-<rect x="40" y="314" width="440" height="130" rx="12" fill="{INK}" fill-opacity=".04" stroke="{INK}" stroke-opacity=".4"/>
-<text x="60" y="340" font-family="monospace" font-size="11" letter-spacing="6" fill="{INK}" opacity=".8">SOUND</text>
-<path transform="translate(60 0)" d="{wave_d}" fill="none" stroke="{INK}" stroke-opacity=".6" stroke-width="2.2" stroke-linejoin="round"/>
-<path class="sc" pathLength="1000" transform="translate(60 0)" d="{wave_d}" fill="none" stroke="{ACC}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-<rect x="1" y="1" width="518" height="478" fill="none" stroke="{ACC}" stroke-opacity="0.25"/>
+<rect x="40" y="314" width="440" height="130" rx="12" fill="#00d4ff" fill-opacity=".04" stroke="#00d4ff" stroke-opacity=".45"/>
+<text x="60" y="340" font-family="monospace" font-size="11" letter-spacing="6" fill="#00d4ff" opacity=".8">SOUND</text>
+<path transform="translate(60 0)" d="{wave_d}" fill="none" stroke="#00d4ff" stroke-opacity=".7" stroke-width="2.2" stroke-linejoin="round"/>
+<path class="sc" pathLength="1000" transform="translate(60 0)" d="{wave_d}" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="1" y="1" width="518" height="478" fill="none" stroke="#00ff88" stroke-opacity="0.25"/>
 </svg>"""
 
 
@@ -234,9 +230,9 @@ def ridge_art():
             f"{x},{y0 - 62 * math.exp(-((x - 600) / 230) ** 2) * (0.3 + 0.7 * rnd.random()) - 2.5 * rnd.random():.1f}"
             for x in range(0, 1201, 12)
         )
-        rows.append(f'<polygon points="0,{y0} {pts} 1200,{y0}" fill="#000" stroke="{ACC}" stroke-opacity="{0.3 + 0.7 * i / 19:.2f}" stroke-width="1.4" stroke-linejoin="round"/>')
-    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460"><rect width="1200" height="460" fill="#000"/>'
-            f'<defs><radialGradient id="rg" cx="0.5" cy="0.55" r="0.5"><stop offset="0" stop-color="{ACC}" stop-opacity="0.14"/><stop offset="1" stop-color="{ACC}" stop-opacity="0"/></radialGradient></defs>'
+        rows.append(f'<polygon points="0,{y0} {pts} 1200,{y0}" fill="#02060a" stroke="#00ff88" stroke-opacity="{0.3 + 0.7 * i / 19:.2f}" stroke-width="1.4" stroke-linejoin="round"/>')
+    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460"><rect width="1200" height="460" fill="#02060a"/>'
+            '<defs><radialGradient id="rg" cx="0.5" cy="0.55" r="0.5"><stop offset="0" stop-color="#00ff88" stop-opacity="0.16"/><stop offset="1" stop-color="#00ff88" stop-opacity="0"/></radialGradient></defs>'
             '<rect width="1200" height="460" fill="url(#rg)"/>' + "".join(rows) + '</svg>')
 
 
@@ -248,230 +244,320 @@ RIDGE = svg_img(ridge_art(), "banner", "Pulse profiles")
 # ═══════════════════════════════════════════════════════════════
 # GLOBAL CSS
 # ═══════════════════════════════════════════════════════════════
-ROOT = f"""
-<style>
-:root {{ --a:{ACC}; --ar:{ACC_RGB}; --h:{HOT}; --hr:{HOT_RGB}; --line:rgba(255,255,255,.12); }}
-</style>
-"""
-st.markdown(ROOT, unsafe_allow_html=True)
-
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=JetBrains+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap');
 
-@property --n { syntax:'<integer>'; initial-value:0; inherits:false; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+.stApp, .stMarkdown, .stMarkdown p, .stMarkdown div { font-family: 'Space Grotesk', sans-serif !important; }
+#MainMenu, footer, header, [data-testid="stToolbar"], [data-testid="stDecoration"] { display:none !important; }
+.block-container { max-width:1320px !important; padding:0 3rem 5rem 3rem !important; position:relative; z-index:3; }
 
-*, *::before, *::after { box-sizing:border-box; }
-html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smoothing:antialiased; overflow-x:hidden; scroll-behavior:smooth; }
-.stApp, .stMarkdown, .stMarkdown p, .stMarkdown div, .stMarkdown span { font-family:'Manrope',sans-serif !important; }
-.stMarkdown .disp  { font-family:'Big Shoulders Display',sans-serif !important; }
-.stMarkdown .serif { font-family:'Instrument Serif',serif !important; }
-.stMarkdown .mono  { font-family:'DM Mono',monospace !important; }
-#MainMenu, footer, header, [data-testid="stToolbar"], [data-testid="stDecoration"], [data-testid="stHeaderActionElements"] { display:none !important; }
-[data-testid="stVerticalBlock"] { gap:0 !important; }
-.block-container { max-width:1260px !important; padding:0 2rem !important; position:relative; z-index:3; }
-::selection { background:rgba(var(--ar),.45); color:#fff; }
-::-webkit-scrollbar { width:8px; } ::-webkit-scrollbar-track { background:#000; } ::-webkit-scrollbar-thumb { background:rgba(var(--ar),.5); border-radius:4px; }
-.bleed { width:100vw; margin-left:calc(50% - 50vw); }
+.bg-layer { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+.bg-orb { position:absolute; border-radius:50%; filter:blur(140px); will-change:transform; }
+.orb-1 { width:700px; height:700px; background:radial-gradient(circle,#00ff88 0%,transparent 70%); top:-280px; left:-180px; opacity:.38; animation:f1 22s ease-in-out infinite; }
+.orb-2 { width:600px; height:600px; background:radial-gradient(circle,#00d4ff 0%,transparent 70%); top:35%; right:-220px; opacity:.26; animation:f2 28s ease-in-out infinite; }
+.orb-3 { width:800px; height:800px; background:radial-gradient(circle,#7b2ff7 0%,transparent 70%); bottom:-380px; left:25%; opacity:.22; animation:f3 32s ease-in-out infinite; }
+@keyframes f1 { 50% { transform:translate(120px,100px) scale(1.15); } }
+@keyframes f2 { 50% { transform:translate(-140px,-120px) scale(1.2); } }
+@keyframes f3 { 50% { transform:translate(100px,-100px) scale(1.1); } }
+.bg-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(0,255,136,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.05) 1px,transparent 1px); background-size:70px 70px; mask-image:radial-gradient(ellipse 90% 70% at 50% 40%,#000 15%,transparent 80%); animation:gridShift 60s linear infinite; }
+@keyframes gridShift { to { background-position:70px 70px; } }
+.particle { position:absolute; width:3px; height:3px; background:#00ff88; border-radius:50%; box-shadow:0 0 10px #00ff88; animation:rise linear infinite; }
+@keyframes rise { 0% { transform:translateY(100vh) scale(0); opacity:0; } 10%,90% { opacity:1; } 100% { transform:translateY(-100px) scale(1); opacity:0; } }
 
-/* ═══ BACKGROUND ═══ */
-.bg-layer { position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; background:#000; }
-.bp { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(rgba(var(--ar),.11) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--ar),.11) 1px,transparent 1px); background-size:40px 40px,40px 40px,160px 160px,160px 160px; -webkit-mask-image:radial-gradient(ellipse 90% 70% at 60% 25%,#000 10%,transparent 78%); mask-image:radial-gradient(ellipse 90% 70% at 60% 25%,#000 10%,transparent 78%); }
-.gl { position:absolute; border-radius:50%; filter:blur(140px); will-change:transform; }
-.g1 { width:820px; height:820px; top:-420px; right:-260px; background:radial-gradient(circle,rgba(var(--ar),.5),transparent 70%); animation:drift 26s ease-in-out infinite; }
-.g2 { width:700px; height:700px; bottom:-380px; left:-300px; background:radial-gradient(circle,rgba(var(--hr),.32),transparent 70%); animation:drift 34s ease-in-out infinite reverse; }
-@keyframes drift { 50% { transform:translate(-90px,70px) scale(1.12); } }
-.grain { position:absolute; inset:0; opacity:.08; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
-.vig { position:absolute; inset:0; background:radial-gradient(ellipse at 50% 40%,transparent 50%,rgba(0,0,0,.8) 100%); }
+.nav { display:flex; justify-content:space-between; align-items:center; padding:1.3rem 3rem; margin:0 -3rem; position:relative; z-index:100; backdrop-filter:blur(24px); background:rgba(0,0,0,.6); border-bottom:1px solid rgba(255,255,255,.08); }
+.nav-brand { display:flex; align-items:center; gap:.85rem; font-family:'Orbitron', sans-serif; font-weight:900; font-size:1.05rem; letter-spacing:.3em; color:#00ff88; text-shadow:0 0 30px rgba(0,255,136,.9); }
+.nav-brand::before { content:''; width:11px; height:11px; background:#00ff88; box-shadow:0 0 25px #00ff88; transform:rotate(45deg); animation:spin 8s linear infinite; }
+@keyframes spin { to { transform:rotate(405deg); } }
+.nav-status { display:flex; align-items:center; gap:.5rem; font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.25em; color:#00ff88; }
+.nav-dot { width:7px; height:7px; border-radius:50%; background:#00ff88; box-shadow:0 0 14px #00ff88; animation:blink 1.8s infinite; }
+@keyframes blink { 50% { opacity:.3; } }
 
-/* ═══ NAV ═══ */
-.nav { position:fixed; top:0; left:0; right:0; z-index:1000; display:flex; justify-content:space-between; align-items:center; padding:.9rem clamp(1rem,3vw,2.2rem); background:rgba(0,0,0,.55); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px); border-bottom:1px solid rgba(255,255,255,.09); }
-.nav-brand { display:flex; align-items:center; gap:.8rem; font-size:1.55rem; font-weight:900; letter-spacing:.22em; line-height:1; }
-.nav-brand::before { content:''; width:11px; height:11px; border:2px solid var(--a); box-shadow:0 0 14px var(--a), inset 0 0 8px var(--a); transform:rotate(45deg); animation:blink 2.4s infinite; }
-.nav-status { display:flex; align-items:center; gap:.55rem; font-size:.64rem; letter-spacing:.24em; color:rgba(255,255,255,.7); }
-.nav-dot { width:7px; height:7px; border-radius:50%; background:var(--a); box-shadow:0 0 12px var(--a); animation:blink 1.6s infinite; }
-@keyframes blink { 50% { opacity:.25; } }
-.rail { position:fixed; left:12px; top:50%; transform:translateY(-50%) rotate(180deg); writing-mode:vertical-rl; z-index:50; font-size:.58rem; letter-spacing:.42em; color:rgba(255,255,255,.32); text-transform:uppercase; }
-@media (max-width:1180px) { .rail { display:none; } }
+.hero { padding:6.5rem 0 2rem 0; text-align:center; position:relative; }
+.hero-badge { display:inline-flex; align-items:center; gap:.7rem; font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.3em; text-transform:uppercase; color:rgba(0,255,136,.9); padding:.7rem 1.8rem; border:1px solid rgba(0,255,136,.3); border-radius:100px; background:rgba(0,255,136,.05); margin-bottom:2.6rem; }
+.hero-badge i { width:7px; height:7px; border-radius:50%; background:#00ff88; box-shadow:0 0 14px #00ff88; animation:blink 1.8s infinite; }
 
-/* ═══ HERO ═══ */
-.hero { position:relative; padding:7.2rem 0 0 0; isolation:isolate; text-align:center; }
-@keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:none; } }
-.hero-badge { display:inline-flex; align-items:center; gap:.7rem; font-size:.64rem; letter-spacing:.24em; text-transform:uppercase; color:rgba(255,255,255,.88); padding:.65rem 1.3rem; border:1px solid rgba(var(--ar),.45); background:rgba(var(--ar),.06); box-shadow:0 0 30px rgba(var(--ar),.18), inset 0 0 18px rgba(var(--ar),.08); animation:fadeUp .8s ease both; margin:0 auto; }
-.hero-badge i { width:7px; height:7px; border-radius:50%; background:var(--a); box-shadow:0 0 12px var(--a); animation:blink 1.6s infinite; }
-.stMarkdown h1.hero-name { font-family:'Big Shoulders Display',sans-serif !important; font-weight:900 !important; font-size:clamp(2.6rem,11vw,9rem) !important; line-height:.88 !important; letter-spacing:.005em !important; margin:1.3rem auto 0 auto !important; padding:0 !important; text-align:center; white-space:nowrap; position:relative;
-  background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.95) 50%,transparent 58%) 150% 0/250% 100% no-repeat, linear-gradient(180deg,#fff 40%,var(--a) 135%);
-  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 40px rgba(var(--ar),.45));
-  animation:fadeUp .9s ease .1s both, nameShine 5s linear 1.2s infinite; }
-@keyframes nameShine { from { background-position:150% 0, 0 0; } to { background-position:-50% 0, 0 0; } }
+.hero-name { font-family:'Orbitron', sans-serif !important; font-weight:900; font-size:clamp(2rem, 9vw, 7rem); line-height:1; letter-spacing:.08em; margin:0 auto 2rem auto; padding:0; white-space:nowrap; background:linear-gradient(180deg,#fff 0%,#00ff88 60%,#00d4ff 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 70px rgba(0,255,136,.65)); animation:glow 4s ease-in-out infinite; }
+@keyframes glow { 50% { filter:drop-shadow(0 0 110px rgba(0,255,136,.95)); } }
 
-div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margin-top:1.5rem; }
-
-/* ═══ TAGLINE — Thin JetBrains Mono ═══ */
-.stMarkdown p.hero-tag {
-    font-family: 'JetBrains Mono', monospace !important;
-    font-style: normal;
-    font-weight: 300 !important;
-    font-size: clamp(0.7rem, 1.2vw, 0.88rem) !important;
-    letter-spacing: 0.24em;
+.hero-tagline {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: clamp(0.75rem, 1.3vw, 0.95rem);
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: #ffffff;
-    text-shadow: 0 0 15px rgba(var(--ar),0.5);
-    margin: 2rem 0 1.8rem 0 !important;
-    text-align: center;
+    color: rgba(0, 255, 136, 0.95);
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+    margin: 1.5rem auto 0 auto;
+    max-width: 950px;
     line-height: 1.9;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    animation: fadeUp 1s ease .4s both;
+    font-weight: 400;
 }
 
-.hero-meta { font-size:.62rem; letter-spacing:.26em; color:rgba(255,255,255,.45); margin-top:1.8rem; text-align:center; }
+.hero-art { display:block; width:min(100%,640px); margin:2.5rem auto 0 auto; border-radius:20px; border:1px solid rgba(255,214,102,.25); box-shadow:0 0 90px rgba(255,200,80,.15); }
+.art { display:block; width:100%; max-width:520px; margin-top:1rem; border-radius:18px; border:1px solid rgba(0,255,136,.2); box-shadow:0 0 70px rgba(0,255,136,.08); }
+.banner { display:block; width:100%; margin-top:5rem; border-radius:20px; border:1px solid rgba(0,255,136,.2); box-shadow:0 0 90px rgba(0,255,136,.08); }
+.banner-cap { font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.4); text-align:center; margin-top:1rem; }
 
-.star-wrap { position:relative; width:100%; max-width:780px; margin:0 auto; animation:fadeUp 1s ease .25s both; }
-.star-wrap .hero-art { display:block; width:100%; margin:0; border:0 !important; border-radius:0 !important; box-shadow:none !important; -webkit-mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%); mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%); }
+.stats-strip { display:grid; grid-template-columns:repeat(4,1fr); margin:3rem 0 2rem 0; border:1px solid rgba(0,255,136,.18); border-radius:20px; background:linear-gradient(145deg,rgba(0,255,136,.05),rgba(255,255,255,.01)); backdrop-filter:blur(20px); overflow:hidden; }
+.stat-item { text-align:center; padding:2.2rem 1rem; }
+.stat-item + .stat-item { border-left:1px solid rgba(255,255,255,.08); }
+.stat-val { font-family:'JetBrains Mono', monospace; font-size:2rem; font-weight:800; color:#00ff88; text-shadow:0 0 25px rgba(0,255,136,.6); display:block; margin-bottom:.6rem; }
+.stat-lbl { font-family:'JetBrains Mono', monospace; font-size:.65rem; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.45); }
 
-/* ═══ TICKER ═══ */
-.ticker { overflow:hidden; margin-top:4.5rem; border-block:1px solid var(--line); background:rgba(var(--ar),.03); }
-.tick-track { display:flex; width:max-content; animation:tick 40s linear infinite; padding:1rem 0; }
-.tick-track span { font-size:.72rem; letter-spacing:.32em; text-transform:uppercase; color:rgba(255,255,255,.75); padding:0 1.4rem; white-space:nowrap; }
-.tick-track b { color:var(--a); font-weight:500; text-shadow:0 0 12px var(--a); }
-@keyframes tick { to { transform:translateX(-50%); } }
+.sec { padding:7rem 0 0 0; position:relative; }
+.sec-grid { display:grid; grid-template-columns:1fr 1.2fr; gap:5rem; align-items:start; }
+.sec-title { font-family:'Orbitron', sans-serif !important; font-weight:900; font-size:clamp(1.3rem, 3vw, 2.4rem); line-height:1.2; letter-spacing:.12em; color:#00ff88; text-shadow:0 0 40px rgba(0,255,136,.6), 0 0 80px rgba(0,255,136,.3); margin:0 0 2rem 0; text-transform:uppercase; }
+.text-block { font-family:'Space Grotesk', sans-serif; font-size:1.08rem; color:rgba(255,255,255,.72); line-height:2; font-weight:300; margin:0 0 2rem 0; padding-left:1.8rem; border-left:2px solid rgba(0,255,136,.3); transition:all .4s ease; }
+.text-block:hover { border-left-color:#00ff88; color:rgba(255,255,255,.95); padding-left:2.4rem; }
+.text-block strong { color:#00ff88; font-weight:600; text-shadow:0 0 25px rgba(0,255,136,.6); }
 
-/* ═══ STATS ═══ */
-.stats { display:grid; grid-template-columns:repeat(4,1fr); margin-top:6rem; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
-.stat { position:relative; padding:2.4rem 1.3rem 2rem 1.5rem; border-left:1px solid var(--line); }
-.stat:first-child { border-left:0; padding-left:0; }
-.stat::before { content:'+'; position:absolute; top:-.78rem; left:-.45rem; font-family:'DM Mono',monospace; color:var(--a); font-size:1.1rem; text-shadow:0 0 10px var(--a); }
-.stat:first-child::before { left:-.45rem; }
-.stat-val { display:block; font-weight:900; font-size:clamp(3.2rem,8.5vw,7rem); line-height:.9; letter-spacing:.01em; background:linear-gradient(180deg,#fff 30%,var(--a) 130%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; counter-reset:n var(--n); filter:drop-shadow(0 0 26px rgba(var(--ar),.35)); }
-.stat-val::after { content:counter(n); }
-.stat-val.pct::after { content:counter(n) "%"; }
-.stat-lbl { display:block; margin-top:.9rem; font-size:.62rem; letter-spacing:.26em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+/* ═══ FAQ — ACCORDION STYLE ═══ */
+.faq-list { display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem; }
 
-/* ═══ SECTIONS ═══ */
-.sec { position:relative; padding-top:9rem; }
-.stMarkdown h2.sec-title { font-family:'Big Shoulders Display',sans-serif !important; font-weight:900 !important; font-size:clamp(3rem,10.5vw,9rem) !important; line-height:.88 !important; letter-spacing:.005em !important; margin:0 0 3.2rem 0 !important; padding:0 !important; color:#fff !important; text-transform:uppercase !important; text-shadow:0 0 60px rgba(var(--ar),.25); }
-.sec-body { display:grid; grid-template-columns:.95fr 1.05fr; gap:4.5rem; align-items:center; }
-.rev .frame { order:2; }
+.faq-item {
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(0, 255, 136, 0.03), rgba(0, 0, 0, 0.2));
+    transition: all .3s ease;
+    overflow: hidden;
+}
+.faq-item[open] {
+    border-color: rgba(0, 255, 136, 0.6);
+    box-shadow: 0 0 35px rgba(0, 255, 136, 0.2);
+}
+.faq-item:hover {
+    border-color: rgba(0, 255, 136, 0.5);
+    box-shadow: 0 0 25px rgba(0, 255, 136, 0.12);
+}
 
-.frame { position:relative; overflow:hidden; border:1px solid rgba(var(--ar),.3); background:#000; box-shadow:0 40px 100px rgba(var(--ar),.12); }
-.frame::after { content:''; position:absolute; left:0; right:0; top:0; height:2px; z-index:4; pointer-events:none; background:linear-gradient(90deg,transparent,var(--a),transparent); box-shadow:0 0 18px var(--a), 0 0 40px rgba(var(--ar),.6); animation:scan 5s linear infinite; }
-@keyframes scan { 0% { top:0; opacity:0; } 8%,92% { opacity:1; } 100% { top:100%; opacity:0; } }
-.frame img.art { display:block; width:100%; max-width:none; margin:0; border:0; border-radius:0; box-shadow:none; }
+.faq-item summary {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #00ff88;
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1.4rem 1.8rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all .3s ease;
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+    content: '+';
+    font-size: 1.4rem;
+    color: rgba(0, 255, 136, 0.7);
+    transition: transform .3s ease;
+    line-height: 1;
+}
+.faq-item[open] summary::after {
+    content: '−';
+    transform: rotate(180deg);
+}
+.faq-item summary:hover {
+    background: rgba(0, 255, 136, 0.04);
+}
 
-.stMarkdown p.lead { font-family:'Instrument Serif',serif !important; font-size:clamp(1.3rem,2.2vw,1.78rem) !important; line-height:1.38 !important; font-weight:400 !important; color:#fff; margin:0 0 1.8rem 0 !important; }
-.stMarkdown p.text-block { font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.6); margin:0 !important; padding:0 0 0 1.3rem; border-left:2px solid var(--a); }
-.stMarkdown p strong { color:#fff; font-weight:600; text-shadow:0 0 22px rgba(var(--ar),.7); }
+.faq-a {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: 0.98rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.8;
+    font-weight: 300;
+    padding: 0 1.8rem 1.4rem 1.8rem;
+    border-top: 1px solid rgba(0, 255, 136, 0.12);
+    margin-top: 0;
+    padding-top: 1.2rem;
+}
 
-/* ═══ QUOTE ═══ */
-.quote { position:relative; margin:10rem 0 0 0; }
-.quote-mark { display:block; font-size:clamp(8rem,22vw,19rem); line-height:.6; height:.45em; color:transparent; -webkit-text-stroke:1px rgba(var(--ar),.7); text-shadow:0 0 60px rgba(var(--ar),.4); }
-.stMarkdown p.quote-text { font-family:'Instrument Serif',serif !important; font-style:italic; font-size:clamp(2.3rem,7vw,6.2rem) !important; line-height:1 !important; letter-spacing:-.01em !important; margin:0 !important; color:#fff; max-width:1100px; }
-.hl { color:var(--a); text-shadow:0 0 40px rgba(var(--ar),.8); }
-.stMarkdown p.quote-author { margin:2.4rem 0 0 0 !important; font-size:.7rem !important; letter-spacing:.34em; text-transform:uppercase; color:rgba(255,255,255,.6); }
+/* ═══ BIG QUOTE STYLE — GLOWING MARKS ═══ */
+.big-quote {
+    position: relative;
+    max-width: 900px;
+    margin: 6rem auto 0 auto;
+    padding: 4.5rem 3rem 3rem 4rem;
+    border: 1px solid rgba(0, 255, 136, 0.25);
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(0, 255, 136, 0.04), rgba(0, 0, 0, 0.2));
+    overflow: hidden;
+}
 
-/* ═══ FAQ ═══ */
-.faq-list { border-top:1px solid var(--line); }
-.faq-item { border-bottom:1px solid var(--line); transition:background .3s; counter-increment:q; }
-.faq-list { counter-reset:q; }
-.faq-item:hover { background:linear-gradient(90deg,rgba(var(--ar),.08),transparent 70%); }
-.faq-item summary { display:flex; align-items:center; gap:1.6rem; padding:1.7rem .4rem; cursor:pointer; list-style:none; font-size:clamp(1.1rem,2.3vw,1.7rem); font-weight:500; color:#fff; line-height:1.25; }
-.faq-item summary::-webkit-details-marker { display:none; }
-.faq-item summary::before { content:counter(q,decimal-leading-zero); font-family:'DM Mono',monospace; font-size:.78rem; letter-spacing:.2em; color:var(--a); text-shadow:0 0 10px rgba(var(--ar),.8); flex:none; }
-.faq-item summary::after { content:'+'; margin-left:auto; flex:none; width:38px; height:38px; display:grid; place-items:center; font-size:1.4rem; font-weight:300; color:var(--a); border:1px solid rgba(var(--ar),.5); transition:transform .35s, background .3s, color .3s; }
-.faq-item[open] { background:linear-gradient(90deg,rgba(var(--ar),.1),transparent 75%); }
-.faq-item[open] summary::after { transform:rotate(45deg); background:var(--a); color:#000; }
-.faq-a { padding:0 .4rem 1.9rem 4.6rem; max-width:860px; font-size:1.02rem; line-height:1.85; font-weight:300; color:rgba(255,255,255,.65); }
+.big-quote::before {
+    content: '"';
+    position: absolute;
+    top: -20px;
+    left: 20px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10rem;
+    font-weight: 700;
+    color: rgba(0, 255, 136, 0.25);
+    text-shadow: 0 0 30px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 255, 136, 0.4);
+    line-height: 1;
+    pointer-events: none;
+    animation: quoteGlow 3s ease-in-out infinite;
+}
 
-/* ═══ BANNER ═══ */
-.banner-wrap { margin-top:8rem; }
-.banner-wrap img.banner { display:block; width:100%; margin:0; border:0; border-radius:0; box-shadow:none; -webkit-mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); }
-.stMarkdown p.banner-cap { margin:-1rem 0 0 0 !important; text-align:center; font-size:.64rem !important; letter-spacing:.28em; text-transform:uppercase; color:rgba(255,255,255,.4); }
+.big-quote::after {
+    content: '"';
+    position: absolute;
+    bottom: -60px;
+    right: 20px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 10rem;
+    font-weight: 700;
+    color: rgba(0, 255, 136, 0.25);
+    text-shadow: 0 0 30px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 255, 136, 0.4);
+    line-height: 1;
+    pointer-events: none;
+    animation: quoteGlow 3s ease-in-out infinite;
+}
 
-/* ═══ CTA ═══ */
-.cta { position:relative; margin-top:8rem; padding:6rem 2rem 9.5rem 2rem; text-align:center; overflow:hidden; isolation:isolate; border:1px solid rgba(var(--ar),.4); background:radial-gradient(70% 90% at 50% 0%,rgba(var(--ar),.26),transparent 70%), #02050c; box-shadow:0 0 120px rgba(var(--ar),.14), inset 0 0 80px rgba(var(--ar),.06); }
-.cta::before { content:''; position:absolute; inset:0; z-index:-1; background-image:linear-gradient(rgba(var(--ar),.14) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--ar),.14) 1px,transparent 1px); background-size:44px 44px; -webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 10%,transparent 72%); mask-image:radial-gradient(ellipse at 50% 0%,#000 10%,transparent 72%); }
-.cta-t { font-weight:900; font-size:clamp(3.2rem,12vw,10.5rem); line-height:.86; letter-spacing:.005em; text-transform:uppercase; background:linear-gradient(180deg,#fff 35%,var(--a) 135%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 36px rgba(var(--ar),.5)); }
-.cta-d { margin-top:1.8rem; font-family:'Instrument Serif',serif !important; font-style:italic; font-size:clamp(1.3rem,2.4vw,1.9rem); color:rgba(255,255,255,.8); }
-div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:-6.3rem; position:relative; z-index:6; }
+@keyframes quoteGlow {
+    0%, 100% { text-shadow: 0 0 30px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 255, 136, 0.4); }
+    50%      { text-shadow: 0 0 50px rgba(0, 255, 136, 1), 0 0 100px rgba(0, 255, 136, 0.6); }
+}
 
-/* ═══ BUTTONS ═══ */
-.stButton > button { min-height:3.6rem !important; position:relative; overflow:hidden !important; transition:transform .3s, box-shadow .3s, background .3s !important; }
-.stButton > button p { font-family:inherit !important; font-size:inherit !important; font-weight:inherit !important; letter-spacing:inherit !important; text-transform:inherit !important; color:inherit !important; margin:0 !important; line-height:1.2 !important; position:relative; z-index:1; }
+.big-quote-text {
+    font-family: 'Space Grotesk', sans-serif !important;
+    font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+    font-weight: 500;
+    color: #ffffff;
+    line-height: 1.6;
+    margin: 0 0 2.5rem 0;
+    position: relative;
+    z-index: 1;
+    padding-top: 0.5rem;
+}
 
-/* PRIMARY BUTTON — Blue gradient, WHITE BOLD text */
-.stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #5fb8ff 0%, #2b6bff 100%) !important;
-    color: #ffffff !important;
-    border: 1px solid rgba(160,215,255,.9) !important;
-    border-radius: 12px !important;
-    padding: 1.15rem 2.5rem !important;
-    font-family: 'Big Shoulders Display', sans-serif !important;
+.big-quote-text .highlight {
+    color: #00ff88;
+    font-weight: 600;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+.big-quote-author {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.75rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.big-quote-author::before,
+.big-quote-author::after {
+    content: '';
+    height: 1px;
+    background: rgba(0, 255, 136, 0.4);
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
+    width: 40px;
+}
+
+.cta { padding:6rem 3rem; text-align:center; border:1px solid rgba(0,255,136,.3); border-radius:28px; background:radial-gradient(ellipse at top,rgba(0,255,136,.18),transparent 60%),linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.01)); position:relative; overflow:hidden; margin-top:7rem; }
+.cta::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(0,255,136,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.07) 1px,transparent 1px); background-size:40px 40px; mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%); }
+.cta-t { font-family:'JetBrains Mono', monospace; font-weight:500; font-size:clamp(1.15rem, 2.8vw, 2.1rem); text-transform:uppercase; letter-spacing:.16em; line-height:1.5; color:#00ff88; text-shadow:0 0 28px rgba(0,255,136,.45); margin-bottom:1rem; position:relative; }
+.cta-d { font-family:'Space Grotesk', sans-serif; font-size:1.05rem; color:rgba(255,255,255,.62); position:relative; font-weight:300; }
+
+/* ═══ CUSTOM BUTTON (HTML) — Final Fix ═══ */
+.btn-wrap { display:flex; justify-content:center; margin:2rem 0; }
+.btn-start {
+    display:inline-block;
+    background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+    color: #000000 !important;
+    font-family: 'Orbitron', sans-serif !important;
     font-weight: 900 !important;
-    font-size: 1.55rem !important;
-    letter-spacing: .2em !important;
+    font-size: 1.15rem !important;
+    letter-spacing: .28em !important;
     text-transform: uppercase !important;
-    box-shadow: 0 0 30px rgba(61,165,255,.8), 0 0 70px rgba(61,165,255,.4), inset 0 0 20px rgba(255,255,255,.3) !important;
-    animation: btnPulse 2.5s ease-in-out infinite !important;
+    text-decoration: none !important;
+    padding: 1.2rem 2.5rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 255, 136, 0.8);
+    box-shadow: 0 0 25px rgba(0,255,136,.5), 0 0 50px rgba(0,255,136,.25), inset 0 0 15px rgba(255,255,255,.2);
+    transition: transform .3s, filter .3s;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    overflow: hidden;
+    animation: btnPulse 2.5s ease-in-out infinite;
 }
-
-/* Force Streamlit to use white bold font inside the button */
-.stButton > button[kind="primary"] p,
-.stButton > button[kind="primary"] div,
-.stButton > button[kind="primary"] span {
-    font-family: 'Big Shoulders Display', sans-serif !important;
-    font-weight: 900 !important;
-    font-size: 1.55rem !important;
-    letter-spacing: .2em !important;
-    text-transform: uppercase !important;
-    color: #ffffff !important;
-    margin: 0 !important;
-    line-height: 1.2 !important;
+.btn-start:hover {
+    transform: translateY(-3px) scale(1.01);
+    filter: brightness(1.1);
+    box-shadow: 0 0 40px rgba(0,255,136,.8), 0 0 80px rgba(0,255,136,.4), inset 0 0 25px rgba(255,255,255,.3);
 }
-
-@keyframes btnPulse {
-    0%,100% { box-shadow: 0 0 30px rgba(61,165,255,.8), 0 0 70px rgba(61,165,255,.4), inset 0 0 20px rgba(255,255,255,.3); }
-    50%     { box-shadow: 0 0 50px rgba(61,165,255,1), 0 0 110px rgba(61,165,255,.6), inset 0 0 30px rgba(255,255,255,.5); }
-}
-
-.stButton > button[kind="primary"]::before {
+.btn-start::before {
     content:''; position:absolute; top:0; left:-60%; width:40%; height:100%;
     background:linear-gradient(100deg,transparent,rgba(255,255,255,.7),transparent);
     transform:skewX(-20deg); animation:shine 3.4s ease-in-out infinite; pointer-events:none;
 }
-@keyframes shine { 0% { left:-60%; } 55%,100% { left:130%; } }
-.stButton > button[kind="primary"]:hover { transform:translateY(-3px) scale(1.01); filter:brightness(1.1); }
-
-.stButton > button[kind="secondary"] { background:rgba(2,5,12,.9) !important; color:#fff !important; border:1px solid rgba(var(--ar),.7) !important; border-radius:12px !important; padding:1.1rem 2.4rem !important; font-family:'Big Shoulders Display',sans-serif !important; font-weight:900 !important; font-size:1.4rem !important; letter-spacing:.2em !important; text-transform:uppercase !important; box-shadow:0 10px 40px rgba(0,0,0,.6), 0 0 30px rgba(var(--ar),.25) !important; }
-.stButton > button[kind="secondary"]:hover { background:var(--a) !important; color:#00081a !important; border-color:#fff !important; transform:translateY(-3px); box-shadow:0 18px 60px rgba(var(--ar),.6) !important; }
-.stButton > button:focus-visible { outline:2px solid #fff !important; outline-offset:3px; }
-
-/* ═══ FOOTER ═══ */
-.foot { margin-top:7rem; padding-top:2rem; border-top:1px solid var(--line); }
-.foot-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; font-size:.66rem; letter-spacing:.24em; text-transform:uppercase; color:rgba(255,255,255,.42); }
-.foot-brand { color:#fff; text-shadow:0 0 20px rgba(var(--ar),.7); }
-.foot-copyright { margin-top:1.1rem; font-size:.6rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.28); }
-.foot-mark { margin-top:2.5rem; text-align:center; white-space:nowrap; font-weight:900; font-size:clamp(3rem,19.5vw,17rem); letter-spacing:.005em; line-height:.78; height:.64em; overflow:hidden; user-select:none; background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(var(--ar),.04) 88%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-
-.stat-val { animation:cnt 2.6s ease-out both; }
-@keyframes cnt { from { --n:0; } }
-
-@media (max-width:900px) {
-  .sec-body { grid-template-columns:1fr; gap:2.4rem; }
-  .rev .frame { order:0; }
-  .stats { grid-template-columns:1fr 1fr; }
-  .stat:nth-child(3) { border-left:0; padding-left:0; }
-  .stat:nth-child(n+3) { border-top:1px solid var(--line); }
-  .faq-a { padding-left:.4rem; }
+@keyframes btnPulse {
+    0%,100% { box-shadow: 0 0 25px rgba(0,255,136,.5), 0 0 50px rgba(0,255,136,.25), inset 0 0 15px rgba(255,255,255,.2); }
+    50%     { box-shadow: 0 0 40px rgba(0,255,136,.8), 0 0 80px rgba(0,255,136,.4), inset 0 0 25px rgba(255,255,255,.3); }
 }
+@keyframes shine { 0% { left:-60%; } 55%,100% { left:130%; } }
+
+.stButton > button[kind="secondary"] {
+    background: linear-gradient(145deg, rgba(0,255,136,.12), rgba(0,255,136,.03)) !important;
+    color: #00ff88 !important;
+    border: 1px solid rgba(0,255,136,.55) !important;
+    border-radius: 12px !important;
+    padding: 1.2rem 2rem !important;
+    font-family: 'Orbitron', sans-serif !important;
+    font-weight: 900 !important;
+    font-size: 1rem !important;
+    letter-spacing: .25em !important;
+    text-transform: uppercase !important;
+    text-shadow: 0 0 20px rgba(0,255,136,.6) !important;
+    transition: all .4s cubic-bezier(.4,0,.2,1) !important;
+    width: 100% !important;
+    position: relative; z-index: 3;
+}
+.stButton > button[kind="secondary"]:hover {
+    color: #000 !important;
+    background: #00ff88 !important;
+    border-color: #00ff88 !important;
+    text-shadow: none !important;
+    box-shadow: 0 0 50px rgba(0,255,136,.7), 0 0 100px rgba(0,255,136,.35) !important;
+    transform: translateY(-3px);
+}
+
+.foot { margin-top:7rem; padding-top:2.5rem; border-top:1px solid rgba(255,255,255,.08); display:flex; flex-direction:column; align-items:center; gap:1.2rem; font-family:'JetBrains Mono', monospace; font-size:.7rem; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.35); }
+.foot-row { display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:1rem; }
+.foot-brand { color:rgba(0,255,136,.95); text-shadow:0 0 25px rgba(0,255,136,.6); font-weight:700; }
+.foot-copyright { font-size:.65rem; color:rgba(255,255,255,.3); letter-spacing:.2em; text-align:center; padding-top:.8rem; border-top:1px solid rgba(255,255,255,.05); width:100%; }
+
+::-webkit-scrollbar { width:8px; } ::-webkit-scrollbar-track { background:#000; }
+::-webkit-scrollbar-thumb { background:rgba(0,255,136,.4); border-radius:4px; }
+
+@media (max-width:980px) { .sec-grid { grid-template-columns:1fr; gap:1rem; } }
 @media (max-width:700px) {
-  .block-container { padding:0 1.1rem !important; }
-  .hero { padding-top:6rem; }
-  .hero-badge { letter-spacing:.12em; font-size:.56rem; padding:.6rem 1rem; line-height:1.7; }
-  .sec { padding-top:6rem; }
-  .cta { padding:4.5rem 1.2rem 9rem 1.2rem; }
-  .quote { margin-top:6rem; }
-  .faq-item summary { gap:1rem; }
+  .block-container { padding:0 1.25rem 4rem 1.25rem !important; }
+  .nav { padding:1.1rem 1.25rem; margin:0 -1.25rem; }
+  .hero { padding-top:4rem; }
+  .hero-badge { letter-spacing:.12em; font-size:.62rem; padding:.7rem 1.2rem; line-height:1.7; }
+  .hero-name { letter-spacing:.04em; }
+  .hero-tagline { letter-spacing:.15em; font-size:.72rem; }
+  .stats-strip { grid-template-columns:1fr; }
+  .stat-item + .stat-item { border-left:none; border-top:1px solid rgba(255,255,255,.08); }
+  .big-quote { padding: 3.5rem 1.5rem 2rem 2rem; }
+  .big-quote::before { font-size: 7rem; top: -10px; left: 10px; }
+  .big-quote::after { font-size: 7rem; bottom: -40px; right: 10px; }
+  .big-quote-text { font-size: 1rem; }
+  .cta { padding:4rem 1.5rem; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -480,53 +566,63 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
 # PAGE
 # ═══════════════════════════════════════════════════════════════
 html("""
-<div class="bg-layer"><div class="bp"></div><div class="gl g1"></div><div class="gl g2"></div><div class="grain"></div><div class="vig"></div></div>
-<div class="rail mono">CRYPTORIAN — SOUND-BASED ENCRYPTION — 2026</div>
-<div class="nav">
-    <div class="nav-brand disp">CRYPTORIAN</div>
-    <div class="nav-status mono"><div class="nav-dot"></div>OPERATIONAL</div>
+<div class="bg-layer">
+    <div class="bg-grid"></div>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+    <div class="particle" style="left:10%;animation-duration:12s;animation-delay:0s;"></div>
+    <div class="particle" style="left:25%;animation-duration:15s;animation-delay:2s;"></div>
+    <div class="particle" style="left:45%;animation-duration:10s;animation-delay:4s;"></div>
+    <div class="particle" style="left:65%;animation-duration:14s;animation-delay:1s;"></div>
+    <div class="particle" style="left:85%;animation-duration:11s;animation-delay:3s;"></div>
+    <div class="particle" style="left:55%;animation-duration:13s;animation-delay:5s;"></div>
+    <div class="particle" style="left:35%;animation-duration:16s;animation-delay:6s;"></div>
 </div>
 """)
 
 html("""
-<div class="hero">
-    <div class="hero-badge mono"><i></i>DM SAFELY AND SECURE YOUR PRIVACY WITH</div>
-    <h1 class="hero-name">CRYPTORIAN</h1>
+<div class="nav">
+    <div class="nav-brand">CRYPTORIAN</div>
+    <div class="nav-status"><div class="nav-dot"></div>OPERATIONAL</div>
 </div>
 """)
 
 html(f"""
-<div class="star-wrap" style="max-width:780px;margin:2.5rem auto 0 auto;">{STAR}</div>
+<div class="hero">
+    <div class="hero-badge"><i></i>DM SAFELY AND SECURE YOUR PRIVACY WITH</div>
+    <h1 class="hero-name">CRYPTORIAN</h1>
+    {STAR}
+    <p class="hero-tagline">USING AN ENCRYPTED MODIFIED NEUTRON STAR SOUND</p>
+</div>
 """)
 
-html("""<p class="hero-tag">Using an encrypted modified neutron star sound</p>""")
+st.markdown('<div style="height:2rem;"></div>', unsafe_allow_html=True)
 
-c1, c2, c3 = st.columns([1, 1, 1])
-with c2:
-    if st.button("LET'S START", use_container_width=True, type="primary"):
-        st.info("The encryption page will be added soon.")
+html("""
+<div class="btn-wrap">
+    <a href="#" class="btn-start" target="_self">LET'S START!</a>
+</div>
+""")
 
-TICKS = ["NEUTRON SOUND", "UNIQUE SIGNATURES", "KEY SHUFFLING", "LENGTH HEADER", "DUAL FORMATS", "ZERO KNOWLEDGE"]
-TICK = "".join(f"<span>{t}</span><span><b>//</b></span>" for t in TICKS) * 2
-
-html(f"""
-<div class="bleed ticker mono" style="margin-top:4.5rem;"><div class="tick-track">{TICK}</div></div>
-
-<div class="stats">
-    <div class="stat"><span class="stat-val disp" style="--n:91"></span><span class="stat-lbl mono">SIGNATURES</span></div>
-    <div class="stat"><span class="stat-val disp" style="--n:2000"></span><span class="stat-lbl mono">MAX CHARS</span></div>
-    <div class="stat"><span class="stat-val disp pct" style="--n:80"></span><span class="stat-lbl mono">FLAC SAVING</span></div>
-    <div class="stat"><span class="stat-val disp" style="--n:3"></span><span class="stat-lbl mono">SHAPES</span></div>
+html("""
+<div class="stats-strip">
+    <div class="stat-item"><span class="stat-val">91</span><span class="stat-lbl">SIGNATURES</span></div>
+    <div class="stat-item"><span class="stat-val">2000</span><span class="stat-lbl">MAX CHARS</span></div>
+    <div class="stat-item"><span class="stat-val">80%</span><span class="stat-lbl">FLAC SAVING</span></div>
+    <div class="stat-item"><span class="stat-val">3</span><span class="stat-lbl">SHAPES</span></div>
 </div>
 """)
 
 html(f"""
 <div class="sec">
-  <h2 class="sec-title">WHY ENCRYPTION MATTERS</h2>
-  <div class="sec-body">
-    <div class="frame hud">{NET}</div>
+  <div class="sec-grid">
     <div>
-        <p class="lead">Before anything else, let it be known that a person who encrypts their messages is not always a criminal, nor is he suffering from paranoia. Every message you send — carrying your words, your thoughts, your secrets — travels through networks you don't know are safe or not, through servers you don't own, and through channels that are easy to intercept. This increases the risk of your data being obtained and exposes you to surveillance or blackmail.</p>
+        <h2 class="sec-title">WHY ENCRYPTION MATTERS</h2>
+        {NET}
+    </div>
+    <div>
+        <p class="text-block">Before anything else, let it be known that a person who encrypts their messages is not always a criminal, nor is he suffering from paranoia. Every message you send — carrying your words, your thoughts, your secrets — travels through networks you don't know are safe or not, through servers you don't own, and through channels that are easy to intercept. This increases the risk of your data being obtained and exposes you to surveillance or blackmail.</p>
         <p class="text-block"><strong>And here comes the role of encryption</strong> — and not just any type of encryption. A private encryption. Encrypting your message using a complex, uncommon method. Using a special encryption method will guarantee you a great deal of security and legitimate privacy. And here comes the role of Criptorian.</p>
     </div>
   </div>
@@ -534,28 +630,29 @@ html(f"""
 """)
 
 html(f"""
-<div class="sec rev">
-  <h2 class="sec-title">WHAT IS CRYPTORIAN</h2>
-  <div class="sec-body">
-    <div class="frame hud">{PIPE}</div>
+<div class="sec">
+  <div class="sec-grid">
     <div>
-        <p class="lead">Criptorian is a modern encryption program built to enhance the preservation of legitimate privacy and to combat the phenomenon of data leakage or unauthorized access by unwanted or disliked individuals or entities. Criptorian takes your written message and converts it into a modified sound wave derived from real sound waves emitted by a neutron star. It can also decrypt the resulting sound wave and convert it back into text.</p>
+        <h2 class="sec-title">WHAT IS CRYPTORIAN</h2>
+        {PIPE}
+    </div>
+    <div>
+        <p class="text-block">Criptorian is a modern encryption program built to enhance the preservation of legitimate privacy and to combat the phenomenon of data leakage or unauthorized access by unwanted or disliked individuals or entities. Criptorian takes your written message and converts it into a modified sound wave derived from real sound waves emitted by a neutron star. It can also decrypt the resulting sound wave and convert it back into text.</p>
         <p class="text-block"><strong>The reason for using this type of sound for encryption</strong> is the founder's taste and his fascination with the incomprehensible sound waves emitted by neutron stars.</p>
     </div>
   </div>
 </div>
 
-<div class="quote">
-    <span class="quote-mark serif">"</span>
-    <p class="quote-text">The only way to keep a secret is to make sure no one knows you <span class="hl">have one.</span></p>
-    <p class="quote-author mono">- Criptorian founder -</p>
+<div class="big-quote">
+    <p class="big-quote-text">The only way to keep a secret is to make sure no one knows you <span class="highlight">have one.</span></p>
+    <p class="big-quote-author">- Criptorian founder -</p>
 </div>
 """)
 
-html("""
+html(f"""
 <div class="sec">
-  <h2 class="sec-title">FREQUENTLY ASKED QUESTIONS</h2>
-  <div class="faq-list">
+    <h2 class="sec-title">FREQUENTLY ASKED QUESTIONS</h2>
+    <div class="faq-list">
         <details class="faq-item">
             <summary>What is Cryptorian?</summary>
             <div class="faq-a">Cryptorian is a sound-based encryption system that transforms your text messages into a waveform modeled after a neutron star's pulse. It sounds like cosmic noise to anyone who listens — but to the person who holds the key, it is a clear message.</div>
@@ -580,19 +677,20 @@ html("""
             <summary>How many characters can I encrypt?</summary>
             <div class="faq-a">Cryptorian supports up to 2000 characters per message, with 91 unique sonic signatures available for encoding.</div>
         </details>
-  </div>
+    </div>
+    {RIDGE}
+    <p class="banner-cap">Illustration · stacked pulse profiles</p>
 </div>
 """)
 
-html(f"""
-<div class="bleed banner-wrap">{RIDGE}</div>
-<p class="banner-cap mono">Illustration · stacked pulse profiles</p>
-
+html("""
 <div class="cta">
-    <div class="cta-t disp">READY TO BECOME A STAR</div>
+    <div class="cta-t">READY TO BECOME A STAR</div>
     <div class="cta-d">Your message is waiting. Your key is your power.</div>
 </div>
 """)
+
+st.markdown("<br>", unsafe_allow_html=True)
 
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
@@ -601,11 +699,10 @@ with c2:
 
 html("""
 <div class="foot">
-    <div class="foot-row mono">
+    <div class="foot-row">
         <div><span class="foot-brand">CRYPTORIAN</span> · V2.0 · 2026</div>
         <div>SOUND-BASED ENCRYPTION</div>
     </div>
-    <div class="foot-copyright mono">© 2026 CRYPTORIAN · ALL RIGHTS RESERVED · BUILT FOR PRIVACY</div>
-    <div class="foot-mark disp">CRYPTORIAN</div>
+    <div class="foot-copyright">© 2026 CRYPTORIAN · ALL RIGHTS RESERVED · BUILT FOR PRIVACY</div>
 </div>
 """)
