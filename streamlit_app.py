@@ -307,7 +307,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 
 div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margin-top:1.5rem; }
 
-/* ═══ TAGLINE — DM Mono (same as badge) ═══ */
+/* ═══ TAGLINE — DM Mono ═══ */
 .stMarkdown p.hero-tag {
     font-family: 'DM Mono', monospace !important;
     font-style: normal;
@@ -396,11 +396,11 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
 .stButton > button { min-height:3.6rem !important; position:relative; overflow:hidden !important; transition:transform .3s, box-shadow .3s, background .3s !important; }
 .stButton > button p { font-family:inherit !important; font-size:inherit !important; font-weight:inherit !important; letter-spacing:inherit !important; text-transform:inherit !important; color:inherit !important; margin:0 !important; line-height:1.2 !important; position:relative; z-index:1; }
 
-/* PRIMARY BUTTON — Big Shoulders Display + BLUE GLOW */
+/* PRIMARY BUTTON — Green with BLUE glow */
 .stButton > button[kind="primary"] {
-    background: linear-gradient(135deg, #5fb8ff 0%, var(--h) 100%) !important;
-    color: #00081a !important;
-    border: 1px solid rgba(160,215,255,.9) !important;
+    background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%) !important;
+    color: #000000 !important;
+    border: 1px solid rgba(0, 255, 136, 0.8) !important;
     border-radius: 12px !important;
     padding: 1.15rem 2.5rem !important;
     font-family: 'Big Shoulders Display', sans-serif !important;
@@ -484,7 +484,7 @@ html("""<p class="hero-tag">Using an encrypted modified neutron star sound</p>""
 
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
-    if st.button("LET'S START!", use_container_width=True, type="primary"):
+    if st.button("LET'S START", use_container_width=True, type="primary"):
         st.info("The encryption page will be added soon.")
 
 TICKS = ["NEUTRON SOUND", "UNIQUE SIGNATURES", "KEY SHUFFLING", "LENGTH HEADER", "DUAL FORMATS", "ZERO KNOWLEDGE"]
