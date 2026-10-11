@@ -358,17 +358,19 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .frame { position:relative; overflow:hidden; border:1px solid rgba(var(--ar),.3); background:#000; box-shadow:0 40px 100px rgba(var(--ar),.12); }
 .frame img.art { display:block; width:100%; max-width:none; margin:0; border:0; border-radius:0; box-shadow:none; }
 
-/* Text blocks with Manrope font, white-ish color */
-.stMarkdown p.lead { font-family:'Manrope', sans-serif !important; font-size:1.08rem !important; line-height:2 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 0 1.8rem 0 !important; }
-.stMarkdown p.text-block { font-family:'Manrope', sans-serif !important; font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 !important; padding:0 0 0 1.3rem; border-left:2px solid var(--a); }
+/* Text blocks with Manrope font, NO left bars */
+.stMarkdown p.lead { font-family:'Manrope', sans-serif !important; font-size:1.08rem !important; line-height:2 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 0 1.8rem 0 !important; padding:0 !important; border-left:none !important; }
+.stMarkdown p.text-block { font-family:'Manrope', sans-serif !important; font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 !important; padding:0 !important; border-left:none !important; }
 .stMarkdown p strong { color:#fff; font-weight:600; text-shadow:0 0 22px rgba(var(--ar),.7); }
 
-/* ═══ QUOTE ═══ */
-.quote { position:relative; margin:10rem 0 0 0; }
-.quote-mark { display:block; font-size:clamp(8rem,22vw,19rem); line-height:.6; height:.45em; color:transparent; -webkit-text-stroke:1px rgba(var(--ar),.7); text-shadow:0 0 60px rgba(var(--ar),.4); }
-.stMarkdown p.quote-text { font-family:'Instrument Serif',serif !important; font-style:italic; font-size:clamp(2.3rem,7vw,6.2rem) !important; line-height:1 !important; letter-spacing:-.01em !important; margin:0 !important; color:#fff; max-width:1100px; }
-.hl { color:var(--a); text-shadow:0 0 40px rgba(var(--ar),.8); }
-.stMarkdown p.quote-author { margin:2.4rem 0 0 0 !important; font-size:.7rem !important; letter-spacing:.34em; text-transform:uppercase; color:rgba(255,255,255,.6); }
+/* ═══ QUOTE — Manrope font, 4 bars ═══ */
+.quote { position:relative; margin:10rem 0 0 0; text-align:center; }
+.quote-mark { display:none; }
+.stMarkdown p.quote-text { font-family:'Manrope', sans-serif !important; font-style:normal; font-size:clamp(1.5rem, 3.5vw, 2.8rem) !important; line-height:1.4 !important; letter-spacing:-.01em !important; margin:0 auto !important; color:#fff; max-width:1100px; font-weight:300 !important; }
+.hl { color:var(--a); font-weight:600; text-shadow:0 0 40px rgba(var(--ar),.8); }
+.stMarkdown p.quote-author { margin:2.4rem auto 0 auto !important; font-size:.7rem !important; letter-spacing:.34em; text-transform:uppercase; color:rgba(255,255,255,.6); font-family:'DM Mono', monospace !important; display:flex; align-items:center; justify-content:center; gap:.8rem; }
+.stMarkdown p.quote-author::before, .stMarkdown p.quote-author::after { content:''; height:1px; background:rgba(var(--ar),.4); box-shadow:0 0 10px rgba(var(--ar),.6); width:30px; }
+.stMarkdown p.quote-author .bar { display:inline-block; width:30px; height:1px; background:rgba(var(--ar),.4); box-shadow:0 0 10px rgba(var(--ar),.6); }
 
 /* ═══ FAQ ═══ */
 .faq-list { border-top:1px solid var(--line); }
@@ -553,9 +555,8 @@ html(f"""
 </div>
 
 <div class="quote">
-    <span class="quote-mark serif">"</span>
     <p class="quote-text">The only way to keep a secret is to make sure no one knows you <span class="hl">have one.</span></p>
-    <p class="quote-author mono">- Criptorian founder -</p>
+    <p class="quote-author"><span class="bar"></span>- Criptorian founder -<span class="bar"></span></p>
 </div>
 """)
 
@@ -563,10 +564,6 @@ html("""
 <div class="sec">
   <h2 class="sec-title">FREQUENTLY ASKED QUESTIONS</h2>
   <div class="faq-list">
-        <details class="faq-item">
-            <summary>What is Cryptorian?</summary>
-            <div class="faq-a">Cryptorian is a sound-based encryption system that transforms your text messages into a waveform modeled after a neutron star's pulse. It sounds like cosmic noise to anyone who listens — but to the person who holds the key, it is a clear message.</div>
-        </details>
         <details class="faq-item">
             <summary>How does the encryption work?</summary>
             <div class="faq-a">Every character you write becomes a unique sonic signature. The secret key reorders these signatures, so the same character produces a different pulse with every key. The message length is embedded in the audio itself for decryption.</div>
