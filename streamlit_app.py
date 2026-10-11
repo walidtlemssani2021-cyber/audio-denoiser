@@ -354,13 +354,13 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .sec-body { display:grid; grid-template-columns:.95fr 1.05fr; gap:4.5rem; align-items:center; }
 .rev .frame { order:2; }
 
+/* Frame WITHOUT the scanning line effect */
 .frame { position:relative; overflow:hidden; border:1px solid rgba(var(--ar),.3); background:#000; box-shadow:0 40px 100px rgba(var(--ar),.12); }
-.frame::after { content:''; position:absolute; left:0; right:0; top:0; height:2px; z-index:4; pointer-events:none; background:linear-gradient(90deg,transparent,var(--a),transparent); box-shadow:0 0 18px var(--a), 0 0 40px rgba(var(--ar),.6); animation:scan 5s linear infinite; }
-@keyframes scan { 0% { top:0; opacity:0; } 8%,92% { opacity:1; } 100% { top:100%; opacity:0; } }
 .frame img.art { display:block; width:100%; max-width:none; margin:0; border:0; border-radius:0; box-shadow:none; }
 
-.stMarkdown p.lead { font-family:'Instrument Serif',serif !important; font-size:clamp(1.3rem,2.2vw,1.78rem) !important; line-height:1.38 !important; font-weight:400 !important; color:#fff; margin:0 0 1.8rem 0 !important; }
-.stMarkdown p.text-block { font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.6); margin:0 !important; padding:0 0 0 1.3rem; border-left:2px solid var(--a); }
+/* Text blocks with Manrope font, white-ish color */
+.stMarkdown p.lead { font-family:'Manrope', sans-serif !important; font-size:1.08rem !important; line-height:2 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 0 1.8rem 0 !important; }
+.stMarkdown p.text-block { font-family:'Manrope', sans-serif !important; font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 !important; padding:0 0 0 1.3rem; border-left:2px solid var(--a); }
 .stMarkdown p strong { color:#fff; font-weight:600; text-shadow:0 0 22px rgba(var(--ar),.7); }
 
 /* ═══ QUOTE ═══ */
@@ -534,7 +534,7 @@ html(f"""
     <div class="frame hud">{NET}</div>
     <div>
         <p class="lead">Before anything else, let it be known that a person who encrypts their messages is not always a criminal, nor is he suffering from paranoia. Every message you send — carrying your words, your thoughts, your secrets — travels through networks you don't know are safe or not, through servers you don't own, and through channels that are easy to intercept. This increases the risk of your data being obtained and exposes you to surveillance or blackmail.</p>
-        <p class="text-block"><strong>And here comes the role of encryption</strong> — and not just any type of encryption. A private encryption. Encrypting your message using a complex, uncommon method. Using a special encryption method will guarantee you a great deal of security and legitimate privacy. And here comes the role of Criptorian.</p>
+        <p class="text-block"><strong>And here comes the role of encryption</strong> — and not just any type of encryption. A private encryption. Encrypting your message using a complex, uncommon method. Using a special encryption method will guarantee you a great deal of security and legitimate privacy.</p>
     </div>
   </div>
 </div>
