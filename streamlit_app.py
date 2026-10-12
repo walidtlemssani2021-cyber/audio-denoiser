@@ -5,6 +5,7 @@ import time
 from html import escape
 
 import streamlit as st
+import streamlit.components.v1 as components
 
 # ═══════════════════════════════════════════════════════════════
 # THEME
@@ -259,8 +260,6 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
-@property --n { syntax:'<integer>'; initial-value:0; inherits:false; }
-
 *, *::before, *::after { box-sizing:border-box; }
 html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smoothing:antialiased; overflow-x:hidden; scroll-behavior:smooth; }
 .stApp, .stMarkdown, .stMarkdown p, .stMarkdown div, .stMarkdown span { font-family:'Manrope',sans-serif !important; }
@@ -307,7 +306,6 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 
 div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margin-top:1.5rem; }
 
-/* ═══ TAGLINE — Thin JetBrains Mono ═══ */
 .stMarkdown p.hero-tag {
     font-family: 'JetBrains Mono', monospace !important;
     font-style: normal;
@@ -340,8 +338,7 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 /* ═══ STATS ═══ */
 .stats { display:grid; grid-template-columns:1fr 1fr; gap:3rem; margin-top:8rem; }
 .stat { position:relative; }
-.stat-val { display:block; font-weight:900; font-size:clamp(5rem,17vw,14rem); line-height:.82; letter-spacing:-.01em; background:linear-gradient(180deg,#fff 25%,var(--a) 125%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; counter-reset:n var(--n); filter:drop-shadow(0 0 40px rgba(var(--ar),.4)); }
-.stat-val::after { content:counter(n); }
+.stat-val { display:block; font-weight:900; font-size:clamp(5rem,17vw,14rem); line-height:.82; letter-spacing:-.01em; background:linear-gradient(180deg,#fff 25%,var(--a) 125%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 40px rgba(var(--ar),.4)); }
 .stat-lbl { display:flex; align-items:center; gap:1rem; margin-top:1.4rem; font-size:.72rem; letter-spacing:.3em; text-transform:uppercase; color:rgba(255,255,255,.72); }
 .stat-lbl::before { content:''; width:48px; height:1px; background:var(--a); box-shadow:0 0 10px var(--a); }
 
@@ -378,10 +375,9 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .faq-item[open] summary::after { transform:rotate(45deg); background:var(--a); color:#000; }
 .faq-a { padding:0 .4rem 1.9rem 4.6rem; max-width:860px; font-size:1.02rem; line-height:1.85; font-weight:300; color:rgba(255,255,255,.65); }
 
-/* ═══ BANNER (Ridge) ═══ */
+/* ═══ BANNER (Ridge) — transparent, no caption ═══ */
 .banner-wrap { margin-top:6rem; margin-bottom:2rem; }
 .banner-wrap img.banner { display:block; width:100%; margin:0; border:0; border-radius:0; box-shadow:none; -webkit-mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); }
-.stMarkdown p.banner-cap { margin:-1rem 0 0 0 !important; text-align:center; font-size:.64rem !important; letter-spacing:.28em; text-transform:uppercase; color:rgba(255,255,255,.4); }
 
 /* ═══ CTA ═══ */
 .cta { position:relative; margin-top:8rem; padding:6rem 2rem 9.5rem 2rem; text-align:center; overflow:hidden; isolation:isolate; border:1px solid rgba(var(--ar),.4); background:radial-gradient(70% 90% at 50% 0%,rgba(var(--ar),.26),transparent 70%), #02050c; box-shadow:0 0 120px rgba(var(--ar),.14), inset 0 0 80px rgba(var(--ar),.06); }
@@ -453,14 +449,6 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
 .foot-copyright { margin-top:1.1rem; font-size:.6rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.28); }
 .foot-mark { margin-top:2.5rem; text-align:center; white-space:nowrap; font-weight:900; font-size:clamp(3rem,19.5vw,17rem); letter-spacing:.005em; line-height:.78; height:.64em; overflow:hidden; user-select:none; background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(var(--ar),.04) 88%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
 
-/* ═══ COUNTER ANIMATION — 4 SECONDS ═══ */
-.stat-val { animation: cnt 4s ease-out both; }
-@keyframes cnt { from { --n:0; } }
-
-@supports (animation-timeline: view()) {
-  .stat-val { animation: cnt 4s linear both; animation-timeline: view(); animation-range: entry 15% entry 100%; }
-}
-
 @media (max-width:900px) {
   .sec-body { grid-template-columns:1fr; gap:2.4rem; }
   .rev .frame { order:0; }
@@ -513,16 +501,61 @@ TICK = "".join(f"<span>{t}</span><span><b>//</b></span>" for t in TICKS) * 2
 
 html(f"""
 <div class="bleed ticker mono" style="margin-top:4.5rem;"><div class="tick-track">{TICK}</div></div>
-
-<div class="stats">
-    <div class="stat"><span class="stat-val disp" style="--n:91"></span><span class="stat-lbl mono">SIGNATURES</span></div>
-    <div class="stat"><span class="stat-val disp" style="--n:2000"></span><span class="stat-lbl mono">MAX CHARS</span></div>
-</div>
 """)
 
+# ═══ STATS with JavaScript counter ═══
+components.html("""
+<div class="stats" style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:8rem;">
+    <div class="stat" style="position:relative;">
+        <span class="stat-val disp" id="counter1" style="display:block;font-weight:900;font-size:clamp(5rem,17vw,14rem);line-height:.82;letter-spacing:-.01em;background:linear-gradient(180deg,#fff 25%,#3da5ff 125%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 40px rgba(61,165,255,.4));font-family:'Big Shoulders Display',sans-serif;">0</span>
+        <span class="stat-lbl mono" style="display:flex;align-items:center;gap:1rem;margin-top:1.4rem;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.72);font-family:'DM Mono',monospace;">SIGNATURES</span>
+    </div>
+    <div class="stat" style="position:relative;">
+        <span class="stat-val disp" id="counter2" style="display:block;font-weight:900;font-size:clamp(5rem,17vw,14rem);line-height:.82;letter-spacing:-.01em;background:linear-gradient(180deg,#fff 25%,#3da5ff 125%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 40px rgba(61,165,255,.4));font-family:'Big Shoulders Display',sans-serif;">0</span>
+        <span class="stat-lbl mono" style="display:flex;align-items:center;gap:1rem;margin-top:1.4rem;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.72);font-family:'DM Mono',monospace;">MAX CHARS</span>
+    </div>
+</div>
+
+<script>
+(function() {
+    function animateCount(el, target) {
+        const duration = 4000;
+        const start = performance.now();
+        function update(now) {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const value = Math.floor(eased * target);
+            el.textContent = value;
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            } else {
+                el.textContent = target;
+            }
+        }
+        requestAnimationFrame(update);
+    }
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const target = parseInt(entry.target.getAttribute('data-target'));
+                animateCount(entry.target, target);
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+    
+    document.querySelectorAll('.stat-val[data-target]').forEach(el => {
+        observer.observe(el);
+    });
+})();
+</script>
+""", height=0, width=0)
+
+# ═══ RIDGE — transparent, no caption ═══
 html(f"""
 <div class="bleed banner-wrap">{RIDGE}</div>
-<p class="banner-cap mono">Illustration · stacked pulse profiles</p>
 """)
 
 html(f"""
