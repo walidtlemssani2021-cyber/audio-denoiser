@@ -223,7 +223,7 @@ def pipeline_art():
 
 
 # ═══════════════════════════════════════════════════════════════
-# ART 4 — RIDGE
+# ART 4 — RIDGE (transparent)
 # ═══════════════════════════════════════════════════════════════
 def ridge_art():
     rnd = random.Random(11)
@@ -234,8 +234,8 @@ def ridge_art():
             f"{x},{y0 - 62 * math.exp(-((x - 600) / 230) ** 2) * (0.3 + 0.7 * rnd.random()) - 2.5 * rnd.random():.1f}"
             for x in range(0, 1201, 12)
         )
-        rows.append(f'<polygon points="0,{y0} {pts} 1200,{y0}" fill="#000" stroke="{ACC}" stroke-opacity="{0.3 + 0.7 * i / 19:.2f}" stroke-width="1.4" stroke-linejoin="round"/>')
-    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460"><rect width="1200" height="460" fill="#000"/>'
+        rows.append(f'<polygon points="0,{y0} {pts} 1200,{y0}" fill="none" stroke="{ACC}" stroke-opacity="{0.3 + 0.7 * i / 19:.2f}" stroke-width="1.4" stroke-linejoin="round"/>')
+    return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460">'
             f'<defs><radialGradient id="rg" cx="0.5" cy="0.55" r="0.5"><stop offset="0" stop-color="{ACC}" stop-opacity="0.14"/><stop offset="1" stop-color="{ACC}" stop-opacity="0"/></radialGradient></defs>'
             '<rect width="1200" height="460" fill="url(#rg)"/>' + "".join(rows) + '</svg>')
 
@@ -338,15 +338,12 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 @keyframes tick { to { transform:translateX(-50%); } }
 
 /* ═══ STATS ═══ */
-.stats { display:grid; grid-template-columns:repeat(4,1fr); margin-top:6rem; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
-.stat { position:relative; padding:2.4rem 1.3rem 2rem 1.5rem; border-left:1px solid var(--line); }
-.stat:first-child { border-left:0; padding-left:0; }
-.stat::before { content:'+'; position:absolute; top:-.78rem; left:-.45rem; font-family:'DM Mono',monospace; color:var(--a); font-size:1.1rem; text-shadow:0 0 10px var(--a); }
-.stat:first-child::before { left:-.45rem; }
-.stat-val { display:block; font-weight:900; font-size:clamp(3.2rem,8.5vw,7rem); line-height:.9; letter-spacing:.01em; background:linear-gradient(180deg,#fff 30%,var(--a) 130%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; counter-reset:n var(--n); filter:drop-shadow(0 0 26px rgba(var(--ar),.35)); }
+.stats { display:grid; grid-template-columns:1fr 1fr; gap:3rem; margin-top:8rem; }
+.stat { position:relative; }
+.stat-val { display:block; font-weight:900; font-size:clamp(5rem,17vw,14rem); line-height:.82; letter-spacing:-.01em; background:linear-gradient(180deg,#fff 25%,var(--a) 125%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; counter-reset:n var(--n); filter:drop-shadow(0 0 40px rgba(var(--ar),.4)); }
 .stat-val::after { content:counter(n); }
-.stat-val.pct::after { content:counter(n) "%"; }
-.stat-lbl { display:block; margin-top:.9rem; font-size:.62rem; letter-spacing:.26em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+.stat-lbl { display:flex; align-items:center; gap:1rem; margin-top:1.4rem; font-size:.72rem; letter-spacing:.3em; text-transform:uppercase; color:rgba(255,255,255,.72); }
+.stat-lbl::before { content:''; width:48px; height:1px; background:var(--a); box-shadow:0 0 10px var(--a); }
 
 /* ═══ SECTIONS ═══ */
 .sec { position:relative; padding-top:9rem; }
@@ -354,23 +351,19 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .sec-body { display:grid; grid-template-columns:.95fr 1.05fr; gap:4.5rem; align-items:center; }
 .rev .frame { order:2; }
 
-/* Frame WITHOUT the scanning line effect */
 .frame { position:relative; overflow:hidden; border:1px solid rgba(var(--ar),.3); background:#000; box-shadow:0 40px 100px rgba(var(--ar),.12); }
 .frame img.art { display:block; width:100%; max-width:none; margin:0; border:0; border-radius:0; box-shadow:none; }
 
-/* Text blocks with Manrope font, NO left bars */
-.stMarkdown p.lead { font-family:'Manrope', sans-serif !important; font-size:1.08rem !important; line-height:2 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 0 1.8rem 0 !important; padding:0 !important; border-left:none !important; }
-.stMarkdown p.text-block { font-family:'Manrope', sans-serif !important; font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 !important; padding:0 !important; border-left:none !important; }
+.stMarkdown p.lead { font-family:'Manrope', sans-serif !important; font-size:1.08rem !important; line-height:2 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 0 1.8rem 0 !important; }
+.stMarkdown p.text-block { font-family:'Manrope', sans-serif !important; font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 !important; padding:0 0 0 1.3rem; border-left:2px solid var(--a); }
 .stMarkdown p strong { color:#fff; font-weight:600; text-shadow:0 0 22px rgba(var(--ar),.7); }
 
-/* ═══ QUOTE — Manrope font, 4 bars ═══ */
-.quote { position:relative; margin:10rem 0 0 0; text-align:center; }
-.quote-mark { display:none; }
-.stMarkdown p.quote-text { font-family:'Manrope', sans-serif !important; font-style:normal; font-size:clamp(1.5rem, 3.5vw, 2.8rem) !important; line-height:1.4 !important; letter-spacing:-.01em !important; margin:0 auto !important; color:#fff; max-width:1100px; font-weight:300 !important; }
-.hl { color:var(--a); font-weight:600; text-shadow:0 0 40px rgba(var(--ar),.8); }
-.stMarkdown p.quote-author { margin:2.4rem auto 0 auto !important; font-size:.7rem !important; letter-spacing:.34em; text-transform:uppercase; color:rgba(255,255,255,.6); font-family:'DM Mono', monospace !important; display:flex; align-items:center; justify-content:center; gap:.8rem; }
-.stMarkdown p.quote-author::before, .stMarkdown p.quote-author::after { content:''; height:1px; background:rgba(var(--ar),.4); box-shadow:0 0 10px rgba(var(--ar),.6); width:30px; }
-.stMarkdown p.quote-author .bar { display:inline-block; width:30px; height:1px; background:rgba(var(--ar),.4); box-shadow:0 0 10px rgba(var(--ar),.6); }
+/* ═══ QUOTE ═══ */
+.quote { position:relative; margin:10rem 0 0 0; }
+.quote-mark { display:block; font-size:clamp(8rem,22vw,19rem); line-height:.6; height:.45em; color:transparent; -webkit-text-stroke:1px rgba(var(--ar),.7); text-shadow:0 0 60px rgba(var(--ar),.4); }
+.stMarkdown p.quote-text { font-family:'Instrument Serif',serif !important; font-style:italic; font-size:clamp(2.3rem,7vw,6.2rem) !important; line-height:1 !important; letter-spacing:-.01em !important; margin:0 !important; color:#fff; max-width:1100px; }
+.hl { color:var(--a); text-shadow:0 0 40px rgba(var(--ar),.8); }
+.stMarkdown p.quote-author { margin:2.4rem 0 0 0 !important; font-size:.7rem !important; letter-spacing:.34em; text-transform:uppercase; color:rgba(255,255,255,.6); }
 
 /* ═══ FAQ ═══ */
 .faq-list { border-top:1px solid var(--line); }
@@ -385,8 +378,8 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .faq-item[open] summary::after { transform:rotate(45deg); background:var(--a); color:#000; }
 .faq-a { padding:0 .4rem 1.9rem 4.6rem; max-width:860px; font-size:1.02rem; line-height:1.85; font-weight:300; color:rgba(255,255,255,.65); }
 
-/* ═══ BANNER ═══ */
-.banner-wrap { margin-top:8rem; }
+/* ═══ BANNER (Ridge) ═══ */
+.banner-wrap { margin-top:6rem; margin-bottom:2rem; }
 .banner-wrap img.banner { display:block; width:100%; margin:0; border:0; border-radius:0; box-shadow:none; -webkit-mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); }
 .stMarkdown p.banner-cap { margin:-1rem 0 0 0 !important; text-align:center; font-size:.64rem !important; letter-spacing:.28em; text-transform:uppercase; color:rgba(255,255,255,.4); }
 
@@ -401,14 +394,12 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
 .stButton > button { min-height:3.6rem !important; position:relative; overflow:hidden !important; transition:transform .3s, box-shadow .3s, background .3s !important; }
 .stButton > button p { font-family:inherit !important; font-size:inherit !important; font-weight:inherit !important; letter-spacing:inherit !important; text-transform:inherit !important; color:inherit !important; margin:0 !important; line-height:1.2 !important; position:relative; z-index:1; }
 
-/* Force centering of the primary button */
 .stButton:has(button[kind="primary"]) {
     display: flex !important;
     justify-content: center !important;
     width: 100% !important;
 }
 
-/* PRIMARY BUTTON — Blue gradient, DM Mono font, BLACK text, SMALLER, CENTERED */
 .stButton > button[kind="primary"] {
     background: linear-gradient(135deg, #5fb8ff 0%, #2b6bff 100%) !important;
     color: #000000 !important;
@@ -462,15 +453,17 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
 .foot-copyright { margin-top:1.1rem; font-size:.6rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.28); }
 .foot-mark { margin-top:2.5rem; text-align:center; white-space:nowrap; font-weight:900; font-size:clamp(3rem,19.5vw,17rem); letter-spacing:.005em; line-height:.78; height:.64em; overflow:hidden; user-select:none; background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(var(--ar),.04) 88%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
 
-.stat-val { animation:cnt 2.6s ease-out both; }
+/* ═══ COUNTER ANIMATION — 4 SECONDS ═══ */
+.stat-val { animation: cnt 4s ease-out both; }
 @keyframes cnt { from { --n:0; } }
+
+@supports (animation-timeline: view()) {
+  .stat-val { animation: cnt 4s linear both; animation-timeline: view(); animation-range: entry 15% entry 100%; }
+}
 
 @media (max-width:900px) {
   .sec-body { grid-template-columns:1fr; gap:2.4rem; }
   .rev .frame { order:0; }
-  .stats { grid-template-columns:1fr 1fr; }
-  .stat:nth-child(3) { border-left:0; padding-left:0; }
-  .stat:nth-child(n+3) { border-top:1px solid var(--line); }
   .faq-a { padding-left:.4rem; }
 }
 @media (max-width:700px) {
@@ -524,9 +517,12 @@ html(f"""
 <div class="stats">
     <div class="stat"><span class="stat-val disp" style="--n:91"></span><span class="stat-lbl mono">SIGNATURES</span></div>
     <div class="stat"><span class="stat-val disp" style="--n:2000"></span><span class="stat-lbl mono">MAX CHARS</span></div>
-    <div class="stat"><span class="stat-val disp pct" style="--n:80"></span><span class="stat-lbl mono">FLAC SAVING</span></div>
-    <div class="stat"><span class="stat-val disp" style="--n:3"></span><span class="stat-lbl mono">SHAPES</span></div>
 </div>
+""")
+
+html(f"""
+<div class="bleed banner-wrap">{RIDGE}</div>
+<p class="banner-cap mono">Illustration · stacked pulse profiles</p>
 """)
 
 html(f"""
@@ -555,8 +551,9 @@ html(f"""
 </div>
 
 <div class="quote">
+    <span class="quote-mark serif">"</span>
     <p class="quote-text">The only way to keep a secret is to make sure no one knows you <span class="hl">have one.</span></p>
-    <p class="quote-author"><span class="bar"></span>- Criptorian founder -<span class="bar"></span></p>
+    <p class="quote-author mono">- Criptorian founder -</p>
 </div>
 """)
 
@@ -564,6 +561,10 @@ html("""
 <div class="sec">
   <h2 class="sec-title">FREQUENTLY ASKED QUESTIONS</h2>
   <div class="faq-list">
+        <details class="faq-item">
+            <summary>What is Cryptorian?</summary>
+            <div class="faq-a">Cryptorian is a sound-based encryption system that transforms your text messages into a waveform modeled after a neutron star's pulse. It sounds like cosmic noise to anyone who listens — but to the person who holds the key, it is a clear message.</div>
+        </details>
         <details class="faq-item">
             <summary>How does the encryption work?</summary>
             <div class="faq-a">Every character you write becomes a unique sonic signature. The secret key reorders these signatures, so the same character produces a different pulse with every key. The message length is embedded in the audio itself for decryption.</div>
@@ -588,10 +589,7 @@ html("""
 </div>
 """)
 
-html(f"""
-<div class="bleed banner-wrap">{RIDGE}</div>
-<p class="banner-cap mono">Illustration · stacked pulse profiles</p>
-
+html("""
 <div class="cta">
     <div class="cta-t disp">READY TO BECOME A STAR</div>
     <div class="cta-d">Your message is waiting. Your key is your power.</div>
