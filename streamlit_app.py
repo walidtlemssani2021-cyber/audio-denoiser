@@ -5,7 +5,6 @@ import time
 from html import escape
 
 import streamlit as st
-import streamlit.components.v1 as components
 
 # ═══════════════════════════════════════════════════════════════
 # THEME
@@ -15,7 +14,7 @@ HOT, HOT_RGB = "#2b6bff", "43,107,255"
 INK = "#ffffff"
 
 # ═══════════════════════════════════════════════════════════════
-# No-Cache
+# No-Cache — forces browser to refresh the view instantly
 # ═══════════════════════════════════════════════════════════════
 st.set_page_config(
     page_title="CRYPTORIAN",
@@ -32,8 +31,12 @@ st.markdown("""
 
 
 def html(code):
+    # Add a unique timestamp to every HTML block to force refresh
+    unique_id = f"ts_{time.time()}"
     clean = " ".join(line.strip() for line in code.split("\n") if line.strip())
-    st.markdown(clean, unsafe_allow_html=True)
+    # Wrap in a div with unique id
+    wrapped = f'<div id="{unique_id}" data-ts="{time.time()}">{clean}</div>'
+    st.markdown(wrapped, unsafe_allow_html=True)
 
 
 def svg_img(svg, cls, alt):
@@ -260,6 +263,8 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=JetBrains+Mono:wght@300;400;500&display=swap');
 
+@property --n { syntax:'<integer>'; initial-value:0; inherits:false; }
+
 *, *::before, *::after { box-sizing:border-box; }
 html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smoothing:antialiased; overflow-x:hidden; scroll-behavior:smooth; }
 .stApp, .stMarkdown, .stMarkdown p, .stMarkdown div, .stMarkdown span { font-family:'Manrope',sans-serif !important; }
@@ -328,19 +333,16 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .star-wrap { position:relative; width:100%; max-width:780px; margin:0 auto; animation:fadeUp 1s ease .25s both; }
 .star-wrap .hero-art { display:block; width:100%; margin:0; border:0 !important; border-radius:0 !important; box-shadow:none !important; -webkit-mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%); mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%); }
 
-/* ═══ TICKER ═══ */
+/* ═══ TICKER with numbers inside ═══ */
 .ticker { overflow:hidden; margin-top:4.5rem; border-block:1px solid var(--line); background:rgba(var(--ar),.03); }
-.tick-track { display:flex; width:max-content; animation:tick 40s linear infinite; padding:1rem 0; }
+.tick-track { display:flex; width:max-content; animation:tick 40s linear infinite; padding:1rem 0; align-items:center; }
 .tick-track span { font-size:.72rem; letter-spacing:.32em; text-transform:uppercase; color:rgba(255,255,255,.75); padding:0 1.4rem; white-space:nowrap; }
 .tick-track b { color:var(--a); font-weight:500; text-shadow:0 0 12px var(--a); }
+.tick-track .num { display:inline-flex; align-items:baseline; gap:.5rem; padding:0 1.4rem; }
+.tick-track .num .v { font-family:'Big Shoulders Display',sans-serif; font-weight:900; font-size:2.6rem; line-height:1; background:linear-gradient(180deg,#fff 25%,var(--a) 125%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 20px rgba(var(--ar),.5)); counter-reset:n var(--n); }
+.tick-track .num .v::after { content:counter(n); }
+.tick-track .num .l { font-size:.6rem; letter-spacing:.3em; text-transform:uppercase; color:rgba(255,255,255,.7); font-family:'DM Mono',monospace; }
 @keyframes tick { to { transform:translateX(-50%); } }
-
-/* ═══ STATS ═══ */
-.stats { display:grid; grid-template-columns:1fr 1fr; gap:3rem; margin-top:8rem; }
-.stat { position:relative; }
-.stat-val { display:block; font-weight:900; font-size:clamp(5rem,17vw,14rem); line-height:.82; letter-spacing:-.01em; background:linear-gradient(180deg,#fff 25%,var(--a) 125%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 40px rgba(var(--ar),.4)); }
-.stat-lbl { display:flex; align-items:center; gap:1rem; margin-top:1.4rem; font-size:.72rem; letter-spacing:.3em; text-transform:uppercase; color:rgba(255,255,255,.72); }
-.stat-lbl::before { content:''; width:48px; height:1px; background:var(--a); box-shadow:0 0 10px var(--a); }
 
 /* ═══ SECTIONS ═══ */
 .sec { position:relative; padding-top:9rem; }
@@ -442,6 +444,10 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
 .stButton > button[kind="secondary"]:hover { background:var(--a) !important; color:#00081a !important; border-color:#fff !important; transform:translateY(-3px); box-shadow:0 18px 60px rgba(var(--ar),.6) !important; }
 .stButton > button:focus-visible { outline:2px solid #fff !important; outline-offset:3px; }
 
+/* ═══ COUNTER ANIMATION — 4 SECONDS ═══ */
+.tick-track .num .v { animation: cnt 4s ease-out both; }
+@keyframes cnt { from { --n:0; } }
+
 /* ═══ FOOTER ═══ */
 .foot { margin-top:7rem; padding-top:2rem; border-top:1px solid var(--line); }
 .foot-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; font-size:.66rem; letter-spacing:.24em; text-transform:uppercase; color:rgba(255,255,255,.42); }
@@ -496,62 +502,41 @@ with c2:
     if st.button("LET'S START", use_container_width=True, type="primary"):
         st.info("The encryption page will be added soon.")
 
-TICKS = ["NEUTRON SOUND", "UNIQUE SIGNATURES", "KEY SHUFFLING", "LENGTH HEADER", "DUAL FORMATS", "ZERO KNOWLEDGE"]
-TICK = "".join(f"<span>{t}</span><span><b>//</b></span>" for t in TICKS) * 2
-
+# ═══ TICKER with numbers INSIDE ═══
 html(f"""
-<div class="bleed ticker mono" style="margin-top:4.5rem;"><div class="tick-track">{TICK}</div></div>
-""")
-
-# ═══ STATS with JavaScript counter ═══
-components.html("""
-<div class="stats" style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:8rem;">
-    <div class="stat" style="position:relative;">
-        <span class="stat-val disp" id="counter1" style="display:block;font-weight:900;font-size:clamp(5rem,17vw,14rem);line-height:.82;letter-spacing:-.01em;background:linear-gradient(180deg,#fff 25%,#3da5ff 125%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 40px rgba(61,165,255,.4));font-family:'Big Shoulders Display',sans-serif;">0</span>
-        <span class="stat-lbl mono" style="display:flex;align-items:center;gap:1rem;margin-top:1.4rem;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.72);font-family:'DM Mono',monospace;">SIGNATURES</span>
-    </div>
-    <div class="stat" style="position:relative;">
-        <span class="stat-val disp" id="counter2" style="display:block;font-weight:900;font-size:clamp(5rem,17vw,14rem);line-height:.82;letter-spacing:-.01em;background:linear-gradient(180deg,#fff 25%,#3da5ff 125%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 40px rgba(61,165,255,.4));font-family:'Big Shoulders Display',sans-serif;">0</span>
-        <span class="stat-lbl mono" style="display:flex;align-items:center;gap:1rem;margin-top:1.4rem;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.72);font-family:'DM Mono',monospace;">MAX CHARS</span>
+<div class="bleed ticker mono" style="margin-top:4.5rem;">
+    <div class="tick-track">
+        <div class="num"><span class="v" style="--n:91"></span><span class="l">SIGNATURES</span></div>
+        <span><b>//</b></span>
+        <div class="num"><span class="v" style="--n:2000"></span><span class="l">MAX CHARS</span></div>
+        <span><b>//</b></span>
+        <span>NEUTRON SOUND</span>
+        <span><b>//</b></span>
+        <span>KEY SHUFFLING</span>
+        <span><b>//</b></span>
+        <span>LENGTH HEADER</span>
+        <span><b>//</b></span>
+        <span>DUAL FORMATS</span>
+        <span><b>//</b></span>
+        <span>ZERO KNOWLEDGE</span>
+        <span><b>//</b></span>
+        <div class="num"><span class="v" style="--n:91"></span><span class="l">SIGNATURES</span></div>
+        <span><b>//</b></span>
+        <div class="num"><span class="v" style="--n:2000"></span><span class="l">MAX CHARS</span></div>
+        <span><b>//</b></span>
+        <span>NEUTRON SOUND</span>
+        <span><b>//</b></span>
+        <span>KEY SHUFFLING</span>
+        <span><b>//</b></span>
+        <span>LENGTH HEADER</span>
+        <span><b>//</b></span>
+        <span>DUAL FORMATS</span>
+        <span><b>//</b></span>
+        <span>ZERO KNOWLEDGE</span>
+        <span><b>//</b></span>
     </div>
 </div>
-
-<script>
-(function() {
-    function animateCount(el, target) {
-        const duration = 4000;
-        const start = performance.now();
-        function update(now) {
-            const elapsed = now - start;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            const value = Math.floor(eased * target);
-            el.textContent = value;
-            if (progress < 1) {
-                requestAnimationFrame(update);
-            } else {
-                el.textContent = target;
-            }
-        }
-        requestAnimationFrame(update);
-    }
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const target = parseInt(entry.target.getAttribute('data-target'));
-                animateCount(entry.target, target);
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.3 });
-    
-    document.querySelectorAll('.stat-val[data-target]').forEach(el => {
-        observer.observe(el);
-    });
-})();
-</script>
-""", height=0, width=0)
+""")
 
 # ═══ RIDGE — transparent, no caption ═══
 html(f"""
