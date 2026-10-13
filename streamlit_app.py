@@ -329,11 +329,10 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .star-wrap { position:relative; width:100%; max-width:780px; margin:0 auto; animation:fadeUp 1s ease .25s both; }
 .star-wrap .hero-art { display:block; width:100%; margin:0; border:0 !important; border-radius:0 !important; box-shadow:none !important; -webkit-mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%); mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%); }
 
-/* ═══ TICKER — moved DOWN, all items same white color ═══ */
+/* ═══ TICKER — no slashes ═══ */
 .ticker { overflow:hidden; margin-top:6rem; border-block:1px solid var(--line); background:rgba(var(--ar),.03); }
 .tick-track { display:flex; width:max-content; animation:tick 40s linear infinite; padding:1rem 0; align-items:center; }
 .tick-track span { font-size:.72rem; letter-spacing:.32em; text-transform:uppercase; color:rgba(255,255,255,.75); padding:0 1.4rem; white-space:nowrap; }
-.tick-track b { color:rgba(255,255,255,.75); font-weight:500; }
 @keyframes tick { to { transform:translateX(-50%); } }
 
 /* ═══ SECTIONS ═══ */
@@ -345,8 +344,9 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .frame { position:relative; overflow:hidden; border:1px solid rgba(var(--ar),.3); background:#000; box-shadow:0 40px 100px rgba(var(--ar),.12); }
 .frame img.art { display:block; width:100%; max-width:none; margin:0; border:0; border-radius:0; box-shadow:none; }
 
-.stMarkdown p.lead { font-family:'Manrope', sans-serif !important; font-size:1.08rem !important; line-height:2 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 0 1.8rem 0 !important; }
-.stMarkdown p.text-block { font-family:'Manrope', sans-serif !important; font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 !important; padding:0 0 0 1.3rem; border-left:2px solid var(--a); }
+/* Text blocks — NO left bars */
+.stMarkdown p.lead { font-family:'Manrope', sans-serif !important; font-size:1.08rem !important; line-height:2 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 0 1.8rem 0 !important; padding:0 !important; border-left:none !important; }
+.stMarkdown p.text-block { font-family:'Manrope', sans-serif !important; font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 !important; padding:0 !important; border-left:none !important; }
 .stMarkdown p strong { color:#fff; font-weight:600; text-shadow:0 0 22px rgba(var(--ar),.7); }
 
 /* ═══ QUOTE ═══ */
@@ -369,7 +369,7 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .faq-item[open] summary::after { transform:rotate(45deg); background:var(--a); color:#000; }
 .faq-a { padding:0 .4rem 1.9rem 4.6rem; max-width:860px; font-size:1.02rem; line-height:1.85; font-weight:300; color:rgba(255,255,255,.65); }
 
-/* ═══ BANNER (Ridge) — moved UP, transparent ═══ */
+/* ═══ BANNER (Ridge) ═══ */
 .banner-wrap { margin-top:6rem; margin-bottom:2rem; }
 .banner-wrap img.banner { display:block; width:100%; margin:0; border:0; border-radius:0; box-shadow:none; -webkit-mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); }
 
@@ -490,43 +490,27 @@ with c2:
     if st.button("LET'S START", use_container_width=True, type="primary"):
         st.info("The encryption page will be added soon.")
 
-# ═══ RIDGE (moved UP — where the ticker was) ═══
+# ═══ RIDGE ═══
 html(f"""
 <div class="bleed banner-wrap">{RIDGE}</div>
 """)
 
-# ═══ TICKER (moved DOWN — where ridge was) ═══
+# ═══ TICKER (no slashes, no 91) ═══
 html("""
 <div class="bleed ticker mono">
     <div class="tick-track">
-        <span><b>91</b> SIGNATURES</span>
-        <span><b>//</b></span>
-        <span><b>2000</b> MAX CHARS</span>
-        <span><b>//</b></span>
+        <span>2000 MAX CHARS</span>
         <span>NEUTRON SOUND</span>
-        <span><b>//</b></span>
         <span>KEY SHUFFLING</span>
-        <span><b>//</b></span>
         <span>LENGTH HEADER</span>
-        <span><b>//</b></span>
         <span>DUAL FORMATS</span>
-        <span><b>//</b></span>
         <span>ZERO KNOWLEDGE</span>
-        <span><b>//</b></span>
-        <span><b>91</b> SIGNATURES</span>
-        <span><b>//</b></span>
-        <span><b>2000</b> MAX CHARS</span>
-        <span><b>//</b></span>
+        <span>2000 MAX CHARS</span>
         <span>NEUTRON SOUND</span>
-        <span><b>//</b></span>
         <span>KEY SHUFFLING</span>
-        <span><b>//</b></span>
         <span>LENGTH HEADER</span>
-        <span><b>//</b></span>
         <span>DUAL FORMATS</span>
-        <span><b>//</b></span>
         <span>ZERO KNOWLEDGE</span>
-        <span><b>//</b></span>
     </div>
 </div>
 """)
@@ -537,8 +521,8 @@ html(f"""
   <div class="sec-body">
     <div class="frame hud">{NET}</div>
     <div>
-        <p class="lead">Before anything else, let it be known that a person who encrypts their messages is not always a criminal, nor is he suffering from paranoia. Every message you send — carrying your words, your thoughts, your secrets — travels through networks you don't know are safe or not, through servers you don't own, and through channels that are easy to intercept. This increases the risk of your data being obtained and exposes you to surveillance or blackmail.</p>
-        <p class="text-block"><strong>And here comes the role of encryption</strong> — and not just any type of encryption. A private encryption. Encrypting your message using a complex, uncommon method. Using a special encryption method will guarantee you a great deal of security and legitimate privacy.</p>
+        <p class="lead">Before anything else, let it be known that a person who encrypts their messages is not always a criminal, nor is he suffering from paranoia. Every message you send, carrying your words, your thoughts, your secrets, travels through networks you don't know are safe or not, through servers you don't own, and through channels that are easy to intercept. This increases the risk of your data being obtained and exposes you to surveillance or blackmail.</p>
+        <p class="text-block"><strong>And here comes the role of encryption</strong>, and not just any type of encryption. A private encryption. Encrypting your message using a complex, uncommon method. Using a special encryption method will guarantee you a great deal of security and legitimate privacy.</p>
     </div>
   </div>
 </div>
@@ -563,21 +547,18 @@ html(f"""
 </div>
 """)
 
+# ═══ FAQ — removed first question, no 91 in answer ═══
 html("""
 <div class="sec">
   <h2 class="sec-title">FREQUENTLY ASKED QUESTIONS</h2>
   <div class="faq-list">
         <details class="faq-item">
-            <summary>What is Cryptorian?</summary>
-            <div class="faq-a">Cryptorian is a sound-based encryption system that transforms your text messages into a waveform modeled after a neutron star's pulse. It sounds like cosmic noise to anyone who listens — but to the person who holds the key, it is a clear message.</div>
-        </details>
-        <details class="faq-item">
             <summary>How does the encryption work?</summary>
-            <div class="faq-a">Every character you write becomes a unique sonic signature. The secret key reorders these signatures, so the same character produces a different pulse with every key. The message length is embedded in the audio itself for decryption.</div>
+            <div class="faq-a">Cryptorian takes your text and transforms it into a unique sound wave that only the person holding the correct key can decode back into the original message.</div>
         </details>
         <details class="faq-item">
             <summary>Is my data stored or sent anywhere?</summary>
-            <div class="faq-a">No. Nothing is stored. Nothing is sent. The entire process happens in memory — invisible to anyone else. Your message and your key never leave your device.</div>
+            <div class="faq-a">No. Nothing is stored. Nothing is sent. The entire process happens in memory, invisible to anyone else. Your message and your key never leave your device.</div>
         </details>
         <details class="faq-item">
             <summary>What audio formats are supported?</summary>
@@ -589,7 +570,7 @@ html("""
         </details>
         <details class="faq-item">
             <summary>How many characters can I encrypt?</summary>
-            <div class="faq-a">Cryptorian supports up to 2000 characters per message, with 91 unique sonic signatures available for encoding.</div>
+            <div class="faq-a">Cryptorian supports up to 2000 characters per message.</div>
         </details>
   </div>
 </div>
