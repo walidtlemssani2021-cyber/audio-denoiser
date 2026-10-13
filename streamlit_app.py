@@ -399,45 +399,10 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .banner-wrap { margin-top:6rem; margin-bottom:2rem; }
 .banner-wrap img.banner { display:block; width:100%; margin:0; border:0; border-radius:0; box-shadow:none; -webkit-mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); }
 
-/* ═══ CTA — UPDATED ═══ */
+/* ═══ CTA ═══ */
 .cta { position:relative; margin-top:8rem; padding:6rem 2rem 6rem 2rem; text-align:center; overflow:hidden; isolation:isolate; border:1px solid rgba(var(--ar),.4); background:radial-gradient(70% 90% at 50% 0%,rgba(var(--ar),.26),transparent 70%), #02050c; box-shadow:0 0 120px rgba(var(--ar),.14), inset 0 0 80px rgba(var(--ar),.06); }
 .cta::before { content:''; position:absolute; inset:0; z-index:-1; background-image:linear-gradient(rgba(var(--ar),.14) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--ar),.14) 1px,transparent 1px); background-size:44px 44px; -webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 10%,transparent 72%); mask-image:radial-gradient(ellipse at 50% 0%,#000 10%,transparent 72%); }
 .cta-t { font-weight:900; font-size:clamp(2.6rem,10vw,8.5rem); line-height:.9; letter-spacing:.005em; text-transform:uppercase; background:linear-gradient(180deg,#fff 35%,var(--a) 135%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 36px rgba(var(--ar),.5)); }
-
-/* CTA button — same style as top LET'S START */
-.cta .stButton > button[kind="secondary"] {
-    background: linear-gradient(135deg, #5fb8ff 0%, #2b6bff 100%) !important;
-    color: #000000 !important;
-    border: 1px solid rgba(160,215,255,.9) !important;
-    border-radius: 10px !important;
-    padding: 0.85rem 1.8rem !important;
-    font-family: 'DM Mono', monospace !important;
-    font-weight: 500 !important;
-    font-size: 0.95rem !important;
-    letter-spacing: .25em !important;
-    text-transform: uppercase !important;
-    box-shadow: 0 0 25px rgba(61,165,255,.7), 0 0 55px rgba(61,165,255,.35), inset 0 0 15px rgba(255,255,255,.3) !important;
-    animation: btnPulse 2.5s ease-in-out infinite !important;
-    max-width: 280px !important;
-    margin: 2rem auto 0 auto !important;
-    display: block !important;
-}
-.cta .stButton > button[kind="secondary"] p,
-.cta .stButton > button[kind="secondary"] div,
-.cta .stButton > button[kind="secondary"] span {
-    font-family: 'DM Mono', monospace !important;
-    font-weight: 500 !important;
-    font-size: 0.95rem !important;
-    letter-spacing: .25em !important;
-    text-transform: uppercase !important;
-    color: #000000 !important;
-    margin: 0 !important;
-    line-height: 1.2 !important;
-}
-.cta .stButton > button[kind="secondary"]:hover { transform:translateY(-2px) scale(1.01); filter:brightness(1.1); }
-
-/* Hide the default Streamlit button container styling */
-div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:0 !important; position:relative; z-index:6; }
 
 /* ═══ BUTTONS ═══ */
 .stButton > button { min-height:3.6rem !important; position:relative; overflow:hidden !important; transition:transform .3s, box-shadow .3s, background .3s !important; }
@@ -449,6 +414,7 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
     width: 100% !important;
 }
 
+/* PRIMARY BUTTON — Blue gradient */
 .stButton > button[kind="primary"] {
     background: linear-gradient(135deg, #5fb8ff 0%, #2b6bff 100%) !important;
     color: #000000 !important;
@@ -479,23 +445,54 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
     line-height: 1.2 !important;
 }
 
+/* SECONDARY BUTTON — SAME as primary (blue gradient, DM Mono, white text on blue) */
+.stButton > button[kind="secondary"] {
+    background: linear-gradient(135deg, #5fb8ff 0%, #2b6bff 100%) !important;
+    color: #000000 !important;
+    border: 1px solid rgba(160,215,255,.9) !important;
+    border-radius: 10px !important;
+    padding: 0.85rem 1.8rem !important;
+    font-family: 'DM Mono', monospace !important;
+    font-weight: 500 !important;
+    font-size: 0.95rem !important;
+    letter-spacing: .25em !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 0 25px rgba(61,165,255,.7), 0 0 55px rgba(61,165,255,.35), inset 0 0 15px rgba(255,255,255,.3) !important;
+    animation: btnPulse 2.5s ease-in-out infinite !important;
+    max-width: 280px !important;
+    margin: 2rem auto 0 auto !important;
+    display: block !important;
+}
+
+.stButton > button[kind="secondary"] p,
+.stButton > button[kind="secondary"] div,
+.stButton > button[kind="secondary"] span {
+    font-family: 'DM Mono', monospace !important;
+    font-weight: 500 !important;
+    font-size: 0.95rem !important;
+    letter-spacing: .25em !important;
+    text-transform: uppercase !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+}
+
 @keyframes btnPulse {
     0%,100% { box-shadow: 0 0 25px rgba(61,165,255,.7), 0 0 55px rgba(61,165,255,.35), inset 0 0 15px rgba(255,255,255,.3); }
     50%     { box-shadow: 0 0 40px rgba(61,165,255,.95), 0 0 90px rgba(61,165,255,.5), inset 0 0 25px rgba(255,255,255,.45); }
 }
-.stButton > button[kind="primary"]::before {
+.stButton > button[kind="primary"]::before,
+.stButton > button[kind="secondary"]::before {
     content:''; position:absolute; top:0; left:-60%; width:40%; height:100%;
     background:linear-gradient(100deg,transparent,rgba(255,255,255,.7),transparent);
     transform:skewX(-20deg); animation:shine 3.4s ease-in-out infinite; pointer-events:none;
 }
 @keyframes shine { 0% { left:-60%; } 55%,100% { left:130%; } }
-.stButton > button[kind="primary"]:hover { transform:translateY(-2px) scale(1.01); filter:brightness(1.1); }
-
-.stButton > button[kind="secondary"] { background:rgba(2,5,12,.9) !important; color:#fff !important; border:1px solid rgba(var(--ar),.7) !important; border-radius:12px !important; padding:1.1rem 2.4rem !important; font-family:'Big Shoulders Display',sans-serif !important; font-weight:900 !important; font-size:1.4rem !important; letter-spacing:.2em !important; text-transform:uppercase !important; box-shadow:0 10px 40px rgba(0,0,0,.6), 0 0 30px rgba(var(--ar),.25) !important; }
-.stButton > button[kind="secondary"]:hover { background:var(--a) !important; color:#00081a !important; border-color:#fff !important; transform:translateY(-3px); box-shadow:0 18px 60px rgba(var(--ar),.6) !important; }
+.stButton > button[kind="primary"]:hover,
+.stButton > button[kind="secondary"]:hover { transform:translateY(-2px) scale(1.01); filter:brightness(1.1); }
 .stButton > button:focus-visible { outline:2px solid #fff !important; outline-offset:3px; }
 
-/* ═══ FOOTER — only copyright, centered ═══ */
+/* ═══ FOOTER ═══ */
 .foot { margin-top:7rem; padding-top:2rem; border-top:1px solid var(--line); text-align:center; }
 .foot-copyright { font-family:'DM Mono', monospace; font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.35); margin:0 auto; text-align:center; }
 
@@ -628,7 +625,6 @@ html("""
 </div>
 """)
 
-# ═══ CTA — UPDATED ═══
 html("""
 <div class="cta">
     <div class="cta-t disp">READY TO COMMUNICATE SMARTLY</div>
@@ -640,7 +636,6 @@ with c2:
     if st.button("LET'S START", use_container_width=True, key="cta_btn", type="secondary"):
         st.info("The encryption page will be added soon.")
 
-# ═══ FOOTER — only copyright ═══
 html("""
 <div class="foot">
     <div class="foot-copyright">© 2026 CRYPTORIAN · ALL RIGHTS RESERVED</div>
