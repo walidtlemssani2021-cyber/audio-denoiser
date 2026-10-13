@@ -329,7 +329,7 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .star-wrap { position:relative; width:100%; max-width:780px; margin:0 auto; animation:fadeUp 1s ease .25s both; }
 .star-wrap .hero-art { display:block; width:100%; margin:0; border:0 !important; border-radius:0 !important; box-shadow:none !important; -webkit-mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%); mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%); }
 
-/* ═══ TICKER — no slashes ═══ */
+/* ═══ TICKER ═══ */
 .ticker { overflow:hidden; margin-top:6rem; border-block:1px solid var(--line); background:rgba(var(--ar),.03); }
 .tick-track { display:flex; width:max-content; animation:tick 40s linear infinite; padding:1rem 0; align-items:center; }
 .tick-track span { font-size:.72rem; letter-spacing:.32em; text-transform:uppercase; color:rgba(255,255,255,.75); padding:0 1.4rem; white-space:nowrap; }
@@ -344,17 +344,43 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .frame { position:relative; overflow:hidden; border:1px solid rgba(var(--ar),.3); background:#000; box-shadow:0 40px 100px rgba(var(--ar),.12); }
 .frame img.art { display:block; width:100%; max-width:none; margin:0; border:0; border-radius:0; box-shadow:none; }
 
-/* Text blocks — NO left bars */
 .stMarkdown p.lead { font-family:'Manrope', sans-serif !important; font-size:1.08rem !important; line-height:2 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 0 1.8rem 0 !important; padding:0 !important; border-left:none !important; }
 .stMarkdown p.text-block { font-family:'Manrope', sans-serif !important; font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 !important; padding:0 !important; border-left:none !important; }
 .stMarkdown p strong { color:#fff; font-weight:600; text-shadow:0 0 22px rgba(var(--ar),.7); }
 
-/* ═══ QUOTE ═══ */
-.quote { position:relative; margin:10rem 0 0 0; }
-.quote-mark { display:block; font-size:clamp(8rem,22vw,19rem); line-height:.6; height:.45em; color:transparent; -webkit-text-stroke:1px rgba(var(--ar),.7); text-shadow:0 0 60px rgba(var(--ar),.4); }
-.stMarkdown p.quote-text { font-family:'Instrument Serif',serif !important; font-style:italic; font-size:clamp(2.3rem,7vw,6.2rem) !important; line-height:1 !important; letter-spacing:-.01em !important; margin:0 !important; color:#fff; max-width:1100px; }
+/* ═══ QUOTE — Professional with 4 marks ═══ */
+.quote { position:relative; margin:10rem auto 0 auto; max-width:1000px; padding:6rem 4rem; text-align:center; }
+.quote::before, .quote::after {
+    position:absolute; font-family:'Instrument Serif', serif; font-size:clamp(10rem,25vw,20rem);
+    line-height:0.8; color:transparent; -webkit-text-stroke:2px rgba(var(--ar),.6);
+    text-shadow:0 0 40px rgba(var(--ar),.3); pointer-events:none; opacity:0.9;
+}
+.quote::before { content:'"'; top:0; left:0; }
+.quote::after { content:'"'; bottom:-3rem; right:0; }
+
+.stMarkdown p.quote-text {
+    font-family:'Instrument Serif',serif !important; font-style:italic;
+    font-size:clamp(1.8rem,4.5vw,3.8rem) !important; line-height:1.3 !important;
+    letter-spacing:-.01em !important; margin:0 !important; color:#fff;
+    position:relative; z-index:1;
+}
 .hl { color:var(--a); text-shadow:0 0 40px rgba(var(--ar),.8); }
-.stMarkdown p.quote-author { margin:2.4rem 0 0 0 !important; font-size:.7rem !important; letter-spacing:.34em; text-transform:uppercase; color:rgba(255,255,255,.6); }
+
+.stMarkdown p.quote-author {
+    margin:3rem 0 0 0 !important;
+    font-family:'DM Mono', monospace !important;
+    font-size:.75rem !important;
+    letter-spacing:.4em; text-transform:uppercase;
+    color:rgba(255,255,255,.7);
+    display:flex; align-items:center; justify-content:center; gap:1.2rem;
+    position:relative; z-index:1;
+}
+.stMarkdown p.quote-author::before,
+.stMarkdown p.quote-author::after {
+    content:''; height:1px; width:60px;
+    background:linear-gradient(90deg, transparent, rgba(var(--ar),.8), transparent);
+    box-shadow:0 0 12px rgba(var(--ar),.6);
+}
 
 /* ═══ FAQ ═══ */
 .faq-list { border-top:1px solid var(--line); }
@@ -454,7 +480,7 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
   .hero-badge { letter-spacing:.12em; font-size:.56rem; padding:.6rem 1rem; line-height:1.7; }
   .sec { padding-top:6rem; }
   .cta { padding:4.5rem 1.2rem 9rem 1.2rem; }
-  .quote { margin-top:6rem; }
+  .quote { margin-top:6rem; padding:4rem 1.5rem; }
   .faq-item summary { gap:1rem; }
 }
 </style>
@@ -490,12 +516,10 @@ with c2:
     if st.button("LET'S START", use_container_width=True, type="primary"):
         st.info("The encryption page will be added soon.")
 
-# ═══ RIDGE ═══
 html(f"""
 <div class="bleed banner-wrap">{RIDGE}</div>
 """)
 
-# ═══ TICKER (no slashes, no 91) ═══
 html("""
 <div class="bleed ticker mono">
     <div class="tick-track">
@@ -541,13 +565,11 @@ html(f"""
 </div>
 
 <div class="quote">
-    <span class="quote-mark serif">"</span>
     <p class="quote-text">The only way to keep a secret is to make sure no one knows you <span class="hl">have one.</span></p>
-    <p class="quote-author mono">- Criptorian founder -</p>
+    <p class="quote-author">Cryptorian Founder</p>
 </div>
 """)
 
-# ═══ FAQ — removed first question, no 91 in answer ═══
 html("""
 <div class="sec">
   <h2 class="sec-title">FREQUENTLY ASKED QUESTIONS</h2>
