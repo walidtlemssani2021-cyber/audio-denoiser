@@ -329,11 +329,11 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .star-wrap { position:relative; width:100%; max-width:780px; margin:0 auto; animation:fadeUp 1s ease .25s both; }
 .star-wrap .hero-art { display:block; width:100%; margin:0; border:0 !important; border-radius:0 !important; box-shadow:none !important; -webkit-mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%); mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%); }
 
-/* ═══ TICKER — all items have the same style ═══ */
-.ticker { overflow:hidden; margin-top:4.5rem; border-block:1px solid var(--line); background:rgba(var(--ar),.03); }
+/* ═══ TICKER — moved DOWN, all items same white color ═══ */
+.ticker { overflow:hidden; margin-top:6rem; border-block:1px solid var(--line); background:rgba(var(--ar),.03); }
 .tick-track { display:flex; width:max-content; animation:tick 40s linear infinite; padding:1rem 0; align-items:center; }
 .tick-track span { font-size:.72rem; letter-spacing:.32em; text-transform:uppercase; color:rgba(255,255,255,.75); padding:0 1.4rem; white-space:nowrap; }
-.tick-track b { color:var(--a); font-weight:500; text-shadow:0 0 12px var(--a); }
+.tick-track b { color:rgba(255,255,255,.75); font-weight:500; }
 @keyframes tick { to { transform:translateX(-50%); } }
 
 /* ═══ SECTIONS ═══ */
@@ -369,7 +369,7 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .faq-item[open] summary::after { transform:rotate(45deg); background:var(--a); color:#000; }
 .faq-a { padding:0 .4rem 1.9rem 4.6rem; max-width:860px; font-size:1.02rem; line-height:1.85; font-weight:300; color:rgba(255,255,255,.65); }
 
-/* ═══ BANNER (Ridge) — transparent, no caption ═══ */
+/* ═══ BANNER (Ridge) — moved UP, transparent ═══ */
 .banner-wrap { margin-top:6rem; margin-bottom:2rem; }
 .banner-wrap img.banner { display:block; width:100%; margin:0; border:0; border-radius:0; box-shadow:none; -webkit-mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); }
 
@@ -490,9 +490,14 @@ with c2:
     if st.button("LET'S START", use_container_width=True, type="primary"):
         st.info("The encryption page will be added soon.")
 
-# ═══ TICKER — 91 and 2000 as PLAIN TEXT (same style as other items) ═══
+# ═══ RIDGE (moved UP — where the ticker was) ═══
+html(f"""
+<div class="bleed banner-wrap">{RIDGE}</div>
+""")
+
+# ═══ TICKER (moved DOWN — where ridge was) ═══
 html("""
-<div class="bleed ticker mono" style="margin-top:4.5rem;">
+<div class="bleed ticker mono">
     <div class="tick-track">
         <span><b>91</b> SIGNATURES</span>
         <span><b>//</b></span>
@@ -524,11 +529,6 @@ html("""
         <span><b>//</b></span>
     </div>
 </div>
-""")
-
-# ═══ RIDGE ═══
-html(f"""
-<div class="bleed banner-wrap">{RIDGE}</div>
 """)
 
 html(f"""
