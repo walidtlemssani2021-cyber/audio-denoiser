@@ -399,12 +399,45 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .banner-wrap { margin-top:6rem; margin-bottom:2rem; }
 .banner-wrap img.banner { display:block; width:100%; margin:0; border:0; border-radius:0; box-shadow:none; -webkit-mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); mask-image:radial-gradient(ellipse 75% 85% at 50% 50%,#000 35%,transparent 100%); }
 
-/* ═══ CTA ═══ */
-.cta { position:relative; margin-top:8rem; padding:6rem 2rem 9.5rem 2rem; text-align:center; overflow:hidden; isolation:isolate; border:1px solid rgba(var(--ar),.4); background:radial-gradient(70% 90% at 50% 0%,rgba(var(--ar),.26),transparent 70%), #02050c; box-shadow:0 0 120px rgba(var(--ar),.14), inset 0 0 80px rgba(var(--ar),.06); }
+/* ═══ CTA — UPDATED ═══ */
+.cta { position:relative; margin-top:8rem; padding:6rem 2rem 6rem 2rem; text-align:center; overflow:hidden; isolation:isolate; border:1px solid rgba(var(--ar),.4); background:radial-gradient(70% 90% at 50% 0%,rgba(var(--ar),.26),transparent 70%), #02050c; box-shadow:0 0 120px rgba(var(--ar),.14), inset 0 0 80px rgba(var(--ar),.06); }
 .cta::before { content:''; position:absolute; inset:0; z-index:-1; background-image:linear-gradient(rgba(var(--ar),.14) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--ar),.14) 1px,transparent 1px); background-size:44px 44px; -webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 10%,transparent 72%); mask-image:radial-gradient(ellipse at 50% 0%,#000 10%,transparent 72%); }
-.cta-t { font-weight:900; font-size:clamp(3.2rem,12vw,10.5rem); line-height:.86; letter-spacing:.005em; text-transform:uppercase; background:linear-gradient(180deg,#fff 35%,var(--a) 135%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 36px rgba(var(--ar),.5)); }
-.cta-d { margin-top:1.8rem; font-family:'Instrument Serif',serif !important; font-style:italic; font-size:clamp(1.3rem,2.4vw,1.9rem); color:rgba(255,255,255,.8); }
-div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:-6.3rem; position:relative; z-index:6; }
+.cta-t { font-weight:900; font-size:clamp(2.6rem,10vw,8.5rem); line-height:.9; letter-spacing:.005em; text-transform:uppercase; background:linear-gradient(180deg,#fff 35%,var(--a) 135%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 0 36px rgba(var(--ar),.5)); }
+
+/* CTA button — same style as top LET'S START */
+.cta .stButton > button[kind="secondary"] {
+    background: linear-gradient(135deg, #5fb8ff 0%, #2b6bff 100%) !important;
+    color: #000000 !important;
+    border: 1px solid rgba(160,215,255,.9) !important;
+    border-radius: 10px !important;
+    padding: 0.85rem 1.8rem !important;
+    font-family: 'DM Mono', monospace !important;
+    font-weight: 500 !important;
+    font-size: 0.95rem !important;
+    letter-spacing: .25em !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 0 25px rgba(61,165,255,.7), 0 0 55px rgba(61,165,255,.35), inset 0 0 15px rgba(255,255,255,.3) !important;
+    animation: btnPulse 2.5s ease-in-out infinite !important;
+    max-width: 280px !important;
+    margin: 2rem auto 0 auto !important;
+    display: block !important;
+}
+.cta .stButton > button[kind="secondary"] p,
+.cta .stButton > button[kind="secondary"] div,
+.cta .stButton > button[kind="secondary"] span {
+    font-family: 'DM Mono', monospace !important;
+    font-weight: 500 !important;
+    font-size: 0.95rem !important;
+    letter-spacing: .25em !important;
+    text-transform: uppercase !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+}
+.cta .stButton > button[kind="secondary"]:hover { transform:translateY(-2px) scale(1.01); filter:brightness(1.1); }
+
+/* Hide the default Streamlit button container styling */
+div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:0 !important; position:relative; z-index:6; }
 
 /* ═══ BUTTONS ═══ */
 .stButton > button { min-height:3.6rem !important; position:relative; overflow:hidden !important; transition:transform .3s, box-shadow .3s, background .3s !important; }
@@ -462,12 +495,9 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
 .stButton > button[kind="secondary"]:hover { background:var(--a) !important; color:#00081a !important; border-color:#fff !important; transform:translateY(-3px); box-shadow:0 18px 60px rgba(var(--ar),.6) !important; }
 .stButton > button:focus-visible { outline:2px solid #fff !important; outline-offset:3px; }
 
-/* ═══ FOOTER ═══ */
-.foot { margin-top:7rem; padding-top:2rem; border-top:1px solid var(--line); }
-.foot-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; font-size:.66rem; letter-spacing:.24em; text-transform:uppercase; color:rgba(255,255,255,.42); }
-.foot-brand { color:#fff; text-shadow:0 0 20px rgba(var(--ar),.7); }
-.foot-copyright { margin-top:1.1rem; font-size:.6rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.28); }
-.foot-mark { margin-top:2.5rem; text-align:center; white-space:nowrap; font-weight:900; font-size:clamp(3rem,19.5vw,17rem); letter-spacing:.005em; line-height:.78; height:.64em; overflow:hidden; user-select:none; background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(var(--ar),.04) 88%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+/* ═══ FOOTER — only copyright, centered ═══ */
+.foot { margin-top:7rem; padding-top:2rem; border-top:1px solid var(--line); text-align:center; }
+.foot-copyright { font-family:'DM Mono', monospace; font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.35); margin:0 auto; text-align:center; }
 
 @media (max-width:900px) {
   .sec-body { grid-template-columns:1fr; gap:2.4rem; }
@@ -479,7 +509,7 @@ div[data-testid="stHorizontalBlock"]:has(button[kind="secondary"]) { margin-top:
   .hero { padding-top:6rem; }
   .hero-badge { letter-spacing:.12em; font-size:.56rem; padding:.6rem 1rem; line-height:1.7; }
   .sec { padding-top:6rem; }
-  .cta { padding:4.5rem 1.2rem 9rem 1.2rem; }
+  .cta { padding:4.5rem 1.2rem; }
   .quote { margin-top:6rem; padding:4rem 1.5rem; }
   .faq-item summary { gap:1rem; }
 }
@@ -598,25 +628,21 @@ html("""
 </div>
 """)
 
+# ═══ CTA — UPDATED ═══
 html("""
 <div class="cta">
-    <div class="cta-t disp">READY TO BECOME A STAR</div>
-    <div class="cta-d">Your message is waiting. Your key is your power.</div>
+    <div class="cta-t disp">READY TO COMMUNICATE SMARTLY</div>
 </div>
 """)
 
 c1, c2, c3 = st.columns([1, 1, 1])
 with c2:
-    if st.button("⚡ ENCRYPT A MESSAGE", use_container_width=True, key="cta_btn", type="secondary"):
+    if st.button("LET'S START", use_container_width=True, key="cta_btn", type="secondary"):
         st.info("The encryption page will be added soon.")
 
+# ═══ FOOTER — only copyright ═══
 html("""
 <div class="foot">
-    <div class="foot-row mono">
-        <div><span class="foot-brand">CRYPTORIAN</span> · V2.0 · 2026</div>
-        <div>SOUND-BASED ENCRYPTION</div>
-    </div>
-    <div class="foot-copyright mono">© 2026 CRYPTORIAN · ALL RIGHTS RESERVED · BUILT FOR PRIVACY</div>
-    <div class="foot-mark disp">CRYPTORIAN</div>
+    <div class="foot-copyright">© 2026 CRYPTORIAN · ALL RIGHTS RESERVED</div>
 </div>
 """)
