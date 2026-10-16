@@ -266,7 +266,7 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .stMarkdown .serif { font-family:'Instrument Serif',serif !important; }
 .stMarkdown .mono  { font-family:'DM Mono',monospace !important; }
 
-/* ═══ KEEP THE 3-DOT MENU VISIBLE (for Reboot) ═══ */
+/* ═══ KEEP THE 3-DOT MENU VISIBLE ═══ */
 #MainMenu, footer { display:none !important; }
 header { background: transparent !important; }
 [data-testid="stToolbar"] { display: flex !important; visibility: visible !important; }
@@ -352,12 +352,13 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .stMarkdown p.text-block { font-family:'Manrope', sans-serif !important; font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 !important; padding:0 !important; border-left:none !important; }
 .stMarkdown p strong { color:#fff; font-weight:600; text-shadow:0 0 22px rgba(var(--ar),.7); }
 
-/* ═══ QUOTE ═══ */
+/* ═══ QUOTE — Enhanced separators with stronger glow ═══ */
 .quote { position:relative; margin:10rem auto 0 auto; max-width:1000px; padding:6rem 4rem; text-align:center; }
 .quote::before, .quote::after {
     position:absolute; font-family:'Instrument Serif', serif; font-size:clamp(10rem,25vw,20rem);
-    line-height:0.8; color:transparent; -webkit-text-stroke:2px rgba(var(--ar),.6);
-    text-shadow:0 0 40px rgba(var(--ar),.3); pointer-events:none; opacity:0.9;
+    line-height:0.8; color:transparent; -webkit-text-stroke:2px rgba(var(--ar),.8);
+    text-shadow:0 0 60px rgba(var(--ar),.9), 0 0 100px rgba(var(--ar),.5);
+    pointer-events:none; opacity:1;
 }
 .quote::before { content:'"'; top:0; left:0; }
 .quote::after { content:'"'; bottom:-3rem; right:0; }
@@ -368,22 +369,22 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
     letter-spacing:-.01em !important; margin:0 !important; color:#fff;
     position:relative; z-index:1;
 }
-.hl { color:var(--a); text-shadow:0 0 40px rgba(var(--ar),.8); }
+.hl { color:var(--a); text-shadow:0 0 40px rgba(var(--ar),.8), 0 0 80px rgba(var(--ar),.5); }
 
 .stMarkdown p.quote-author {
     margin:3rem 0 0 0 !important;
     font-family:'DM Mono', monospace !important;
     font-size:.75rem !important;
     letter-spacing:.4em; text-transform:uppercase;
-    color:rgba(255,255,255,.7);
-    display:flex; align-items:center; justify-content:center; gap:1.2rem;
+    color:rgba(255,255,255,.85);
+    display:flex; align-items:center; justify-content:center; gap:1.5rem;
     position:relative; z-index:1;
 }
 .stMarkdown p.quote-author::before,
 .stMarkdown p.quote-author::after {
-    content:''; height:1px; width:60px;
-    background:linear-gradient(90deg, transparent, rgba(var(--ar),.8), transparent);
-    box-shadow:0 0 12px rgba(var(--ar),.6);
+    content:''; height:2px; width:80px;
+    background:linear-gradient(90deg, transparent, var(--a), transparent);
+    box-shadow:0 0 20px var(--a), 0 0 40px rgba(var(--ar),.8), 0 0 60px rgba(var(--ar),.5);
 }
 
 /* ═══ FAQ ═══ */
@@ -494,8 +495,8 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .stButton > button[kind="secondary"]:hover { transform:translateY(-2px) scale(1.01); filter:brightness(1.1); }
 .stButton > button:focus-visible { outline:2px solid #fff !important; outline-offset:3px; }
 
-/* ═══ FOOTER — raised up ═══ */
-.foot { margin-top:3rem; padding-top:2rem; border-top:1px solid var(--line); text-align:center; }
+/* ═══ FOOTER — raised up more ═══ */
+.foot { margin-top:1rem; padding-top:1.5rem; border-top:1px solid var(--line); text-align:center; }
 .foot-copyright { font-family:'DM Mono', monospace; font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.35); margin:0 auto; text-align:center; }
 
 @media (max-width:900px) {
@@ -553,8 +554,8 @@ html(f"""
 html("""
 <div class="bleed ticker mono">
     <div class="tick-track">
-        <span>DISCLAIMER: CRYPTORIAN IS BUILT FOR LEGITIMATE PRIVACY ONLY, THE PLATFORM AND THE FOUNDER ARE NOT RESPONSIBLE FOR ANY IRRESPONSIBLE, HARMFUL USE OF THIS SITE..</span>
-        <span>DISCLAIMER: CRYPTORIAN IS BUILT FOR LEGITIMATE PRIVACY ONLY, THE PLATFORM AND THE FOUNDER ARE NOT RESPONSIBLE FOR ANY IRRESPONSIBLE, HARMFUL USE OF THIS SITE..</span>
+        <span>DISCLAIMER: CRYPTORIAN IS BUILT FOR LEGITIMATE PRIVACY ONLY, THE PLATFORM AND THE FOUNDER ARE NOT RESPONSIBLE FOR ANY IRRESPONSIBLE AND HARMFUL USE OF THIS SITE..</span>
+        <span>DISCLAIMER: CRYPTORIAN IS BUILT FOR LEGITIMATE PRIVACY ONLY, THE PLATFORM AND THE FOUNDER ARE NOT RESPONSIBLE FOR ANY IRRESPONSIBLE AND HARMFUL USE OF THIS SITE..</span>
     </div>
 </div>
 """)
