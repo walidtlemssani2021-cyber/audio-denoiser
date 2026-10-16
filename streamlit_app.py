@@ -31,10 +31,8 @@ st.markdown("""
 
 
 def html(code):
-    unique_id = f"ts_{time.time()}"
     clean = " ".join(line.strip() for line in code.split("\n") if line.strip())
-    wrapped = f'<div id="{unique_id}" data-ts="{time.time()}">{clean}</div>'
-    st.markdown(wrapped, unsafe_allow_html=True)
+    st.markdown(clean, unsafe_allow_html=True)
 
 
 def svg_img(svg, cls, alt):
@@ -267,8 +265,14 @@ html, body, .stApp { background:#000 !important; color:#fff; -webkit-font-smooth
 .stMarkdown .disp  { font-family:'Big Shoulders Display',sans-serif !important; }
 .stMarkdown .serif { font-family:'Instrument Serif',serif !important; }
 .stMarkdown .mono  { font-family:'DM Mono',monospace !important; }
-#MainMenu, footer, header, [data-testid="stToolbar"], [data-testid="stDecoration"], [data-testid="stHeaderActionElements"] { display:none !important; }
-[data-testid="stVerticalBlock"] { gap:0 !important; }
+
+/* ═══ KEEP THE 3-DOT MENU VISIBLE (for Reboot) ═══ */
+#MainMenu, footer { display:none !important; }
+header { background: transparent !important; }
+[data-testid="stToolbar"] { display: flex !important; visibility: visible !important; }
+[data-testid="stDecoration"] { display: none !important; }
+[data-testid="stHeaderActionElements"] { display: flex !important; visibility: visible !important; }
+
 .block-container { max-width:1260px !important; padding:0 2rem !important; position:relative; z-index:3; }
 ::selection { background:rgba(var(--ar),.45); color:#fff; }
 ::-webkit-scrollbar { width:8px; } ::-webkit-scrollbar-track { background:#000; } ::-webkit-scrollbar-thumb { background:rgba(var(--ar),.5); border-radius:4px; }
