@@ -352,7 +352,7 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .stMarkdown p.text-block { font-family:'Manrope', sans-serif !important; font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 !important; padding:0 !important; border-left:none !important; }
 .stMarkdown p strong { color:#fff; font-weight:600; text-shadow:0 0 22px rgba(var(--ar),.7); }
 
-/* ═══ QUOTE — Enhanced separators with stronger glow ═══ */
+/* ═══ QUOTE ═══ */
 .quote { position:relative; margin:10rem auto 0 auto; max-width:1000px; padding:6rem 4rem; text-align:center; }
 .quote::before, .quote::after {
     position:absolute; font-family:'Instrument Serif', serif; font-size:clamp(10rem,25vw,20rem);
@@ -554,8 +554,8 @@ html(f"""
 html("""
 <div class="bleed ticker mono">
     <div class="tick-track">
-        <span>DISCLAIMER: CRYPTORIAN IS BUILT FOR LEGITIMATE PRIVACY ONLY, THE PLATFORM AND THE FOUNDER ARE NOT RESPONSIBLE FOR ANY IRRESPONSIBLE AND HARMFUL USE OF THIS SITE..</span>
-        <span>DISCLAIMER: CRYPTORIAN IS BUILT FOR LEGITIMATE PRIVACY ONLY, THE PLATFORM AND THE FOUNDER ARE NOT RESPONSIBLE FOR ANY IRRESPONSIBLE AND HARMFUL USE OF THIS SITE..</span>
+        <span>DISCLAIMER: CRYPTORIAN IS BUILT FOR LEGITIMATE PRIVACY ONLY, THE PLATFORM AND THE FOUNDER ARE NOT RESPONSIBLE FOR ANY IRRESPONSIBLE AND HARMFUL USE..</span>
+        <span>DISCLAIMER: CRYPTORIAN IS BUILT FOR LEGITIMATE PRIVACY ONLY, THE PLATFORM AND THE FOUNDER ARE NOT RESPONSIBLE FOR ANY IRRESPONSIBLE AND HARMFUL USE..</span>
     </div>
 </div>
 """)
