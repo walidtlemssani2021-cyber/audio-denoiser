@@ -329,10 +329,10 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .star-wrap { position:relative; width:100%; max-width:780px; margin:0 auto; animation:fadeUp 1s ease .25s both; }
 .star-wrap .hero-art { display:block; width:100%; margin:0; border:0 !important; border-radius:0 !important; box-shadow:none !important; -webkit-mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%); mask-image:radial-gradient(ellipse closest-side,#000 58%,transparent 100%); }
 
-/* ═══ TICKER ═══ */
+/* ═══ TICKER (disclaimer) ═══ */
 .ticker { overflow:hidden; margin-top:6rem; border-block:1px solid var(--line); background:rgba(var(--ar),.03); }
-.tick-track { display:flex; width:max-content; animation:tick 40s linear infinite; padding:1rem 0; align-items:center; }
-.tick-track span { font-size:.72rem; letter-spacing:.32em; text-transform:uppercase; color:rgba(255,255,255,.75); padding:0 1.4rem; white-space:nowrap; }
+.tick-track { display:flex; width:max-content; animation:tick 60s linear infinite; padding:1rem 0; align-items:center; }
+.tick-track span { font-size:.72rem; letter-spacing:.24em; text-transform:uppercase; color:rgba(255,255,255,.75); padding:0 2rem; white-space:nowrap; }
 @keyframes tick { to { transform:translateX(-50%); } }
 
 /* ═══ SECTIONS ═══ */
@@ -348,7 +348,7 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .stMarkdown p.text-block { font-family:'Manrope', sans-serif !important; font-size:1.02rem !important; line-height:1.85 !important; font-weight:300 !important; color:rgba(255,255,255,.85); margin:0 !important; padding:0 !important; border-left:none !important; }
 .stMarkdown p strong { color:#fff; font-weight:600; text-shadow:0 0 22px rgba(var(--ar),.7); }
 
-/* ═══ QUOTE — Professional with 4 marks ═══ */
+/* ═══ QUOTE ═══ */
 .quote { position:relative; margin:10rem auto 0 auto; max-width:1000px; padding:6rem 4rem; text-align:center; }
 .quote::before, .quote::after {
     position:absolute; font-family:'Instrument Serif', serif; font-size:clamp(10rem,25vw,20rem);
@@ -414,7 +414,6 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
     width: 100% !important;
 }
 
-/* PRIMARY BUTTON — Blue gradient */
 .stButton > button[kind="primary"] {
     background: linear-gradient(135deg, #5fb8ff 0%, #2b6bff 100%) !important;
     color: #000000 !important;
@@ -445,7 +444,6 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
     line-height: 1.2 !important;
 }
 
-/* SECONDARY BUTTON — SAME as primary (blue gradient, DM Mono, white text on blue) */
 .stButton > button[kind="secondary"] {
     background: linear-gradient(135deg, #5fb8ff 0%, #2b6bff 100%) !important;
     color: #000000 !important;
@@ -492,8 +490,8 @@ div[data-testid="stHorizontalBlock"]:has(.star-wrap) { align-items:center; margi
 .stButton > button[kind="secondary"]:hover { transform:translateY(-2px) scale(1.01); filter:brightness(1.1); }
 .stButton > button:focus-visible { outline:2px solid #fff !important; outline-offset:3px; }
 
-/* ═══ FOOTER ═══ */
-.foot { margin-top:7rem; padding-top:2rem; border-top:1px solid var(--line); text-align:center; }
+/* ═══ FOOTER — raised up ═══ */
+.foot { margin-top:3rem; padding-top:2rem; border-top:1px solid var(--line); text-align:center; }
 .foot-copyright { font-family:'DM Mono', monospace; font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.35); margin:0 auto; text-align:center; }
 
 @media (max-width:900px) {
@@ -547,21 +545,12 @@ html(f"""
 <div class="bleed banner-wrap">{RIDGE}</div>
 """)
 
+# ═══ TICKER (disclaimer) ═══
 html("""
 <div class="bleed ticker mono">
     <div class="tick-track">
-        <span>2000 MAX CHARS</span>
-        <span>NEUTRON SOUND</span>
-        <span>KEY SHUFFLING</span>
-        <span>LENGTH HEADER</span>
-        <span>DUAL FORMATS</span>
-        <span>ZERO KNOWLEDGE</span>
-        <span>2000 MAX CHARS</span>
-        <span>NEUTRON SOUND</span>
-        <span>KEY SHUFFLING</span>
-        <span>LENGTH HEADER</span>
-        <span>DUAL FORMATS</span>
-        <span>ZERO KNOWLEDGE</span>
+        <span>DISCLAIMER: CRYPTORIAN IS BUILT FOR LEGITIMATE PRIVACY ONLY, THE PLATFORM AND THE FOUNDER ARE NOT RESPONSIBLE FOR ANY IRRESPONSIBLE, HARMFUL USE OF THIS SITE..</span>
+        <span>DISCLAIMER: CRYPTORIAN IS BUILT FOR LEGITIMATE PRIVACY ONLY, THE PLATFORM AND THE FOUNDER ARE NOT RESPONSIBLE FOR ANY IRRESPONSIBLE, HARMFUL USE OF THIS SITE..</span>
     </div>
 </div>
 """)
